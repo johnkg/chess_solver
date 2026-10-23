@@ -1,0 +1,315 @@
+[
+ {
+  "fen": "1nb2b2/1p1qp1n1/3r3k/p1pp2N1/P4P1P/2NBPQ2/1PPP4/R1B1K2R w KQ - 0 1",
+  "solutions": [
+   "g5f7"
+  ],
+  "san": "Nf7#",
+  "idea": "checkmate",
+  "tier": 1,
+  "mate_in": 1,
+  "text": "Checkmate. The knight to f7 attacks the king on h6 and it has no safe square and nothing can block or capture.",
+  "source": "game78",
+  "id": "checkmate-1"
+ },
+ {
+  "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 1",
+  "solutions": [
+   "h5f7"
+  ],
+  "san": "Qxf7#",
+  "idea": "checkmate",
+  "tier": 1,
+  "mate_in": 1,
+  "text": "Checkmate. The queen to f7 attacks the king on e8 and it has no safe square and nothing can block or capture.",
+  "source": "hand",
+  "id": "checkmate-2"
+ },
+ {
+  "fen": "r2q1bn1/4p1pr/np1pb2p/p4k2/P2Q3P/2N1BP2/1PP1B1PR/R3K1N1 w - - 0 1",
+  "solutions": [
+   "e2d3"
+  ],
+  "san": "Bd3#",
+  "idea": "checkmate",
+  "tier": 1,
+  "mate_in": 1,
+  "text": "Checkmate. The bishop to d3 attacks the king on f5 and it has no safe square and nothing can block or capture.",
+  "source": "game135",
+  "id": "checkmate-3"
+ },
+ {
+  "fen": "r2qkbnr/2p1p3/3p1pp1/n1PNP2p/8/p4PPB/P2P3P/RQ2K2R w KQk - 0 1",
+  "solutions": [
+   "b1g6"
+  ],
+  "san": "Qxg6#",
+  "idea": "checkmate",
+  "tier": 1,
+  "mate_in": 1,
+  "text": "Checkmate. The queen to g6 attacks the king on e8 and it has no safe square and nothing can block or capture.",
+  "source": "game52",
+  "id": "checkmate-4"
+ },
+ {
+  "fen": "4k3/8/8/3q4/8/8/8/3RK3 w - - 0 1",
+  "solutions": [
+   "d1d5"
+  ],
+  "san": "Rxd5",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Rook takes the queen on d5. Nothing can recapture, so White wins a free queen.",
+  "source": "hand",
+  "id": "hangingPiece-1"
+ },
+ {
+  "fen": "r1b1k1nr/2qn1p2/4pb2/p2p2Np/7P/3P3R/P3P1P1/1NQ1KBB1 w kq - 0 1",
+  "solutions": [
+   "c1c7"
+  ],
+  "san": "Qxc7",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Queen takes the queen on c7. Nothing can recapture, so White wins a free queen.",
+  "source": "game5",
+  "id": "hangingPiece-2"
+ },
+ {
+  "fen": "r1bqkbn1/p1ppp1pr/8/1P3p2/3P3p/1P2n2P/P3PPP1/RN1QKBNR w KQq - 0 1",
+  "solutions": [
+   "f2e3"
+  ],
+  "san": "fxe3",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Pawn takes the knight on e3. Nothing can recapture, so White wins a free knight.",
+  "source": "game10",
+  "id": "hangingPiece-3"
+ },
+ {
+  "fen": "rn2kbnr/p3p2p/2p2p2/q2p2p1/pP2b3/P1P4P/3PPPPR/1RBQKBN1 w kq - 0 1",
+  "solutions": [
+   "b4a5"
+  ],
+  "san": "bxa5",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Pawn takes the queen on a5. Nothing can recapture, so White wins a free queen.",
+  "source": "game6",
+  "id": "hangingPiece-4"
+ },
+ {
+  "fen": "3r2k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1",
+  "solutions": [
+   "d1d8"
+  ],
+  "san": "Rxd8#",
+  "idea": "backRankMate",
+  "tier": 2,
+  "mate_in": 1,
+  "text": "Checkmate. The black king on g8 is trapped on its back rank by its own pieces on f7, g7, h7, and the rook on d8 attacks it along the rank.",
+  "source": "hand",
+  "id": "backRankMate-1"
+ },
+ {
+  "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+  "solutions": [
+   "a1a8"
+  ],
+  "san": "Ra8#",
+  "idea": "backRankMate",
+  "tier": 2,
+  "mate_in": 1,
+  "text": "Checkmate. The black king on g8 is trapped on its back rank by its own pieces on f7, g7, h7, and the rook on a8 attacks it along the rank.",
+  "source": "hand",
+  "id": "backRankMate-2"
+ },
+ {
+  "fen": "rnbk1b2/1pppnQ2/5p2/p3p2r/4P3/2NP4/PPP3P1/R1B1KBN1 w - - 0 1",
+  "solutions": [
+   "f7f8"
+  ],
+  "san": "Qxf8#",
+  "idea": "backRankMate",
+  "tier": 2,
+  "mate_in": 1,
+  "text": "Checkmate. The black king on d8 is trapped on its back rank by its own pieces on c7, d7, e7, and the queen on f8 attacks it along the rank.",
+  "source": "game1084",
+  "id": "backRankMate-3"
+ },
+ {
+  "fen": "1nb2bnr/4k1pp/rp3q2/p3pp2/Q1Pp1N2/P3P3/R3KPPP/1NB2B1R w - - 0 1",
+  "solutions": [
+   "f4d5"
+  ],
+  "san": "Nd5+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Knight to d5 forks the queen on f6 and the king on e7. Black must answer the check, so White then wins the other piece.",
+  "source": "game19",
+  "id": "fork-1"
+ },
+ {
+  "fen": "3k2nr/p4p1p/b1Qpp2b/1p3pN1/1Pp4P/P1N1P3/R1PP2P1/2BK1BR1 w - - 0 1",
+  "solutions": [
+   "g5f7"
+  ],
+  "san": "Nxf7+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Knight to f7 forks the rook on h8 and the king on d8. Black must answer the check, so White then wins the other piece.",
+  "source": "game7",
+  "id": "fork-2"
+ },
+ {
+  "fen": "3k3r/8/8/4N3/8/8/8/4K3 w - - 0 1",
+  "solutions": [
+   "e5f7"
+  ],
+  "san": "Nf7+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Knight to f7 forks the rook on h8 and the king on d8. Black must answer the check, so White then wins the other piece.",
+  "source": "hand",
+  "id": "fork-3"
+ },
+ {
+  "fen": "r1b4r/pppkbppp/n2p3n/8/4Pp2/N2B1NQ1/PPPP2PP/R1B1K2R w KQ - 0 1",
+  "solutions": [
+   "g3g7"
+  ],
+  "san": "Qxg7",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Queen to g7 forks the rook on h8 and the knight on h6. Black can only save one of them.",
+  "source": "game11",
+  "id": "fork-4"
+ },
+ {
+  "fen": "1nbq1b1r/2ppk2p/1p1n2p1/rN2p3/p1P1P1P1/3P3Q/PP3K1P/R1B2BNR w - - 0 1",
+  "solutions": [
+   "c1g5"
+  ],
+  "san": "Bg5+",
+  "idea": "skewer",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "The bishop on g5 skewers the king on e7: the king must move, and then White takes the queen on d8.",
+  "source": "game95",
+  "id": "skewer-1"
+ },
+ {
+  "fen": "1nbq2r1/rp1p1pbp/2pkpn2/p4Pp1/2PP4/NP2P2Q/P3NKPP/R1B2B1R w - - 0 1",
+  "solutions": [
+   "h3g3"
+  ],
+  "san": "Qg3+",
+  "idea": "skewer",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "The queen on g3 skewers the king on d6: the king must move, and then White takes the knight on b8.",
+  "source": "game1106",
+  "id": "skewer-2"
+ },
+ {
+  "fen": "7q/8/8/7k/8/K7/8/R7 w - - 0 1",
+  "solutions": [
+   "a1h1"
+  ],
+  "san": "Rh1+",
+  "idea": "skewer",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "The rook on h1 skewers the king on h5: the king must move, and then White takes the queen on h8.",
+  "source": "hand",
+  "id": "skewer-3"
+ },
+ {
+  "fen": "rnb1qbnr/pp1p1k2/5p1p/2p1p1p1/2P1QPB1/4P3/PP1P1KPP/RNB3NR w - - 0 1",
+  "solutions": [
+   "g4h5"
+  ],
+  "san": "Bh5+",
+  "idea": "skewer",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "The bishop on h5 skewers the king on f7: the king must move, and then White takes the queen on e8.",
+  "source": "game1078",
+  "id": "skewer-4"
+ },
+ {
+  "fen": "r1b2b1r/pp2pk1p/n5pn/1qp2p2/1P2p3/P1P4N/1B1PPPBP/RNR3K1 w - - 0 1",
+  "solutions": [
+   "c3c4"
+  ],
+  "san": "c4",
+  "idea": "discoveredAttack",
+  "tier": 3,
+  "mate_in": 0,
+  "text": "Moving the pawn uncovers the bishop on b2, which now attacks the rook on h8, while the pawn makes a threat of its own. Black cannot meet both.",
+  "source": "game1085",
+  "id": "discoveredAttack-1"
+ },
+ {
+  "fen": "rnb1k1nr/3p3p/p2b1Pp1/1P6/4P2R/P2P1N2/1B1N1PP1/R2QKB2 w Q - 0 1",
+  "solutions": [
+   "f6f7"
+  ],
+  "san": "f7+",
+  "idea": "discoveredAttack",
+  "tier": 3,
+  "mate_in": 0,
+  "text": "Moving the pawn gives check and uncovers the bishop on b2, which attacks the rook on h8. Black must answer the check, so there is no time to save it.",
+  "source": "game107",
+  "id": "discoveredAttack-2"
+ },
+ {
+  "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
+  "solutions": [
+   "g5f7"
+  ],
+  "san": "Nf7#",
+  "idea": "smotheredMate",
+  "tier": 3,
+  "mate_in": 1,
+  "text": "Smothered mate. The black king on h8 is boxed in by its own pieces, so the knight on f7 gives check and nothing can capture it or help the king.",
+  "source": "hand",
+  "id": "smotheredMate-1"
+ },
+ {
+  "fen": "5kn1/3r1p2/n4P2/4N1pp/4P3/1P6/2K5/3r1r1N b - - 0 1",
+  "solutions": [
+   "d1d2"
+  ],
+  "san": "R1d2+",
+  "idea": null,
+  "tier": 4,
+  "mate_in": 2,
+  "text": "R1d2+ forces checkmate in 2: every reply still runs into mate.",
+  "source": "mate136",
+  "id": "mate2-1"
+ },
+ {
+  "fen": "7k/8/8/8/8/8/R7/1R4K1 w - - 0 1",
+  "solutions": [
+   "a2a7",
+   "b1b7"
+  ],
+  "san": "Ra7",
+  "idea": null,
+  "tier": 4,
+  "mate_in": 2,
+  "text": "Ra7 forces checkmate in 2: every reply still runs into mate.",
+  "source": "hand",
+  "id": "mate2-2"
+ }
+]

@@ -1,0 +1,48 @@
+import '../engine/insight.dart';
+import '../engine/piece.dart';
+import '../engine/position.dart';
+
+/// Short name of an idea for buttons and hints.
+String ideaLabel(Idea idea) => switch (idea) {
+      Idea.checkmate => 'Checkmate',
+      Idea.backRankMate => 'Back-rank mate',
+      Idea.smotheredMate => 'Smothered mate',
+      Idea.doubleCheck => 'Double check',
+      Idea.hangingPiece => 'A free piece',
+      Idea.fork => 'A fork',
+      Idea.discoveredAttack => 'A discovered attack',
+      Idea.removingDefender => 'Removing the defender',
+      Idea.pin => 'A pin',
+      Idea.skewer => 'A skewer',
+      Idea.castling => 'Castling',
+      Idea.development => 'Development',
+      Idea.center => 'Fighting for the center',
+    };
+
+/// Section titles for the Learn tab.
+String levelTitle(int level) => switch (level) {
+      1 => 'Level 1 · How the pieces move',
+      2 => 'Level 2 · Finishing the game',
+      3 => 'Level 3 · Good habits',
+      4 => 'Level 4 · Tactics',
+      _ => 'Level $level',
+    };
+
+/// Section titles for the Practice tab.
+String tierTitle(int tier) => switch (tier) {
+      1 => 'Tier 1 · Win a piece or deliver mate',
+      2 => 'Tier 2 · Forks, skewers and back-rank mates',
+      3 => 'Tier 3 · Hidden ideas',
+      4 => 'Tier 4 · Mate in 2',
+      5 => 'Tier 5 · Mate in 3',
+      _ => 'Tier $tier',
+    };
+
+/// One line about whose turn it is, or how the game ended.
+String statusText(Position pos) {
+  if (pos.isCheckmate) {
+    return '${colorName(1 - pos.turn)} wins by checkmate';
+  }
+  if (pos.isStalemate) return 'Stalemate: a draw';
+  return '${colorName(pos.turn)} to move${pos.inCheck ? ' (in check)' : ''}';
+}

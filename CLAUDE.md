@@ -1,0 +1,45 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+# chess-solver
+
+Flutter/Dart app that teaches chess from scratch and explains why a move is good.
+Modeled on https://github.com/johnkg/sudoku-solver (same stack, same layout). Read `PLAN.md` first (design, idea ladder, build order, perft targets).
+
+## Status
+- Platform folders created; `flutter analyze` is clean and `flutter test` passes (165 tests). The web app runs in Chrome; `tool/solve.dart` runs.
+- UI is only smoke-tested in the browser plus `test/widget_test.dart`; android/ios/macos builds have not been tried.
+- The directory is not a git repo yet.
+- Chess pieces are Unicode glyphs with U+FE0E; Flutter web logs "Could not find a set of Noto fonts" for the selector. Harmless: pieces render.
+
+## Commands
+Flutter SDK is at `~/flutter/bin` (not on PATH): use `~/flutter/bin/flutter` and `~/flutter/bin/dart`.
+- First time only: `flutter create . --project-name chess_solver --platforms=web,android,ios,macos`
+- `flutter pub get` · `flutter analyze` · `flutter test` · `flutter run -d chrome`
+- One test file: `flutter test test/engine/perft_test.dart`; one test by name: `flutter test --plain-name "<name>" <file>`
+- CLI explainer: `dart run tool/solve.dart "<fen>" [depth] [move-to-critique, e.g. e2e4]`
+- Python mirrors: `python3 tool/<name>.py`, see below.
+- CI (`.github/workflows/pages.yml`): every push to `main` runs `flutter analyze` + `flutter test`, then deploys the web build to GitHub Pages. An analyzer warning or failing test blocks the deploy.
+
+## Architecture
+- `lib/engine/` (pure Dart, no Flutter imports):
+  - `position.dart`: board, FEN, legal moves, check/mate/stalemate, perft. Everything else depends on it being right.
+  - `search.dart`: `mateIn` (forced-mate solver), `negamax` alpha-beta, and `materialMargin`/`materialOutcome` (shallow material search used to verify claims). `eval.dart` splits the score into named terms.
+  - `ideas/*.dart`: one detector per idea, each `detectX(pos, move, next) -> List<Insight>`. `insight.dart` holds the `Idea` enum and `materialIdeas`.
+  - `explainer.dart`: `explainMove` runs all detectors in teaching order (positional reasons only if no tactic); `explainVerified` drops material claims the 2-ply search doesn't confirm.
+  - `rater.dart` (`ratePuzzle`: is this a puzzle, which idea, what tier) and `mistakes.dart` (`explainMistake`: "why is my move bad") sit on top of search + explainer.
+- `lib/ui/`: `app.dart` 3-tab shell (Learn, Practice, Board). `analysis.dart` bridges the engine to the UI (`analysePosition`, `critiqueMove`). `board_controller.dart` is a `ChangeNotifier`; `progress_store.dart` uses `shared_preferences`.
+- `lib/lessons/lessons.dart` and `lib/puzzles/library.dart` are data, GENERATED from Python (see Rules).
+- `tool/`: Python ports of the engine (`perft_mirror.py` = position, `mirror_search.py`, `mirror_ideas.py`, `mirror_rater.py`, `mirror_mistakes.py`, `mirror_san.py`, `mirror_games.py`), `check_*.py` tests against them, and generators (`gen_lessons.py`, `curate.py`, `gen_library.py`, helpers in `dartgen.py`).
+
+## Rules
+- Reply in /caveman style (terse), unless asked otherwise.
+- `lib/engine/` is pure Dart: no Flutter imports. UI lives in `lib/ui/`.
+- Every tactic/lesson has a hand-built test position. Soundness test: a technique must never claim a wrong result.
+- Do not hand-roll the engine blind: perft counts in `PLAN.md` must pass before any tactic work.
+- Python mirror checks (`python3 tool/<name>.py`): `perft_mirror` (5 perft positions), `check_mirror` (mate solver vs brute-force minimax, eval, alpha-beta), `check_ideas` (hand-built positions, SEE, search-verified claims), `check_more` (smothered mate, double check, discovered attack, removing the defender, SAN), `check_mistakes` ("why is my move bad"), `check_rater` (puzzle rating), `check_lessons` (every lesson example), `check_library` (independent re-check of the puzzle library: brute-force mates, depth-4 for material puzzles; slow, ~2 min).
+- Tactic claims (free piece, fork, skewer, discovered attack, removing the defender) are only told to the learner after `explainVerified` confirms them with a 2-ply material search. Raw detectors are right only ~45-60% of the time on real-looking positions; verified claims held at 3 plies in 71 of 72 cases.
+- `lib/lessons/lessons.dart` and `lib/puzzles/library.dart` are GENERATED; never edit them by hand. Edit `tool/lessons_data.py` then run `python3 tool/gen_lessons.py`; rebuild puzzles with `python3 tool/curate.py [minutes]` (merges into `tool/library.json`, re-rating old entries) then `python3 tool/gen_library.py`. If you change the search, eval, detectors or rater on purpose, regenerate the library; `test/puzzle_library_test.dart` re-rates every entry with the Dart engine.
+- Puzzle rule: a position is a puzzle only if one move clearly wins (or <=4 equal mating moves) AND the named idea explains the advantage (`rater.dart`: `uniqueMargin`, `explainSlack`). Idea = what wins the most material; tier = how hard that idea is.
+- Keep Python mirrors and Dart in sync when changing engine logic, or delete the mirrors once Dart tests cover the same cases.
