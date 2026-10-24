@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'board_screen.dart';
 import 'learn_screen.dart';
+import 'play_screen.dart';
 import 'practice_screen.dart';
 import 'progress_store.dart';
 
-/// The whole app: three tabs.
+/// The whole app: four tabs.
 class ChessSolverApp extends StatelessWidget {
   const ChessSolverApp({super.key});
 
@@ -54,6 +55,7 @@ class _HomeShellState extends State<HomeShell> {
         children: [
           const LearnScreen(),
           PracticeScreen(progress: _progress),
+          const PlayScreen(),
           const BoardScreen(),
         ],
       ),
@@ -63,6 +65,7 @@ class _HomeShellState extends State<HomeShell> {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.school_outlined), label: 'Learn'),
           NavigationDestination(icon: Icon(Icons.extension_outlined), label: 'Practice'),
+          NavigationDestination(icon: Icon(Icons.sports_esports_outlined), label: 'Play'),
           NavigationDestination(icon: Icon(Icons.grid_on), label: 'Board'),
         ],
       ),

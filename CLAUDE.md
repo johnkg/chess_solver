@@ -8,7 +8,7 @@ Flutter/Dart app that teaches chess from scratch and explains why a move is good
 Modeled on https://github.com/johnkg/sudoku-solver (same stack, same layout). Read `PLAN.md` first (design, idea ladder, build order, perft targets).
 
 ## Status
-- Platform folders created; `flutter analyze` is clean and `flutter test` passes (165 tests). The web app runs in Chrome; `tool/solve.dart` runs.
+- Platform folders created; `flutter analyze` is clean and `flutter test` passes (171 tests). The web app runs in Chrome; `tool/solve.dart` runs.
 - UI is only smoke-tested in the browser plus `test/widget_test.dart`; android/ios/macos builds have not been tried.
 - The directory is not a git repo yet.
 - Chess pieces are Unicode glyphs with U+FE0E; Flutter web logs "Could not find a set of Noto fonts" for the selector. Harmless: pieces render.
@@ -28,8 +28,8 @@ Flutter SDK is at `~/flutter/bin` (not on PATH): use `~/flutter/bin/flutter` and
   - `search.dart`: `mateIn` (forced-mate solver), `negamax` alpha-beta, and `materialMargin`/`materialOutcome` (shallow material search used to verify claims). `eval.dart` splits the score into named terms.
   - `ideas/*.dart`: one detector per idea, each `detectX(pos, move, next) -> List<Insight>`. `insight.dart` holds the `Idea` enum and `materialIdeas`.
   - `explainer.dart`: `explainMove` runs all detectors in teaching order (positional reasons only if no tactic); `explainVerified` drops material claims the 2-ply search doesn't confirm.
-  - `rater.dart` (`ratePuzzle`: is this a puzzle, which idea, what tier) and `mistakes.dart` (`explainMistake`: "why is my move bad") sit on top of search + explainer.
-- `lib/ui/`: `app.dart` 3-tab shell (Learn, Practice, Board). `analysis.dart` bridges the engine to the UI (`analysePosition`, `critiqueMove`). `board_controller.dart` is a `ChangeNotifier`; `progress_store.dart` uses `shared_preferences`.
+  - `opponent.dart` (`chooseMove` by `Level`: depth + score slack so weak levels blunder; `drawReason`). `rater.dart` (`ratePuzzle`: is this a puzzle, which idea, what tier) and `mistakes.dart` (`explainMistake`: "why is my move bad") sit on top of search + explainer.
+- `lib/ui/`: `app.dart` 4-tab shell (Learn, Practice, Play, Board). `play_screen.dart` = game vs engine with coach text via `critiqueMove`. `analysis.dart` bridges the engine to the UI (`analysePosition`, `critiqueMove`). `board_controller.dart` is a `ChangeNotifier`; `progress_store.dart` uses `shared_preferences`.
 - `lib/lessons/lessons.dart` and `lib/puzzles/library.dart` are data, GENERATED from Python (see Rules).
 - `tool/`: Python ports of the engine (`perft_mirror.py` = position, `mirror_search.py`, `mirror_ideas.py`, `mirror_rater.py`, `mirror_mistakes.py`, `mirror_san.py`, `mirror_games.py`), `check_*.py` tests against them, and generators (`gen_lessons.py`, `curate.py`, `gen_library.py`, helpers in `dartgen.py`).
 
