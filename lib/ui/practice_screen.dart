@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../engine/piece.dart';
 import '../engine/position.dart';
+import '../engine/weakspots.dart';
 import '../puzzles/library.dart';
 import 'labels.dart';
 import 'progress_store.dart';
@@ -12,6 +13,54 @@ class PracticeScreen extends StatelessWidget {
   const PracticeScreen({super.key, required this.progress});
 
   final ProgressStore progress;
+
+  Widget _weakSpots(BuildContext context) {
+    final spots = weakest(progress.missed, puzzleLibrary);
+    final next = nextWeakPuzzle(puzzleLibrary, progress.missed, progress.solved);
+    return Card(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Your weak spots', style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            if (spots.isEmpty)
+              const Text(
+                'None yet. Ideas you miss in a game or a puzzle show up here.',
+              )
+            else ...[
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  for (final e in spots)
+                    Chip(label: Text('${weakLabel(e.key)} · missed ${e.value}')),
+                ],
+              ),
+              const SizedBox(height: 8),
+              FilledButton.icon(
+                onPressed: next == null
+                    ? null
+                    : () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => PuzzleScreen(
+                              puzzle: next,
+                              progress: progress,
+                              weakMode: true,
+                            ),
+                          ),
+                        ),
+                icon: const Icon(Icons.fitness_center),
+                label: const Text('Practice weak spots'),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +83,7 @@ class PracticeScreen extends StatelessWidget {
                     style: theme.textTheme.titleMedium,
                   ),
                 ),
+                _weakSpots(context),
                 for (final tier in tiers) ...[
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),

@@ -55,7 +55,7 @@ class _HomeShellState extends State<HomeShell> {
         children: [
           const LearnScreen(),
           PracticeScreen(progress: _progress),
-          const PlayScreen(),
+          PlayScreen(progress: _progress),
           const BoardScreen(),
         ],
       ),

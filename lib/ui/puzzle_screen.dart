@@ -4,7 +4,10 @@ import '../engine/mistakes.dart';
 import '../engine/move.dart';
 import '../engine/piece.dart';
 import '../engine/position.dart';
+import '../engine/review.dart';
 import '../engine/san.dart';
+import '../engine/weakspots.dart';
+import '../puzzles/library.dart';
 import '../engine/puzzle.dart';
 import 'board_controller.dart';
 import 'board_view.dart';
@@ -14,10 +17,18 @@ import 'progress_store.dart';
 /// Solve one puzzle: tap a piece, tap its destination. A wrong move is
 /// explained and taken back; hints get more specific each time.
 class PuzzleScreen extends StatefulWidget {
-  const PuzzleScreen({super.key, required this.puzzle, required this.progress});
+  const PuzzleScreen({
+    super.key,
+    required this.puzzle,
+    required this.progress,
+    this.weakMode = false,
+  });
 
   final Puzzle puzzle;
   final ProgressStore progress;
+
+  /// Launched from "Practice weak spots": offers the next one when solved.
+  final bool weakMode;
 
   @override
   State<PuzzleScreen> createState() => _PuzzleScreenState();
@@ -27,6 +38,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   late final Position _start;
   late final BoardController _board;
   bool _solved = false;
+  bool _missed = false;
   int _hints = 0;
   String? _feedback;
   List<BoardArrow> _arrows = const [];
@@ -58,6 +70,9 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
     if (_puzzle.solutions.contains(move.uci)) {
       _board.setPosition(_start.makeMove(move));
       widget.progress.markSolved(_puzzle.id);
+      if (!_missed && _hints == 0) {
+        widget.progress.relieve(weakKey(_puzzle.idea));
+      }
       setState(() {
         _solved = true;
         _hintSquares = {};
@@ -65,6 +80,10 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
         _feedback = 'Correct: ${san(_start, move)}.\n\n${_puzzle.text}';
       });
       return;
+    }
+    if (!_missed) {
+      _missed = true;
+      widget.progress.recordMiss(weakKey(_puzzle.idea));
     }
     final mistake = explainMistake(_start, move);
     setState(() {
@@ -108,10 +127,34 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
     });
   }
 
+  void _next() {
+    final next = nextWeakPuzzle(
+      puzzleLibrary,
+      widget.progress.missed,
+      widget.progress.solved,
+      skipId: _puzzle.id,
+    );
+    final nav = Navigator.of(context);
+    if (next == null) {
+      nav.pop();
+      return;
+    }
+    nav.pushReplacement(
+      MaterialPageRoute<void>(
+        builder: (_) => PuzzleScreen(
+          puzzle: next,
+          progress: widget.progress,
+          weakMode: true,
+        ),
+      ),
+    );
+  }
+
   void _retry() {
     _board.setPosition(_start);
     setState(() {
       _solved = false;
+      _missed = false;
       _hints = 0;
       _feedback = null;
       _arrows = const [];
@@ -161,6 +204,13 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                   label: Text(_hints == 0 ? 'Hint' : 'Hint ($_hints/3)'),
                 ),
                 const SizedBox(width: 8),
+                if (_solved && widget.weakMode)
+                  FilledButton.icon(
+                    onPressed: _next,
+                    icon: const Icon(Icons.arrow_forward),
+                    label: const Text('Next weak spot'),
+                  ),
+                if (_solved && widget.weakMode) const SizedBox(width: 8),
                 if (_solved)
                   OutlinedButton.icon(
                     onPressed: _retry,

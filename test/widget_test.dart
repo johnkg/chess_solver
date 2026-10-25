@@ -57,6 +57,22 @@ void main() {
     expect(find.textContaining('e4'), findsWidgets);
     expect(find.textContaining('I played'), findsOneWidget);
     expect(find.text('Your move'), findsOneWidget);
+    await tester.tap(find.text('Game review'));
+    await tester.pump();
+    expect(find.textContaining('all of them sound'), findsOneWidget);
+  });
+
+  testWidgets('Practice tab shows weak spots', (tester) async {
+    SharedPreferences.setMockInitialValues({'missed_ideas': ['fork:2']});
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(const ChessSolverApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Practice').last);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('A fork · missed 2'), findsOneWidget);
+    expect(find.text('Practice weak spots'), findsOneWidget);
   });
 
   test('BoardController selects, moves and undoes', () {

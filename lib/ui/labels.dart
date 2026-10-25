@@ -1,5 +1,6 @@
 import '../engine/insight.dart';
 import '../engine/piece.dart';
+import '../engine/review.dart';
 import '../engine/position.dart';
 
 /// Short name of an idea for buttons and hints.
@@ -46,3 +47,8 @@ String statusText(Position pos) {
   if (pos.isStalemate) return 'Stalemate: a draw';
   return '${colorName(pos.turn)} to move${pos.inCheck ? ' (in check)' : ''}';
 }
+
+/// Name of a weak-spot key (see `weakKey`) for the Practice tab.
+String weakLabel(String key) => key == mateKey
+    ? 'Forced mates'
+    : ideaLabel(Idea.values.byName(key));

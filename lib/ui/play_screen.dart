@@ -4,17 +4,22 @@ import 'package:flutter/material.dart';
 
 import '../engine/explainer.dart';
 import '../engine/opponent.dart';
+import '../engine/mistakes.dart';
 import '../engine/piece.dart';
 import '../engine/position.dart';
+import '../engine/review.dart';
 import '../engine/san.dart';
 import 'analysis.dart';
 import 'board_controller.dart';
 import 'board_view.dart';
+import 'progress_store.dart';
 
 /// Play a game against the engine. After each of your moves it says whether
 /// the move was fine or a mistake, and why; it also says why it replied.
 class PlayScreen extends StatefulWidget {
-  const PlayScreen({super.key, this.random});
+  const PlayScreen({super.key, required this.progress, this.random});
+
+  final ProgressStore progress;
 
   /// Fixed source of randomness for tests.
   final Random? random;
@@ -31,6 +36,8 @@ class _PlayScreenState extends State<PlayScreen> {
   Analysis? _coach;
   String? _engineNote;
   int _game = 0;
+  final List<ReviewEntry> _entries = [];
+  bool _showReview = false;
 
   @override
   void initState() {
@@ -58,6 +65,8 @@ class _PlayScreenState extends State<PlayScreen> {
     _thinking = false;
     _coach = null;
     _engineNote = null;
+    _entries.clear();
+    _showReview = false;
     _board.setPosition(Position.start());
     if (_player == black) _engineMove();
   }
@@ -94,7 +103,12 @@ class _PlayScreenState extends State<PlayScreen> {
     });
     await Future<void>.delayed(const Duration(milliseconds: 60));
     if (!mounted || game != _game) return;
-    _coach = critiqueMove(before, move);
+    final mistake = explainMistake(before, move);
+    final entry = reviewMove(before, move, ply: _board.ply - 1, mistake: mistake);
+    _entries.add(entry);
+    final key = entry.missedKey;
+    if (key != null) widget.progress.recordMiss(key);
+    _coach = critiqueWith(before, move, mistake);
     if (_over) {
       setState(() => _thinking = false);
       return;
@@ -111,6 +125,7 @@ class _PlayScreenState extends State<PlayScreen> {
   void _undo() {
     _board.undo();
     if (_pos.turn != _player && _board.canUndo) _board.undo();
+    _entries.removeWhere((e) => e.ply >= _board.ply);
     setState(() {
       _coach = null;
       _engineNote = null;
@@ -203,6 +218,13 @@ class _PlayScreenState extends State<PlayScreen> {
                   label: const Text('Take back'),
                 ),
                 OutlinedButton.icon(
+                  onPressed: _entries.isEmpty
+                      ? null
+                      : () => setState(() => _showReview = !_showReview),
+                  icon: const Icon(Icons.fact_check_outlined),
+                  label: const Text('Game review'),
+                ),
+                OutlinedButton.icon(
                   onPressed: () => setState(_newGame),
                   icon: const Icon(Icons.restart_alt),
                   label: const Text('New game'),
@@ -220,6 +242,37 @@ class _PlayScreenState extends State<PlayScreen> {
                   ].join('\n\n')),
                 ),
               ),
+            ],
+            if ((_showReview || _over) && _entries.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              _reviewCard(context),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _reviewCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final mistakes = _entries.where((e) => e.isMistake).toList();
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Game review', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 4),
+            Text(reviewSummary(_entries)),
+            for (final e in mistakes) ...[
+              const SizedBox(height: 12),
+              Text('${e.number} ${e.san}', style: theme.textTheme.titleSmall),
+              Text(e.mistake!.text),
+            ],
+            if (mistakes.any((e) => e.missedKey != null)) ...[
+              const SizedBox(height: 12),
+              const Text('Saved to your weak spots: see the Practice tab.'),
             ],
           ],
         ),

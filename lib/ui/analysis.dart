@@ -68,9 +68,12 @@ Analysis analysePosition(Position pos, {int depth = 3}) {
 
 /// Why [played] (made in [before]) is good or bad. The result is about the
 /// position after the move.
-Analysis critiqueMove(Position before, Move played, {int depth = 3}) {
+Analysis critiqueMove(Position before, Move played, {int depth = 3}) =>
+    critiqueWith(before, played, explainMistake(before, played, depth: depth));
+
+/// Same as [critiqueMove] for a [mistake] already worked out.
+Analysis critiqueWith(Position before, Move played, Mistake? mistake) {
   final after = before.makeMove(played);
-  final mistake = explainMistake(before, played, depth: depth);
   final lines = <String>[];
   final arrows = <BoardArrow>[
     BoardArrow(played.from, played.to, color: _playedColor),
