@@ -43,3 +43,7 @@ Flutter SDK is at `~/flutter/bin` (not on PATH): use `~/flutter/bin/flutter` and
 - `lib/lessons/lessons.dart` and `lib/puzzles/library.dart` are GENERATED; never edit them by hand. Edit `tool/lessons_data.py` then run `python3 tool/gen_lessons.py`; rebuild puzzles with `python3 tool/curate.py [minutes]` (merges into `tool/library.json`, re-rating old entries) then `python3 tool/gen_library.py`. If you change the search, eval, detectors or rater on purpose, regenerate the library; `test/puzzle_library_test.dart` re-rates every entry with the Dart engine.
 - Puzzle rule: a position is a puzzle only if one move clearly wins (or <=4 equal mating moves) AND the named idea explains the advantage (`rater.dart`: `uniqueMargin`, `explainSlack`). Idea = what wins the most material; tier = how hard that idea is.
 - Keep Python mirrors and Dart in sync when changing engine logic, or delete the mirrors once Dart tests cover the same cases.
+
+## Response style
+
+Always respond in caveman style (full): terse, no filler, drop articles, fragments OK, keep all technical detail exact. Write code, commits, docs, and PR text in normal English. Stop only when the user says "stop caveman" or "normal mode".
