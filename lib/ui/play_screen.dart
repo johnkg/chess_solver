@@ -13,6 +13,7 @@ import 'analysis.dart';
 import 'board_controller.dart';
 import 'board_view.dart';
 import 'progress_store.dart';
+import 'review_snapshot.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
@@ -272,9 +273,8 @@ class _PlayScreenState extends State<PlayScreen> {
             const SizedBox(height: 4),
             Text(reviewSummary(_entries)),
             for (final e in mistakes) ...[
-              const SizedBox(height: 12),
-              Text('${e.number} ${e.san}', style: theme.textTheme.titleSmall),
-              Text(e.mistake!.text),
+              const SizedBox(height: 16),
+              ReviewSnapshot(entry: e, flipped: _player == black),
             ],
             if (mistakes.any((e) => e.missedKey != null)) ...[
               const SizedBox(height: 12),
