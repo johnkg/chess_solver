@@ -40,6 +40,17 @@ void main() {
     }
   });
 
+  test('first move is not always a knight', () {
+    for (final l in Level.values) {
+      final firsts = {
+        for (var seed = 0; seed < 60; seed++)
+          chooseMove(Position.start(), l, Random(seed))!.uci,
+      };
+      expect(firsts.length, greaterThan(2), reason: l.label);
+      expect(firsts, containsAll(['e2e4', 'd2d4']));
+    }
+  });
+
   test('no move when mated', () {
     final pos = Position.fromFen('R5k1/5ppp/8/8/8/8/8/6K1 b - - 0 1');
     expect(chooseMove(pos, Level.club), isNull);
