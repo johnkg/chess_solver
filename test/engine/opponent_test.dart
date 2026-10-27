@@ -25,6 +25,21 @@ void main() {
     expect(chooseMove(pos, Level.club, Random(3))!.uci, 'd1d5');
   });
 
+  test('openings vary: not one fixed reply at any level', () {
+    final replyTo = {
+      'start': Position.start(),
+      'e4': Position.fromFen('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'),
+    };
+    for (final l in Level.values) {
+      for (final pos in replyTo.values) {
+        final moves = {
+          for (var seed = 0; seed < 40; seed++) chooseMove(pos, l, Random(seed))!.uci,
+        };
+        expect(moves.length, greaterThan(1), reason: '${l.label} ${pos.toFen()}');
+      }
+    }
+  });
+
   test('no move when mated', () {
     final pos = Position.fromFen('R5k1/5ppp/8/8/8/8/8/6K1 b - - 0 1');
     expect(chooseMove(pos, Level.club), isNull);
