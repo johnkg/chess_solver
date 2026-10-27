@@ -17,7 +17,7 @@ from mirror_rater import rate, TIER, MATE_TIER
 from mirror_search import random_game_positions
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-QUOTA = 4
+QUOTA = 10
 PROPOSERS = {'hangingPiece', 'fork', 'skewer', 'removingDefender', 'discoveredAttack', 'doubleCheck'}
 
 SEEDS = [
