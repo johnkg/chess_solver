@@ -33,7 +33,8 @@ void main() {
       expect(r.idea, p.idea);
       expect(r.tier, p.tier);
       expect(r.mateIn, p.mateIn);
-      expect(r.text, p.text);
+      // Puzzles from real games start with a line saying which game they come from.
+      expect(p.text.endsWith(r.text), isTrue, reason: p.text);
     });
 
     test('${p.id} solutions are legal moves', () {
