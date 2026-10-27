@@ -42,6 +42,7 @@ Flutter SDK is at `~/flutter/bin` (not on PATH): use `~/flutter/bin/flutter` and
 - Tactic claims (free piece, fork, skewer, discovered attack, removing the defender) are only told to the learner after `explainVerified` confirms them with a 2-ply material search. Raw detectors are right only ~45-60% of the time on real-looking positions; verified claims held at 3 plies in 71 of 72 cases.
 - `lib/lessons/lessons.dart` and `lib/puzzles/library.dart` are GENERATED; never edit them by hand. Edit `tool/lessons_data.py` then run `python3 tool/gen_lessons.py`; rebuild puzzles with `python3 tool/curate.py [minutes]` (merges into `tool/library.json`, re-rating old entries) then `python3 tool/gen_library.py`. If you change the search, eval, detectors or rater on purpose, regenerate the library; `test/puzzle_library_test.dart` re-rates every entry with the Dart engine.
 - Puzzle rule: a position is a puzzle only if one move clearly wins (or <=4 equal mating moves) AND the named idea explains the advantage (`rater.dart`: `uniqueMargin`, `explainSlack`). Idea = what wins the most material; tier = how hard that idea is.
+- Famous games: `tool/famous.py` holds move lists only; positions are replayed by the Python engine (a typo fails loudly). They feed Level 7 lessons (`lessons_data.py`) and `curate.py` puzzles (`FAMOUS`, text gets a "From X vs Y" line).
 - Keep Python mirrors and Dart in sync when changing engine logic, or delete the mirrors once Dart tests cover the same cases.
 
 ## Response style

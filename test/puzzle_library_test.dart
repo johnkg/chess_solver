@@ -33,7 +33,9 @@ void main() {
       expect(r.idea, p.idea);
       expect(r.tier, p.tier);
       expect(r.mateIn, p.mateIn);
-      expect(r.text, p.text);
+      // Puzzles from real games start with a "From X vs Y, place year." line.
+      expect(p.text.endsWith(r.text), isTrue, reason: p.text);
+      expect(p.text == r.text || p.text.startsWith('From '), isTrue);
     });
 
     test('${p.id} solutions are legal moves', () {
