@@ -161,19 +161,17 @@ class _PlayScreenState extends State<PlayScreen> {
               spacing: 12,
               runSpacing: 8,
               children: [
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
+                DropdownMenu<Level>(
+                  initialSelection: _level,
+                  label: const Text('Opponent'),
+                  requestFocusOnTap: false,
+                  dropdownMenuEntries: [
                     for (final l in Level.values)
-                      ChoiceChip(
-                        label: Text(l.label),
-                        selected: _level == l,
-                        showCheckmark: false,
-                        onSelected: (_) => setState(() => _level = l),
-                      ),
+                      DropdownMenuEntry(value: l, label: l.title),
                   ],
+                  onSelected: (l) {
+                    if (l != null) setState(() => _level = l);
+                  },
                 ),
                 SegmentedButton<int>(
                   showSelectedIcon: false,
@@ -186,14 +184,6 @@ class _PlayScreenState extends State<PlayScreen> {
                       setState(() => _newGame(player: s.first)),
                 ),
               ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Playing ${_level.title}',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
             ),
             const SizedBox(height: 12),
             Center(

@@ -12,11 +12,16 @@ import 'search.dart';
 /// near-best move instead of the best one); they are not measured Elo.
 enum Level {
   beginner('Beginner', 600, depth: 1, millis: 150, temperature: 150, margin: 350, bookPlies: 2, mateDepth: 1),
+  novice('Novice', 800, depth: 1, millis: 200, temperature: 100, margin: 280, bookPlies: 4, mateDepth: 1),
   casual('Casual', 1000, depth: 2, millis: 250, temperature: 70, margin: 200, bookPlies: 6, mateDepth: 1),
+  intermediate('Intermediate', 1200, depth: 2, millis: 350, temperature: 50, margin: 160, bookPlies: 8, mateDepth: 2),
   club('Club', 1400, depth: 3, millis: 500, temperature: 35, margin: 120, bookPlies: 10, mateDepth: 2),
-  expert('Expert', 1800, depth: 4, millis: 1000, temperature: 18, margin: 70, bookPlies: 14),
-  master('Master', 2200, depth: 6, millis: 2500, temperature: 8, margin: 40, bookPlies: 20),
-  grandmaster('Grandmaster', 2500, depth: 9, millis: 5000, temperature: 3, margin: 25, bookPlies: 24);
+  advanced('Advanced', 1600, depth: 4, millis: 700, temperature: 25, margin: 90, bookPlies: 12, mateDepth: 2),
+  expert('Expert', 1800, depth: 5, millis: 1000, temperature: 18, margin: 70, bookPlies: 14),
+  candidateMaster('Candidate Master', 2000, depth: 6, millis: 1500, temperature: 12, margin: 55, bookPlies: 16),
+  master('Master', 2200, depth: 7, millis: 2500, temperature: 8, margin: 40, bookPlies: 20),
+  internationalMaster('International Master', 2400, depth: 8, millis: 3500, temperature: 5, margin: 32, bookPlies: 22),
+  grandmaster('Grandmaster', 2500, depth: 10, millis: 5000, temperature: 3, margin: 25, bookPlies: 24);
 
   const Level(
     this.label,
