@@ -18,7 +18,7 @@ from mirror_search import random_game_positions
 from famous import GAMES, before
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-QUOTA = 10
+QUOTA = 16
 PROPOSERS = {'hangingPiece', 'fork', 'skewer', 'removingDefender', 'discoveredAttack', 'doubleCheck'}
 
 SEEDS = [
@@ -51,7 +51,7 @@ def bucket(r):
 
 # Puzzles taken from real games: (game id, SAN of the key move, which occurrence).
 FAMOUS = [('legal', 'Nd5#', 1), ('opera', 'Qb8+', 1), ('immortal', 'Qf6+', 2),
-          ('reti', 'Qd8+', 1), ('evergreen', 'Bf5+', 1)]
+          ('reti', 'Qd8+', 1), ('evergreen', 'Bf5+', 1), ('fool', 'Qh4#', 1)]
 
 
 def famous_intro(source):
@@ -59,6 +59,8 @@ def famous_intro(source):
     if not source.startswith('famous-'):
         return ''
     g = next(g for g in GAMES if g['id'] == source[len('famous-'):])
+    if 'intro' in g:
+        return g['intro']
     return f"From {g['white']} vs {g['black']}, {g['place']} {g['year']}. "
 
 

@@ -64,4 +64,6 @@ GAMES = [
          moves='1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Nf6 5.Qd3 e5 6.dxe5 Qa5+ 7.Bd2 Qxe5 8.O-O-O Nxe4 9.Qd8+ Kxd8 '
                '10.Bg5+ Kc7 11.Bd8#',
          key='Qd8+'),
+    dict(id='fool', intro="Fool's mate, the shortest possible game. ",
+         moves='1.f3 e5 2.g4 Qh4#', key='Qh4#'),
 ]
