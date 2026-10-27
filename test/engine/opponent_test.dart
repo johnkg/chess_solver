@@ -9,20 +9,20 @@ void main() {
     final pos = Position.start();
     final legal = pos.legalMoves().map((m) => m.uci).toSet();
     for (final l in Level.values) {
-      expect(legal, contains(chooseMove(pos, l, Random(1))!.uci));
+      expect(legal, contains(chooseMove(pos, l, Random(1), 60)!.uci));
     }
   });
 
   test('every level plays a mate in one', () {
     final pos = Position.fromFen('6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1');
     for (final l in Level.values) {
-      expect(chooseMove(pos, l, Random(2))!.uci, 'a1a8');
+      expect(chooseMove(pos, l, Random(2), 60)!.uci, 'a1a8');
     }
   });
 
   test('club level takes a free queen', () {
     final pos = Position.fromFen('4k3/8/8/3q4/8/8/8/3RK3 w - - 0 1');
-    expect(chooseMove(pos, Level.club, Random(3))!.uci, 'd1d5');
+    expect(chooseMove(pos, Level.club, Random(3), 200)!.uci, 'd1d5');
   });
 
   test('openings vary: not one fixed reply at any level', () {
@@ -33,7 +33,7 @@ void main() {
     for (final l in Level.values) {
       for (final pos in replyTo.values) {
         final moves = {
-          for (var seed = 0; seed < 40; seed++) chooseMove(pos, l, Random(seed))!.uci,
+          for (var seed = 0; seed < 40; seed++) chooseMove(pos, l, Random(seed), 60)!.uci,
         };
         expect(moves.length, greaterThan(1), reason: '${l.label} ${pos.toFen()}');
       }
@@ -44,7 +44,7 @@ void main() {
     for (final l in Level.values) {
       final firsts = {
         for (var seed = 0; seed < 60; seed++)
-          chooseMove(Position.start(), l, Random(seed))!.uci,
+          chooseMove(Position.start(), l, Random(seed), 60)!.uci,
       };
       expect(firsts.length, greaterThan(2), reason: l.label);
       expect(firsts, containsAll(['e2e4', 'd2d4']));
