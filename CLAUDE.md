@@ -11,7 +11,7 @@ Modeled on https://github.com/johnkg/sudoku-solver (same stack, same layout). Re
 - Platform folders created; `flutter analyze` is clean and `flutter test` passes (182 tests). The web app runs in Chrome; `tool/solve.dart` runs.
 - UI is only smoke-tested in the browser plus `test/widget_test.dart`; android/ios/macos builds have not been tried.
 - The directory is not a git repo yet.
-- Chess pieces are Unicode glyphs with U+FE0E; Flutter web logs "Could not find a set of Noto fonts" for the selector. Harmless: pieces render.
+- Chess pieces are shaded vector shapes drawn by `lib/ui/piece_painter.dart` (no fonts needed).
 
 ## Commands
 Flutter SDK is at `~/flutter/bin` (not on PATH): use `~/flutter/bin/flutter` and `~/flutter/bin/dart`.
