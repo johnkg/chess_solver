@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../engine/mate_line.dart';
 import '../engine/mistakes.dart';
+import '../engine/search.dart' show mateIn;
 import '../engine/move.dart';
 import '../engine/piece.dart';
 import '../engine/position.dart';
@@ -44,7 +46,16 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   late final BoardController _board;
   bool _solved = false;
   bool _missed = false;
+  bool _usedHint = false;
   int _hints = 0;
+
+  /// Where the current step of the puzzle starts, and how many of your moves
+  /// are left to mate. A mate in 3 plays on: you move, the opponent defends,
+  /// and so on until checkmate.
+  late Position _stepPos;
+  late int _remaining;
+  final List<String> _line = [];
+  bool _busy = false;
   String? _feedback;
   List<BoardArrow> _arrows = const [];
   Set<int> _hintSquares = {};
@@ -55,6 +66,8 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   void initState() {
     super.initState();
     _start = Position.fromFen(_puzzle.fen);
+    _stepPos = _start;
+    _remaining = _puzzle.mateIn;
     _board = BoardController(_start);
     _board.addListener(_onChanged);
   }
@@ -68,21 +81,60 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
 
   void _onChanged() => setState(() {});
 
-  void _onTap(int square) {
-    if (_solved) return;
+  bool get _firstStep => _line.isEmpty;
+
+  bool _isCorrect(Move move) {
+    if (_puzzle.mateIn == 0 || _firstStep) {
+      return _puzzle.solutions.contains(move.uci);
+    }
+    return leadsToMate(_stepPos, move, _remaining);
+  }
+
+  Future<void> _onTap(int square) async {
+    if (_solved || _busy) return;
     final move = _board.tap(square);
     if (move == null) return;
-    if (_puzzle.solutions.contains(move.uci)) {
-      _board.setPosition(_start.makeMove(move));
-      widget.progress.markSolved(_puzzle.id);
-      if (!_missed && _hints == 0) {
-        widget.progress.relieve(weakKey(_puzzle.idea));
+    final before = _stepPos;
+    if (_isCorrect(move)) {
+      _line.add(san(before, move));
+      final after = before.makeMove(move);
+      final done = _puzzle.mateIn == 0 || after.legalMoves().isEmpty;
+      if (done) {
+        _board.setPosition(after);
+        widget.progress.markSolved(_puzzle.id);
+        if (!_missed && !_usedHint) {
+          widget.progress.relieve(weakKey(_puzzle.idea));
+        }
+        setState(() {
+          _solved = true;
+          _hintSquares = {};
+          _arrows = const [];
+          _feedback = _puzzle.mateIn == 0
+              ? 'Correct: ${_line.last}.\n\n${_puzzle.text}'
+              : 'Checkmate! ${_line.join(' ')}\n\n${_puzzle.text}';
+        });
+        return;
       }
+      // Mate is still coming: the opponent defends, then you continue.
       setState(() {
-        _solved = true;
+        _busy = true;
         _hintSquares = {};
         _arrows = const [];
-        _feedback = 'Correct: ${san(_start, move)}.\n\n${_puzzle.text}';
+        _feedback = 'Correct: ${_line.last}. The opponent defends...';
+      });
+      await Future<void>.delayed(const Duration(milliseconds: 700));
+      if (!mounted) return;
+      final reply = stubbornDefence(after, _remaining - 1);
+      if (reply == null) return;
+      _line.add(san(after, reply));
+      _board.play(reply);
+      _stepPos = after.makeMove(reply);
+      _remaining--;
+      _hints = 0;
+      setState(() {
+        _busy = false;
+        _feedback = 'The opponent played ${_line.last}. '
+            'Keep going: mate in $_remaining.';
       });
       return;
     }
@@ -90,19 +142,20 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
       _missed = true;
       widget.progress.recordMiss(weakKey(_puzzle.idea));
     }
-    final mistake = explainMistake(_start, move);
+    final mistake = explainMistake(before, move);
     setState(() {
       _feedback = mistake == null
-          ? '${san(_start, move)} is playable, but it is not the winning move here. Try again.'
+          ? '${san(before, move)} is playable, but it is not the winning move here. Try again.'
           : 'Not that one. ${mistake.text}';
       _arrows = const [];
       _hintSquares = {};
     });
-    _board.setPosition(_start);
+    _board.setPosition(before);
   }
 
   Move? _solutionMove() {
-    for (final m in _start.legalMoves()) {
+    if (_puzzle.mateIn > 0 && !_firstStep) return mateIn(_stepPos, _remaining);
+    for (final m in _stepPos.legalMoves()) {
       if (_puzzle.solutions.contains(m.uci)) return m;
     }
     return null;
@@ -110,13 +163,14 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
 
   void _hint() {
     final m = _solutionMove();
-    if (m == null || _solved) return;
+    if (m == null || _solved || _busy) return;
     setState(() {
+      _usedHint = true;
       _hints = _hints < 3 ? _hints + 1 : 3;
       switch (_hints) {
         case 1:
           _feedback = _puzzle.mateIn > 0
-              ? 'Look for a forced checkmate in ${_puzzle.mateIn}.'
+              ? 'Look for a forced checkmate in $_remaining.'
               : _puzzle.idea == null
                   ? 'There is a winning move here.'
                   : 'Look for: ${ideaLabel(_puzzle.idea!).toLowerCase()}.';
@@ -125,7 +179,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
           _feedback = 'Move the highlighted piece.';
           _hintSquares = {m.from};
         default:
-          _feedback = 'Play ${san(_start, m)}.';
+          _feedback = 'Play ${san(_stepPos, m)}.';
           _hintSquares = {m.from, m.to};
           _arrows = [BoardArrow(m.from, m.to)];
       }
@@ -159,9 +213,14 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
 
   void _retry() {
     _board.setPosition(_start);
+    _stepPos = _start;
+    _remaining = _puzzle.mateIn;
+    _line.clear();
     setState(() {
       _solved = false;
       _missed = false;
+      _usedHint = false;
+      _busy = false;
       _hints = 0;
       _feedback = null;
       _arrows = const [];
