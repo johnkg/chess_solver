@@ -7,6 +7,8 @@ import '../puzzles/library.dart';
 import 'labels.dart';
 import 'progress_store.dart';
 import 'puzzle_screen.dart';
+import 'theme.dart';
+import 'widgets.dart';
 
 /// Puzzles grouped by difficulty tier, with a tick on solved ones.
 class PracticeScreen extends StatelessWidget {
@@ -17,48 +19,58 @@ class PracticeScreen extends StatelessWidget {
   Widget _weakSpots(BuildContext context) {
     final spots = weakest(progress.missed, puzzleLibrary);
     final next = nextWeakPuzzle(puzzleLibrary, progress.missed, progress.solved);
-    return Card(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Your weak spots', style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 8),
-            if (spots.isEmpty)
-              const Text(
-                'None yet. Ideas you miss in a game or a puzzle show up here.',
-              )
-            else ...[
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: [
-                  for (final e in spots)
-                    Chip(label: Text('${weakLabel(e.key)} · missed ${e.value}')),
-                ],
-              ),
-              const SizedBox(height: 8),
-              FilledButton.icon(
-                onPressed: next == null
-                    ? null
-                    : () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => PuzzleScreen(
-                              puzzle: next,
-                              progress: progress,
-                              weakMode: true,
-                            ),
-                          ),
+    if (spots.isEmpty) {
+      return const CoachCard(
+        title: 'Your weak spots',
+        text: 'None yet. Ideas you miss in a game or a puzzle show up here.',
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HeroCard(
+          amber: true,
+          eyebrow: 'Drill what you miss',
+          title: 'Your weak spots',
+          body: 'Puzzles that practise the ideas you miss most.',
+          action: FilledButton.icon(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.onPrimary,
+              foregroundColor: Theme.of(context).colorScheme.primary,
+            ),
+            onPressed: next == null
+                ? null
+                : () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => PuzzleScreen(
+                          puzzle: next,
+                          progress: progress,
+                          weakMode: true,
                         ),
-                icon: const Icon(Icons.fitness_center),
-                label: const Text('Practice weak spots'),
+                      ),
+                    ),
+            icon: const Icon(Icons.fitness_center),
+            label: const Text('Practice weak spots'),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final e in spots)
+              Chip(
+                label: Text('${weakLabel(e.key)} · missed ${e.value}'),
+                backgroundColor: context.coach.badBg,
+                labelStyle: TextStyle(
+                  color: context.coach.bad,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                ),
               ),
-            ],
           ],
         ),
-      ),
+      ],
     );
   }
 
@@ -74,32 +86,44 @@ class PracticeScreen extends StatelessWidget {
           builder: (context, _) {
             final done = puzzleLibrary.where((p) => progress.isSolved(p.id)).length;
             return ListView(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  child: Text(
-                    'Solved $done of ${puzzleLibrary.length}',
-                    style: theme.textTheme.titleMedium,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Solved $done of ${puzzleLibrary.length}',
+                        style: theme.textTheme.titleMedium,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: LinearProgressIndicator(
+                    value: puzzleLibrary.isEmpty ? 0 : done / puzzleLibrary.length,
+                    minHeight: 6,
+                    color: context.coach.good,
+                    backgroundColor: theme.colorScheme.outline,
                   ),
                 ),
+                const SizedBox(height: 16),
                 _weakSpots(context),
                 for (final tier in tiers) ...[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
-                    child: Text(tierTitle(tier), style: theme.textTheme.titleSmall),
-                  ),
+                  SectionLabel(tierTitle(tier)),
                   for (final p in puzzleLibrary.where((p) => p.tier == tier))
-                    ListTile(
+                    RowCard(
                       leading: Icon(
                         progress.isSolved(p.id)
                             ? Icons.check_circle
                             : Icons.radio_button_unchecked,
+                        color: progress.isSolved(p.id)
+                            ? context.coach.good
+                            : theme.colorScheme.onSurfaceVariant,
                       ),
-                      title: Text(p.mateIn > 0 ? 'Mate in ${p.mateIn}' : 'Win material'),
-                      subtitle: Text(
-                        '${colorName(Position.fromFen(p.fen).turn)} to move',
-                      ),
+                      title: p.mateIn > 0 ? 'Mate in ${p.mateIn}' : 'Win material',
+                      subtitle: '${colorName(Position.fromFen(p.fen).turn)} to move',
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(

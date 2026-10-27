@@ -10,8 +10,8 @@ import '../engine/san.dart';
 import '../engine/search.dart';
 import 'board_view.dart';
 
-const Color _bestColor = Color(0xCC2E7D32);
-const Color _playedColor = Color(0xCCEF6C00);
+const Color _bestColor = Color(0xE61F7A4D);
+const Color _playedColor = Color(0xE6B8412F);
 
 /// A written verdict on a position or a move, tied to the position it
 /// describes (by FEN) so a screen can hide it once the board moves on.
