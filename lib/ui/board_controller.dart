@@ -34,6 +34,23 @@ class BoardController extends ChangeNotifier {
   /// Position before [lastMove], or null.
   Position? get previous => _history.isEmpty ? null : _history.last.$1;
 
+  /// Piece types [color] has captured so far, most valuable first. Counts
+  /// en passant; promotions do not change it.
+  List<int> capturedBy(int color) {
+    final out = <int>[];
+    for (final (before, move) in _history) {
+      if (pieceColor(before.squares[move.from]) != color) continue;
+      final victim = before.squares[move.to];
+      if (victim != empty) {
+        out.add(pieceType(victim));
+      } else if (move.flag == Move.enPassant) {
+        out.add(pawn);
+      }
+    }
+    out.sort((a, b) => pieceValue(b).compareTo(pieceValue(a)));
+    return out;
+  }
+
   /// Squares of the last move, for tinting.
   Set<int> get lastMoveSquares {
     final m = lastMove;
