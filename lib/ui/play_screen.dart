@@ -13,6 +13,8 @@ import 'analysis.dart';
 import 'board_controller.dart';
 import 'board_view.dart';
 import 'progress_store.dart';
+import 'theme.dart';
+import 'widgets.dart';
 
 /// Play a game against the engine. After each of your moves it says whether
 /// the move was fine or a mistake, and why; it also says why it replied.
@@ -152,7 +154,7 @@ class _PlayScreenState extends State<PlayScreen> {
       appBar: AppBar(title: const Text('Play')),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
           children: [
             Wrap(
               alignment: WrapAlignment.center,
@@ -198,7 +200,11 @@ class _PlayScreenState extends State<PlayScreen> {
             const SizedBox(height: 12),
             Text(
               _status,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: _pos.isCheckmate
+                        ? (_pos.turn == _player ? context.coach.bad : context.coach.good)
+                        : null,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -233,14 +239,11 @@ class _PlayScreenState extends State<PlayScreen> {
             ),
             if (_engineNote != null || showCoach) ...[
               const SizedBox(height: 12),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text([
-                    if (showCoach) coach.text,
-                    ?_engineNote,
-                  ].join('\n\n')),
-                ),
+              CoachCard(
+                text: [
+                  if (showCoach) coach.text,
+                  ?_engineNote,
+                ].join('\n\n'),
               ),
             ],
             if ((_showReview || _over) && _entries.isNotEmpty) ...[

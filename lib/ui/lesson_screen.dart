@@ -7,6 +7,7 @@ import '../engine/position.dart';
 import '../engine/san.dart';
 import '../lessons/lessons.dart';
 import 'board_view.dart';
+import 'widgets.dart';
 
 /// One lesson: an example board, the idea in plain words, and (for idea and
 /// move lessons) a button that shows the point on the board.
@@ -103,7 +104,7 @@ class _LessonScreenState extends State<LessonScreen> {
       appBar: AppBar(title: Text(_lesson.title)),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
           children: [
             Text(_lesson.tagline, style: theme.textTheme.titleMedium),
             const SizedBox(height: 12),
@@ -141,16 +142,11 @@ class _LessonScreenState extends State<LessonScreen> {
                 ],
               ),
             if (_demo != null)
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(_demo!),
-                ),
-              ),
+              CoachCard(text: _demo!, tone: CoachTone.good),
             const SizedBox(height: 8),
             Text(_lesson.why, style: theme.textTheme.bodyLarge),
             const SizedBox(height: 16),
-            Text('What to look for', style: theme.textTheme.titleSmall),
+            const SectionLabel('What to look for'),
             const SizedBox(height: 4),
             for (final s in _lesson.spot)
               Padding(

@@ -5,6 +5,7 @@ import 'analysis.dart';
 import 'board_controller.dart';
 import 'board_view.dart';
 import 'labels.dart';
+import 'widgets.dart';
 
 /// Free play: move pieces, ask for the best move, or ask why your last move
 /// was good or bad.
@@ -113,7 +114,7 @@ class _BoardScreenState extends State<BoardScreen> {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
           children: [
             Center(
               child: ConstrainedBox(
@@ -170,12 +171,7 @@ class _BoardScreenState extends State<BoardScreen> {
             ),
             if (analysis != null) ...[
               const SizedBox(height: 12),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(analysis.text),
-                ),
-              ),
+              CoachCard(text: analysis.text),
             ],
           ],
         ),

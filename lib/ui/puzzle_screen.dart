@@ -13,6 +13,7 @@ import 'board_controller.dart';
 import 'board_view.dart';
 import 'labels.dart';
 import 'progress_store.dart';
+import 'widgets.dart';
 
 /// Solve one puzzle: tap a piece, tap its destination. A wrong move is
 /// explained and taken back; hints get more specific each time.
@@ -173,7 +174,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
           children: [
             Text(
               '${colorName(_start.turn)} to move. Find the best move.',
@@ -219,14 +220,18 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                   ),
               ],
             ),
-            if (_feedback != null)
-              Card(
-                margin: const EdgeInsets.only(top: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(_feedback!),
-                ),
+            if (_feedback != null) ...[
+              const SizedBox(height: 12),
+              CoachCard(
+                text: _feedback!,
+                tone: _solved
+                    ? CoachTone.good
+                    : _feedback!.startsWith('Not that one') ||
+                            _feedback!.contains('not the winning move')
+                        ? CoachTone.bad
+                        : CoachTone.neutral,
               ),
+            ],
           ],
         ),
       ),

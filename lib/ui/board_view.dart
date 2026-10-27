@@ -2,21 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../engine/piece.dart';
 import '../engine/position.dart';
+import 'theme.dart';
 
 /// An arrow drawn over the board, from one square to another.
 class BoardArrow {
-  const BoardArrow(this.from, this.to, {this.color = const Color(0xCC2E7D32)});
+  const BoardArrow(this.from, this.to, {this.color = const Color(0xE61F7A4D)});
 
   final int from;
   final int to;
   final Color color;
 }
-
-const Color _lightSquare = Color(0xFFEEEED2);
-const Color _darkSquare = Color(0xFF769656);
-const Color _selectedTint = Color(0x99FFEB3B);
-const Color _lastMoveTint = Color(0x66FFEB3B);
-const Color _patternTint = Color(0x8042A5F5);
 
 /// Filled glyphs for both colours; the variation selector keeps platforms
 /// from swapping the pawn for an emoji.
@@ -67,6 +62,7 @@ class BoardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.board;
     return AspectRatio(
       aspectRatio: 1,
       child: LayoutBuilder(
@@ -83,7 +79,7 @@ class BoardView extends StatelessWidget {
                   top: row * cell,
                   width: cell,
                   height: cell,
-                  child: _buildCell(sq, cell, row, col),
+                  child: _buildCell(colors, sq, cell, row, col),
                 ),
               );
             }
@@ -101,16 +97,25 @@ class BoardView extends StatelessWidget {
               ),
             ),
           );
-          return SizedBox(width: size, height: size, child: Stack(children: children));
+          return Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 2),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Stack(children: children),
+          );
         },
       ),
     );
   }
 
-  Widget _buildCell(int sq, double cell, int row, int col) {
+  Widget _buildCell(BoardColors colors, int sq, double cell, int row, int col) {
     final dark = (rankOf(sq) + fileOf(sq)) % 2 == 0;
     final piece = position.squares[sq];
-    final labelColor = dark ? _lightSquare : _darkSquare;
+    final labelColor = dark ? colors.light : colors.dark;
     final labelStyle = TextStyle(
       fontSize: cell * 0.17,
       fontWeight: FontWeight.bold,
@@ -123,10 +128,10 @@ class BoardView extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          ColoredBox(color: dark ? _darkSquare : _lightSquare),
-          if (lastMove.contains(sq)) const ColoredBox(color: _lastMoveTint),
-          if (highlights.contains(sq)) const ColoredBox(color: _patternTint),
-          if (selected == sq) const ColoredBox(color: _selectedTint),
+          ColoredBox(color: dark ? colors.dark : colors.light),
+          if (lastMove.contains(sq)) ColoredBox(color: colors.lastMove),
+          if (highlights.contains(sq)) ColoredBox(color: colors.pattern),
+          if (selected == sq) ColoredBox(color: colors.selected),
           if (row == 7)
             Positioned(
               right: 2,
