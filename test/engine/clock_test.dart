@@ -51,4 +51,21 @@ void main() {
     expect(formatClock(9400), '0:09.4');
     expect(formatClock(0), '0:00.0');
   });
+
+  test('giving the turn back charges the side that was running, no increment', () {
+    final c = ChessClock(TimeControl.blitz3);
+    c.moved(white, at(0)); // black runs
+    c.giveTurnTo(white, at(7000)); // take-back: white to move again
+    expect(c.running, white);
+    expect(c.remaining(black, at(20000)), 180000 - 7000);
+    expect(c.remaining(white, at(10000)), 180000 - 3000);
+  });
+
+  test('giving the turn back clears a pause', () {
+    final c = ChessClock(TimeControl.blitz5);
+    c.moved(white, at(0));
+    c.pause(at(1000));
+    c.giveTurnTo(white, at(1000));
+    expect(c.remaining(white, at(4000)), 300000 - 3000);
+  });
 }

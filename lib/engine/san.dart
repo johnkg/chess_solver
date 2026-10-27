@@ -49,3 +49,16 @@ String san(Position pos, Move m) {
   if (next.inCheck) core += next.legalMoves().isEmpty ? '#' : '+';
   return core;
 }
+
+/// The legal move in [pos] that [text] names, or null. Check marks, "!" and
+/// "?" are ignored; "0-0" is read as castling.
+Move? moveFromSan(Position pos, String text) {
+  String clean(String t) =>
+      t.replaceAll('0', 'O').replaceAll(RegExp(r'[+#!?]'), '').replaceAll('=', '').replaceAll('x', '');
+  final want = clean(text.trim());
+  if (want.isEmpty) return null;
+  for (final m in pos.legalMoves()) {
+    if (clean(san(pos, m)) == want) return m;
+  }
+  return null;
+}

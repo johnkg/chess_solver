@@ -21,4 +21,23 @@ void main() {
     await b.reset();
     expect(b.missed, isEmpty);
   });
+
+  test('rated games move the rating and survive a reload', () async {
+    final a = ProgressStore();
+    expect(a.rating, 1000);
+    final r = await a.recordGame(1000, 1);
+    expect(r, 1020);
+    await a.recordGame(1400, 0);
+    expect(a.games.length, 2);
+    expect(a.peakRating, 1020);
+
+    final b = ProgressStore();
+    await b.load();
+    expect(b.games.length, 2);
+    expect(b.rating, a.rating);
+
+    await b.reset();
+    expect(b.rating, 1000);
+    expect(b.games, isEmpty);
+  });
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:chess_solver/engine/book.dart';
@@ -67,6 +68,43 @@ void main() {
         expect(l[i].depth, greaterThanOrEqualTo(l[i - 1].depth));
         expect(l[i].temperature, lessThan(l[i - 1].temperature));
       }
+    });
+  });
+
+  group('async search', () {
+    const fen = 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4';
+
+    test('finds the same moves as the blocking search', () async {
+      final a = Searcher().search(Position.fromFen(fen), maxDepth: 3, millis: 20000)!;
+      final b = await Searcher().searchAsync(Position.fromFen(fen), maxDepth: 3, millis: 20000);
+      expect(b!.best.$1, a.best.$1);
+      expect(b.best.$2, a.best.$2);
+    });
+
+    test('lets other work run while it thinks', () async {
+      var ticks = 0;
+      final timer = Timer.periodic(const Duration(milliseconds: 5), (_) => ticks++);
+      await Searcher().searchAsync(Position.fromFen(fen), maxDepth: 8, millis: 600);
+      timer.cancel();
+      expect(ticks, greaterThan(5));
+    });
+
+    test('stops and answers null when cancelled', () async {
+      final s = Searcher();
+      Timer(const Duration(milliseconds: 50), () => s.cancelled = true);
+      final sw = Stopwatch()..start();
+      final r = await s.searchAsync(Position.fromFen(fen), maxDepth: 12, millis: 20000);
+      expect(r, isNull);
+      expect(sw.elapsedMilliseconds, lessThan(3000));
+    });
+
+    test('chooseMoveAsync plays a legal move and a mate in one', () async {
+      final pos = Position.fromFen(fen);
+      final legal = pos.legalMoves().map((m) => m.uci).toSet();
+      final m = await chooseMoveAsync(pos, Level.club, random: Random(1), maxMillis: 100);
+      expect(legal, contains(m!.uci));
+      final mate = Position.fromFen('6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1');
+      expect((await chooseMoveAsync(mate, Level.master, random: Random(1), maxMillis: 100))!.uci, 'a1a8');
     });
   });
 }

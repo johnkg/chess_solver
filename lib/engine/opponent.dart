@@ -73,23 +73,54 @@ enum Level {
 /// thinking time (tests use it).
 Move? chooseMove(Position pos, Level level, [Random? random, int? maxMillis]) {
   final rng = random ?? Random();
-  final legal = pos.legalMoves();
-  if (legal.isEmpty) return null;
-  if (legal.length == 1) return legal.first;
-
-  if (level.mateDepth > 0) {
-    final mate = findMate(pos, level.mateDepth);
-    if (mate != null) return mate.move;
-  }
-  final booked = bookMove(pos, level.bookPlies, rng);
-  if (booked != null) return booked;
-
+  final quick = _quickMove(pos, level, rng);
+  if (quick != null) return quick.$1;
   final result = Searcher().search(
     pos,
     maxDepth: level.depth,
     millis: maxMillis ?? level.millis,
     margin: level.margin,
-  )!;
+  );
+  return result == null ? null : _pick(result, level, rng);
+}
+
+/// [chooseMove] that keeps the UI alive while it thinks. Set
+/// `searcher.cancelled` to abandon the search; the result is then null.
+Future<Move?> chooseMoveAsync(
+  Position pos,
+  Level level, {
+  Random? random,
+  int? maxMillis,
+  Searcher? searcher,
+}) async {
+  final rng = random ?? Random();
+  final quick = _quickMove(pos, level, rng);
+  if (quick != null) return quick.$1;
+  final result = await (searcher ?? Searcher()).searchAsync(
+    pos,
+    maxDepth: level.depth,
+    millis: maxMillis ?? level.millis,
+    margin: level.margin,
+  );
+  return result == null ? null : _pick(result, level, rng);
+}
+
+/// A move that needs no search: the only legal move, a short mate for the
+/// weak levels, or the book. The record wraps the move so that "none" and
+/// "no answer yet" differ; null means search.
+(Move?,)? _quickMove(Position pos, Level level, Random rng) {
+  final legal = pos.legalMoves();
+  if (legal.isEmpty) return (null,);
+  if (legal.length == 1) return (legal.first,);
+  if (level.mateDepth > 0) {
+    final mate = findMate(pos, level.mateDepth);
+    if (mate != null) return (mate.move,);
+  }
+  final booked = bookMove(pos, level.bookPlies, rng);
+  return booked == null ? null : (booked,);
+}
+
+Move _pick(SearchResult result, Level level, Random rng) {
   final best = result.best.$2;
   if (isMateScore(best)) return result.best.$1;
   final weights = [

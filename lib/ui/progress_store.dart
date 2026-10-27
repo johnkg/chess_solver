@@ -1,15 +1,29 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../engine/rating.dart';
+
 /// Remembers which puzzles are solved. Storage failures are ignored: the
 /// app still works, it just forgets between runs.
 class ProgressStore extends ChangeNotifier {
   static const String _key = 'solved_puzzles';
 
   static const String _missKey = 'missed_ideas';
+  static const String _gamesKey = 'rated_games';
 
   final Set<String> _solved = {};
   final Map<String, int> _missed = {};
+  final List<GameRecord> _games = [];
+
+  /// Rated games against the engine, oldest first.
+  List<GameRecord> get games => List.unmodifiable(_games);
+
+  /// Current rating: starts at [startRating], moves with each rated game.
+  int get rating => _games.isEmpty ? startRating : _games.last.ratingAfter;
+
+  /// Highest rating reached.
+  int get peakRating =>
+      _games.fold(startRating, (best, g) => g.ratingAfter > best ? g.ratingAfter : best);
 
   /// How often each idea (see `weakKey`) was missed, net of later successes.
   Map<String, int> get missed => Map.unmodifiable(_missed);
@@ -30,10 +44,31 @@ class ProgressStore extends ChangeNotifier {
         final n = i < 0 ? null : int.tryParse(line.substring(i + 1));
         if (n != null && n > 0) _missed[line.substring(0, i)] = n;
       }
+      _games
+        ..clear()
+        ..addAll([
+          for (final line in prefs.getStringList(_gamesKey) ?? const <String>[])
+            ?GameRecord.decode(line),
+        ]);
       notifyListeners();
     } catch (_) {
       // No storage available.
     }
+  }
+
+  /// Records a finished game against an opponent of [opponentElo] and returns
+  /// the new rating. [score] is 1, 0.5 or 0.
+  Future<int> recordGame(int opponentElo, double score) async {
+    final after = updatedRating(rating, opponentElo, score, games: _games.length);
+    _games.add(GameRecord(opponentElo: opponentElo, score: score, ratingAfter: after));
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(_gamesKey, [for (final g in _games) g.encode()]);
+    } catch (_) {
+      // No storage available.
+    }
+    return after;
   }
 
   Future<void> markSolved(String id) async {
@@ -82,11 +117,13 @@ class ProgressStore extends ChangeNotifier {
   Future<void> reset() async {
     _solved.clear();
     _missed.clear();
+    _games.clear();
     notifyListeners();
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_key);
       await prefs.remove(_missKey);
+      await prefs.remove(_gamesKey);
     } catch (_) {
       // No storage available.
     }

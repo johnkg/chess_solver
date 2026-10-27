@@ -39,6 +39,12 @@ class Searcher {
   ];
   final List<int> _history = List<int>.filled(64 * 64, 0);
 
+  /// Set to true to abandon a running search; [searchAsync] then returns null.
+  bool cancelled = false;
+
+  SearchResult? _result;
+  final Stopwatch _slice = Stopwatch();
+
   /// Best moves in [pos], or null when there is no legal move. Searches up to
   /// [maxDepth] plies or [millis] milliseconds, whichever comes first (depth 1
   /// always finishes). Moves within [margin] centipawns of the best are
@@ -49,11 +55,41 @@ class Searcher {
     required int millis,
     int margin = 50,
   }) {
+    for (final _ in _run(pos, maxDepth, millis, margin)) {}
+    return _result;
+  }
+
+  /// Same as [search], but hands control back to the event loop every few
+  /// milliseconds so the UI can repaint (a clock keeps ticking, a button still
+  /// answers). Returns null when [cancelled] is set or there is no legal move.
+  Future<SearchResult?> searchAsync(
+    Position pos, {
+    required int maxDepth,
+    required int millis,
+    int margin = 50,
+  }) async {
+    for (final _ in _run(pos, maxDepth, millis, margin)) {
+      await Future<void>.delayed(Duration.zero);
+      if (cancelled) return null;
+    }
+    return cancelled ? null : _result;
+  }
+
+  /// The search itself. It yields (with nothing) between root moves once a
+  /// slice of work has taken long enough, and leaves the answer in [_result].
+  Iterable<void> _run(Position pos, int maxDepth, int millis, int margin) sync* {
+    _result = null;
     final legal = pos.legalMoves();
-    if (legal.isEmpty) return null;
-    if (legal.length == 1) return SearchResult([(legal.first, 0)], 0, 0);
+    if (legal.isEmpty) return;
+    if (legal.length == 1) {
+      _result = SearchResult([(legal.first, 0)], 0, 0);
+      return;
+    }
 
     _clock
+      ..reset()
+      ..start();
+    _slice
       ..reset()
       ..start();
     _budgetMs = millis;
@@ -64,19 +100,37 @@ class Searcher {
     for (var depth = 1; depth <= maxDepth; depth++) {
       _timed = depth > 1;
       try {
-        final scored = _rootSearch(pos, ordered, depth, margin);
-        done = SearchResult(scored, depth, nodes);
-        ordered = [for (final e in scored) e.$1];
+        final out = <(Move, int)>[];
+        var best = -mateScore - 1;
+        for (final m in ordered) {
+          final next = pos.makeMove(m);
+          final floor = out.isEmpty ? -mateScore - 1 : best - margin;
+          final score = -_negamax(next, depth - 1, -mateScore - 1, -floor, 1, true);
+          if (out.isEmpty || score > floor) {
+            out.add((m, score));
+            if (score > best) best = score;
+          }
+          if (_slice.elapsedMilliseconds >= 20) {
+            yield null;
+            _slice
+              ..reset()
+              ..start();
+          }
+        }
+        out.removeWhere((e) => e.$2 < best - margin);
+        out.sort((a, b) => b.$2.compareTo(a.$2));
+        done = SearchResult(out, depth, nodes);
+        ordered = [for (final e in out) e.$1];
         final rest = legal.where((m) => !ordered.contains(m));
         ordered = [...ordered, ...rest];
-        if (isMate(scored.first.$2)) break;
+        if (isMate(out.first.$2)) break;
       } on _Stop {
         break;
       }
       if (_clock.elapsedMilliseconds > millis * 0.6) break; // next depth will not finish
     }
     _clock.stop();
-    return done ?? SearchResult([(legal.first, 0)], 0, nodes);
+    _result = done ?? SearchResult([(legal.first, 0)], 0, nodes);
   }
 
   bool isMate(int score) => score.abs() > mateScore - 1000;
@@ -87,26 +141,9 @@ class Searcher {
     return list;
   }
 
-  List<(Move, int)> _rootSearch(Position pos, List<Move> moves, int depth, int margin) {
-    final out = <(Move, int)>[];
-    var best = -mateScore - 1;
-    for (var i = 0; i < moves.length; i++) {
-      final m = moves[i];
-      final next = pos.makeMove(m);
-      final floor = out.isEmpty ? -mateScore - 1 : best - margin;
-      final score = -_negamax(next, depth - 1, -mateScore - 1, -floor, 1, true);
-      if (out.isEmpty || score > floor) {
-        out.add((m, score));
-        if (score > best) best = score;
-      }
-    }
-    out.removeWhere((e) => e.$2 < best - margin);
-    out.sort((a, b) => b.$2.compareTo(a.$2));
-    return out;
-  }
-
   void _tick() {
     nodes++;
+    if (cancelled) throw const _Stop();
     if (_timed && (nodes & 1023) == 0 && _clock.elapsedMilliseconds > _budgetMs) {
       throw const _Stop();
     }
