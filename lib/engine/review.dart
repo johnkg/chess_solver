@@ -22,6 +22,9 @@ class ReviewEntry {
   final String number;
   final String san;
 
+  /// The position before the move, as FEN: the snapshot the review shows.
+  final String fen;
+
   /// Null when the move was fine.
   final Mistake? mistake;
 
@@ -33,6 +36,7 @@ class ReviewEntry {
     required this.ply,
     required this.number,
     required this.san,
+    required this.fen,
     required this.mistake,
     required this.missedKey,
   });
@@ -61,6 +65,7 @@ ReviewEntry reviewMove(
     ply: ply,
     number: before.turn == white ? '${before.fullmove}.' : '${before.fullmove}...',
     san: san(before, played),
+    fen: before.toFen(),
     mistake: m,
     missedKey: key,
   );
