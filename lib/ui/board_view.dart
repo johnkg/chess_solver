@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../engine/piece.dart';
 import '../engine/position.dart';
+import 'piece_painter.dart';
 import 'theme.dart';
 
 /// An arrow drawn over the board, from one square to another.
@@ -12,24 +13,6 @@ class BoardArrow {
   final int to;
   final Color color;
 }
-
-/// Filled glyphs for both colours; the variation selector keeps platforms
-/// from swapping the pawn for an emoji.
-const Map<int, String> _glyphs = {
-  pawn: '♟︎',
-  knight: '♞︎',
-  bishop: '♝︎',
-  rook: '♜︎',
-  queen: '♛︎',
-  king: '♚︎',
-};
-
-const List<Shadow> _whiteOutline = [
-  Shadow(color: Colors.black, blurRadius: 1, offset: Offset(1, 0)),
-  Shadow(color: Colors.black, blurRadius: 1, offset: Offset(-1, 0)),
-  Shadow(color: Colors.black, blurRadius: 1, offset: Offset(0, 1)),
-  Shadow(color: Colors.black, blurRadius: 1, offset: Offset(0, -1)),
-];
 
 /// Draws a position. Square numbers follow the engine: a1 = 0 ... h8 = 63.
 ///
@@ -152,24 +135,12 @@ class BoardView extends StatelessWidget {
     );
   }
 
-  Widget _pieceGlyph(int piece, double cell) {
-    final isWhite = pieceColor(piece) == white;
-    return FittedBox(
-      fit: BoxFit.contain,
-      child: Padding(
-        padding: EdgeInsets.all(cell * 0.04),
-        child: Text(
-          _glyphs[pieceType(piece)]!,
-          style: TextStyle(
-            fontSize: cell * 0.8,
-            height: 1.0,
-            color: isWhite ? Colors.white : Colors.black,
-            shadows: isWhite ? _whiteOutline : null,
-          ),
+  Widget _pieceGlyph(int piece, double cell) => Center(
+        child: CustomPaint(
+          size: Size.square(cell * 0.94),
+          painter: PiecePainter(piece),
         ),
-      ),
-    );
-  }
+      );
 
   Widget _dot(double cell) => Container(
         width: cell * 0.3,
