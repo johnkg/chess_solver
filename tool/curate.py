@@ -34,6 +34,16 @@ SEEDS = [
 ]
 
 
+MOST = {'q': 1, 'r': 2, 'b': 2, 'n': 2}
+
+
+def plausible(fen):
+    """No side has more pieces than it started with: random games promote pawns, which
+    gives odd-looking puzzles (three rooks)."""
+    board = fen.split()[0]
+    return all(board.count(c) <= n and board.count(c.upper()) <= n for c, n in MOST.items())
+
+
 def bucket(r):
     return f"mate{r['mate_in']}" if r['mate_in'] >= 2 else r['idea']
 
@@ -79,7 +89,7 @@ def main(minutes, start=1):
     def add(e):
         key = e['fen'].split()[0]
         b = f"mate{e['mate_in']}" if e['mate_in'] >= 2 else e['idea']
-        if key in boards or counts.get(b, 0) >= QUOTA:
+        if key in boards or counts.get(b, 0) >= QUOTA or not plausible(e['fen']):
             return False
         if e['source'] != 'hand' and e['source'][-1:].isdigit() and e['source'] in used_sources:
             return False  # one puzzle per game: neighbours in one game look alike
