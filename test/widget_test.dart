@@ -33,7 +33,7 @@ void main() {
   });
 
   testWidgets('Play tab: engine answers a move and coach speaks', (tester) async {
-    tester.view.physicalSize = const Size(390, 1200);
+    tester.view.physicalSize = const Size(390, 1800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(const ChessSolverApp());

@@ -1,71 +1,101 @@
 import 'dart:math';
 
-import 'mistakes.dart';
+import 'book.dart';
+import 'engine.dart';
 import 'move.dart';
 import 'piece.dart';
 import 'position.dart';
 import 'search.dart';
 
-/// How strong the computer opponent plays.
+/// How strong the computer opponent plays. The ratings are targets for how
+/// each level is tuned (search depth, thinking time, how often it plays a
+/// near-best move instead of the best one); they are not measured Elo.
 enum Level {
-  beginner(1, 200),
-  casual(2, 60),
-  club(3, 10);
+  beginner('Beginner', 600, depth: 1, millis: 150, temperature: 150, margin: 350, bookPlies: 2, mateDepth: 1),
+  casual('Casual', 1000, depth: 2, millis: 250, temperature: 70, margin: 200, bookPlies: 6, mateDepth: 1),
+  club('Club', 1400, depth: 3, millis: 500, temperature: 35, margin: 120, bookPlies: 10, mateDepth: 2),
+  expert('Expert', 1800, depth: 4, millis: 1000, temperature: 18, margin: 70, bookPlies: 14),
+  master('Master', 2200, depth: 6, millis: 2500, temperature: 8, margin: 40, bookPlies: 20),
+  grandmaster('Grandmaster', 2500, depth: 9, millis: 5000, temperature: 3, margin: 25, bookPlies: 24);
 
-  const Level(this.depth, this.slack);
+  const Level(
+    this.label,
+    this.elo, {
+    required this.depth,
+    required this.millis,
+    required this.temperature,
+    required this.margin,
+    required this.bookPlies,
+    this.mateDepth = 0,
+  });
 
-  /// Plies searched.
+  final String label;
+
+  /// Target playing strength (see the note above).
+  final int elo;
+
+  /// Deepest search in plies.
   final int depth;
 
-  /// The engine may pick any move scoring within this many centipawns of the
-  /// best one, so weaker levels make human-sized mistakes (and no level plays
-  /// the exact same game every time).
-  final int slack;
+  /// Thinking time per move, milliseconds.
+  final int millis;
 
-  String get label => switch (this) {
-        Level.beginner => 'Beginner',
-        Level.casual => 'Casual',
-        Level.club => 'Club',
-      };
+  /// Among moves close to the best, the chance of choosing one falls off by
+  /// a factor of e for every [temperature] centipawns it is worse. Low
+  /// temperature = nearly always the best move.
+  final int temperature;
+
+  /// Moves further than this from the best are never played.
+  final int margin;
+
+  /// The opening book is used for this many half-moves.
+  final int bookPlies;
+
+  /// Plain forced-mate search before thinking (the weakest levels only see
+  /// mate in 1). Zero means the normal search finds mates by itself.
+  final int mateDepth;
+
+  String get title => '$label · about $elo';
 }
 
-/// In the first moves many replies are about equally good, so every level
-/// varies its opening instead of always playing the same line.
-const int _openingSlack = 20;
-const int _openingMoves = 8;
+/// The opponent's reply in [pos], or null if there is no legal move.
+///
+/// It plays an opening line from its book (a different one each game), and
+/// afterwards searches for the best moves. Rather than always playing the
+/// single best move it picks among the near-best ones, weighted by how good
+/// they are, so games differ but every move still has a reason. A forced
+/// mate is always played when found. [maxMillis] overrides the level's
+/// thinking time (tests use it).
+Move? chooseMove(Position pos, Level level, [Random? random, int? maxMillis]) {
+  final rng = random ?? Random();
+  final legal = pos.legalMoves();
+  if (legal.isEmpty) return null;
+  if (legal.length == 1) return legal.first;
 
-/// First-move choices (board and side to move -> UCI moves). The static
-/// scores rank two knight moves on top, which would make every game start the
-/// same way, so the first move of each side comes from this short list.
-const Map<String, List<String>> _book = {
-  'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w': ['e2e4', 'd2d4', 'g1f3', 'c2c4'],
-  'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b': ['e7e5', 'c7c5', 'e7e6', 'c7c6'],
-  'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b': ['d7d5', 'g8f6', 'e7e6'],
-  'rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b': ['e7e5', 'g8f6', 'c7c5'],
-  'rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b': ['d7d5', 'g8f6', 'c7c5'],
-};
-
-/// The opponent's reply in [pos], or null if there is no legal move. A forced
-/// mate is always played when found.
-Move? chooseMove(Position pos, Level level, [Random? random]) {
-  final mate = findMate(pos, 2);
-  if (mate != null) return mate.move;
-  final booked = _book[pos.toFen().split(' ').take(2).join(' ')];
-  if (booked != null) {
-    final legal = pos.legalMoves().where((m) => booked.contains(m.uci)).toList();
-    if (legal.isNotEmpty) return legal[(random ?? Random()).nextInt(legal.length)];
+  if (level.mateDepth > 0) {
+    final mate = findMate(pos, level.mateDepth);
+    if (mate != null) return mate.move;
   }
-  final scored = scoreMoves(pos, level.depth);
-  if (scored.isEmpty) return null;
-  final best = scored.map((e) => e.$2).reduce(max);
-  final slack = isMateScore(best)
-      ? 0
-      : max(level.slack, pos.fullmove <= _openingMoves ? _openingSlack : 0);
-  final pool = [
-    for (final e in scored)
-      if (e.$2 >= best - slack) e.$1,
+  final booked = bookMove(pos, level.bookPlies, rng);
+  if (booked != null) return booked;
+
+  final result = Searcher().search(
+    pos,
+    maxDepth: level.depth,
+    millis: maxMillis ?? level.millis,
+    margin: level.margin,
+  )!;
+  final best = result.best.$2;
+  if (isMateScore(best)) return result.best.$1;
+  final weights = [
+    for (final e in result.moves) exp(-(best - e.$2) / level.temperature),
   ];
-  return pool[(random ?? Random()).nextInt(pool.length)];
+  var pick = rng.nextDouble() * weights.reduce((a, b) => a + b);
+  for (var i = 0; i < weights.length; i++) {
+    pick -= weights[i];
+    if (pick <= 0) return result.moves[i].$1;
+  }
+  return result.best.$1;
 }
 
 /// Why the game is drawn (other than stalemate), or null.

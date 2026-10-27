@@ -161,14 +161,19 @@ class _PlayScreenState extends State<PlayScreen> {
               spacing: 12,
               runSpacing: 8,
               children: [
-                SegmentedButton<Level>(
-                  showSelectedIcon: false,
-                  segments: [
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
                     for (final l in Level.values)
-                      ButtonSegment(value: l, label: Text(l.label)),
+                      ChoiceChip(
+                        label: Text(l.label),
+                        selected: _level == l,
+                        showCheckmark: false,
+                        onSelected: (_) => setState(() => _level = l),
+                      ),
                   ],
-                  selected: {_level},
-                  onSelectionChanged: (s) => setState(() => _level = s.first),
                 ),
                 SegmentedButton<int>(
                   showSelectedIcon: false,
@@ -181,6 +186,14 @@ class _PlayScreenState extends State<PlayScreen> {
                       setState(() => _newGame(player: s.first)),
                 ),
               ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Playing ${_level.title}',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
             const SizedBox(height: 12),
             Center(
