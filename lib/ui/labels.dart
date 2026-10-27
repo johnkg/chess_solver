@@ -26,6 +26,7 @@ String levelTitle(int level) => switch (level) {
       2 => 'Level 2 · Finishing the game',
       3 => 'Level 3 · Good habits',
       4 => 'Level 4 · Tactics',
+      7 => 'Level 7 · Famous games',
       _ => 'Level $level',
     };
 

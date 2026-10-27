@@ -15,6 +15,7 @@ from mirror_games import sensible_game, to_fen
 from mirror_ideas import explain
 from mirror_rater import rate, TIER, MATE_TIER
 from mirror_search import random_game_positions
+from famous import GAMES, before
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 QUOTA = 10
@@ -48,9 +49,23 @@ def bucket(r):
     return f"mate{r['mate_in']}" if r['mate_in'] >= 2 else r['idea']
 
 
+# Puzzles taken from real games: (game id, SAN of the key move, which occurrence).
+FAMOUS = [('legal', 'Nd5#', 1), ('opera', 'Qb8+', 1), ('immortal', 'Qf6+', 2),
+          ('reti', 'Qd8+', 1), ('evergreen', 'Bf5+', 1)]
+
+
+def famous_intro(source):
+    """'Morphy vs ..., Paris 1858. ' for a source like 'famous-opera', else ''."""
+    if not source.startswith('famous-'):
+        return ''
+    g = next(g for g in GAMES if g['id'] == source[len('famous-'):])
+    return f"From {g['white']} vs {g['black']}, {g['place']} {g['year']}. "
+
+
 def entry(pos, r, source):
     return {'fen': to_fen(pos), 'solutions': r['solutions'], 'san': r['san'], 'idea': r['idea'],
-            'tier': r['tier'], 'mate_in': r['mate_in'], 'text': r['text'], 'source': source}
+            'tier': r['tier'], 'mate_in': r['mate_in'], 'text': famous_intro(source) + r['text'],
+            'source': source}
 
 
 def work(seed):
@@ -98,6 +113,15 @@ def main(minutes, start=1):
         counts[b] = counts.get(b, 0) + 1
         lib.append(e)
         return True
+
+    for gid, key, nth in FAMOUS:  # first, so quotas never push a real game out
+        fen, _ = before(next(g for g in GAMES if g['id'] == gid)['moves'], key, nth)
+        pos = Pos(fen)
+        r = rate(pos, max_mate=3)
+        if r is None:
+            print('famous position rejected by rater:', gid)
+        else:
+            add(entry(pos, r, f'famous-{gid}'))
 
     old = os.path.join(HERE, 'library.json')
     if os.path.exists(old):  # keep earlier finds, re-rated with the current rater

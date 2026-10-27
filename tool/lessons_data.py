@@ -5,6 +5,18 @@
 # kind 'status' : the position is check / checkmate / stalemate for the side to move
 # kind 'idea'   : playing `move` shows `idea` (search-verified for material ideas)
 
+from famous import GAMES, before
+
+
+def _game(id_):
+    return next(g for g in GAMES if g['id'] == id_)
+
+
+def _at(id_, san, nth=1):
+    g = _game(id_)
+    return before(g['moves'], san, nth)
+
+
 LESSONS = [
     # ------------------------------------------------------------ level 1: rules
     dict(id='pawn', level=1, kind='moves', title='The pawn',
@@ -229,4 +241,50 @@ LESSONS = [
                'A knight can reach a square that attacks the king.',
                'The mating knight cannot be captured.'],
          fen='6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1', move='g5f7'),
+
+    # ------------------------------------------------- level 7: famous games
+    # Positions are replayed from the real move lists in famous.py.
+    dict(id='game-legal', level=7, kind='idea', idea='checkmate', title='Légal\'s mate (1750)',
+         tagline='Saint Brie vs Légal, Paris: give up the queen, mate with two minor pieces.',
+         why='Black\'s bishop takes the white queen on d1, but White has a surprise. Bxf7+ drives the king to e7, and the '
+             'knight jumps to d5 for checkmate. The black king is hemmed in by its own pieces and the bishop on f7. '
+             'The queen was bait.',
+         spot=['A greedy capture that pulls a defender away.',
+               'A king stuck on e7 with its own pieces around it.',
+               'Two minor pieces can mate together: knight on d5, bishop on f7.'],
+         fen=_at('legal', 'Nd5#')[0], move=_at('legal', 'Nd5#')[1]),
+    dict(id='game-opera', level=7, kind='idea', idea='checkmate', title='The Opera Game (1858)',
+         tagline='Morphy vs two noblemen, Paris: a queen sacrifice and a back-rank mate.',
+         why='Paul Morphy finished with 16.Qb8+!! The knight must take, which pulls it off d7, and then 17.Rd8# is '
+             'checkmate: the rook on d1 hits the back rank and the king has no escape. Morphy developed fast, and the '
+             'attack came from pieces that were already active.',
+         spot=['A rook ready on the open d-file.',
+               'A king with no flight squares behind its own pieces.',
+               'A sacrifice that removes the one piece guarding the back rank.'],
+         fen=_at('opera', 'Rd8#', 2)[0], move=_at('opera', 'Rd8#', 2)[1]),
+    dict(id='game-immortal', level=7, kind='idea', idea='checkmate', title='The Immortal Game (1851)',
+         tagline='Anderssen vs Kieseritzky, London: he gave up both rooks and the queen.',
+         why='Adolf Anderssen sacrificed almost everything for the attack. After 22.Qf6+!! Nxf6 the bishop delivers '
+             '23.Be7#. Black\'s king on d8 is boxed in by its own pieces, and the bishop and knight cover every escape.',
+         spot=['Counting attackers near the enemy king instead of material.',
+               'A king on its original rank with its own pieces in the way.',
+               'A quiet bishop move can be the final blow.'],
+         fen=_at('immortal', 'Be7#')[0], move=_at('immortal', 'Be7#')[1]),
+    dict(id='game-evergreen', level=7, kind='idea', idea='checkmate', title='The Evergreen Game (1852)',
+         tagline='Anderssen vs Dufresne, Berlin: a rook and a queen sacrificed to mate with a bishop.',
+         why='Anderssen played 20.Rxe7+ and 21.Qxd7+, giving up the queen. The black king is forced to d7, then e8 and '
+             'f8, and 24.Bxe7# ends it. The two bishops reach squares the king cannot cover.',
+         spot=['Check after check drives the king into the open.',
+               'Bishops on a clear diagonal finish what the heavy pieces started.',
+               'Each sacrifice removes a defender of the king.'],
+         fen=_at('evergreen', 'Bxe7#')[0], move=_at('evergreen', 'Bxe7#')[1]),
+    dict(id='game-reti', level=7, kind='idea', idea='doubleCheck', title='Réti vs Tartakower (1910)',
+         tagline='A queen sacrifice leads to a double check and a mate in the center.',
+         why='Richard Réti played 9.Qd8+!! Kxd8 and then 10.Bg5++. The bishop attacks the king and uncovers the rook on d1 '
+             'at the same moment. In a double check the king must move, so Black cannot capture the bishop. After '
+             '10...Kc7 comes 11.Bd8#.',
+         spot=['Two pieces give check at once.',
+               'The only reply is a king move, never a capture or a block.',
+               'A queen sacrifice that drags the king onto the open file.'],
+         fen=_at('reti', 'Bg5+')[0], move=_at('reti', 'Bg5+')[1]),
 ]
