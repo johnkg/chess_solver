@@ -23,6 +23,7 @@ class PuzzleScreen extends StatefulWidget {
     required this.puzzle,
     required this.progress,
     this.weakMode = false,
+    this.seen = const {},
   });
 
   final Puzzle puzzle;
@@ -30,6 +31,9 @@ class PuzzleScreen extends StatefulWidget {
 
   /// Launched from "Practice weak spots": offers the next one when solved.
   final bool weakMode;
+
+  /// Puzzle ids already shown in this weak-spot drill.
+  final Set<String> seen;
 
   @override
   State<PuzzleScreen> createState() => _PuzzleScreenState();
@@ -134,6 +138,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
       widget.progress.missed,
       widget.progress.solved,
       skipId: _puzzle.id,
+      seen: {...widget.seen, _puzzle.id},
     );
     final nav = Navigator.of(context);
     if (next == null) {
@@ -146,6 +151,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
           puzzle: next,
           progress: widget.progress,
           weakMode: true,
+          seen: {...widget.seen, _puzzle.id},
         ),
       ),
     );

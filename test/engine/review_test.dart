@@ -90,6 +90,17 @@ void main() {
       expect(p!.id, 'f2');
     });
 
+    test('a drill moves to the next weak spot before repeating a puzzle', () {
+      final missed = {'fork': 3, 'mate': 1};
+      final all = {'f1', 'f2', 'm1'};
+      expect(nextWeakPuzzle(lib, missed, all, seen: {'f1', 'f2'})!.id, 'm1');
+      // Every puzzle seen: falls back to repeating rather than returning null.
+      expect(
+        nextWeakPuzzle(lib, missed, all, skipId: 'f1', seen: all, random: Random(1)),
+        isNotNull,
+      );
+    });
+
     test('nothing weak: null', () {
       expect(nextWeakPuzzle(lib, {}, {}), isNull);
     });
