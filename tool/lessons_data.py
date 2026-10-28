@@ -359,3 +359,14 @@ LESSONS = [
                'A queen sacrifice that drags the king onto the open file.'],
          fen=_at('reti', 'Bg5+')[0], move=_at('reti', 'Bg5+')[1]),
 ]
+
+
+# Opening lines (level 8) live in openings_data.py.
+from openings_data import build as _build_openings  # noqa: E402
+
+LESSONS += _build_openings()
+
+from structure_build import lessons as _structure_lessons  # noqa: E402
+
+LESSONS += _structure_lessons()
+LESSONS.sort(key=lambda l: l['level'])  # stable: keeps the order inside a level

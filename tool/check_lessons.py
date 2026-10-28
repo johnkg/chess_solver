@@ -6,6 +6,7 @@ from mirror_search import in_check
 from lessons_data import LESSONS
 from drills_data import DRILLS
 import tb_kpk as TB
+from mirror_structure import concept_targets
 
 fails = 0
 
@@ -48,6 +49,14 @@ for l in LESSONS:
         else:
             ok = not in_check(pos) and not legal
         check(f"{l['id']}: is {st}", ok)
+    elif kind == 'concept':
+        got = concept_targets(l['fen'], l['concept'], l['side'])
+        check(f"{l['id']}: the {l['concept']} squares are {l['targets']}", got == sorted(l['targets']), str(got))
+    elif kind == 'line':
+        from famous import replay
+        sans = [x for _, _, x in replay(' '.join(l['line']))]
+        check(f"{l['id']}: every move of the line is legal, one note per move",
+              sans == l['line'] and len(l['notes']) == len(l['line']) and l['side'] in ('white', 'black'))
     elif kind == 'plan':
         lid = l['id']
         mv = [m for m in pos.legal() if uci_of(m) == l['move']]

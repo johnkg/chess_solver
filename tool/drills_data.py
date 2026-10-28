@@ -55,3 +55,8 @@ DRILLS = [
          hint='Run to the corner (a8 or b8). A king on the corner square in front of a rook-pawn can never be driven out.',
          lesson='eg-rookpawn'),
 ]
+
+
+from structure_build import drills as _structure_drills  # noqa: E402
+
+DRILLS += _structure_drills()

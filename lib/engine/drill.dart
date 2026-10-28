@@ -13,6 +13,9 @@ enum DrillGoal {
   /// You defend: draw (stalemate, win the pawn, or just survive) against an
   /// engine that is trying to win.
   hold,
+
+  /// Mark every square (or file) that shows [Drill.concept] for [Drill.subject].
+  find,
 }
 
 /// A position to play out against the engine. Generated data (see
@@ -30,6 +33,10 @@ class Drill {
     required this.hint,
     this.level = 'expert',
     this.lesson,
+    this.answers = const [],
+    this.explain = '',
+    this.concept,
+    this.subject = white,
   });
 
   final String id;
@@ -56,6 +63,15 @@ class Drill {
 
   /// Id of the lesson that explains it, if any.
   final String? lesson;
+
+  /// For [DrillGoal.find]: the correct answers (squares such as 'e6', or one
+  /// square per file for file concepts) and a sentence that explains them.
+  final List<String> answers;
+  final String explain;
+
+  /// For [DrillGoal.find]: the [Concept] name and whose structure to look at.
+  final String? concept;
+  final int subject;
 
   Level get engineLevel => Level.values.firstWhere((l) => l.name == level);
 }
@@ -98,33 +114,61 @@ DrillStatus drillStatus(Drill drill, Position pos, int userMoves) {
 
   switch (drill.goal) {
     case DrillGoal.mate:
-      if (stalemate) return const DrillStatus(DrillState.failure, 'Stalemate: no mate this time.');
+      if (stalemate) {
+        return const DrillStatus(DrillState.failure, 'Stalemate: no mate this time.');
+      }
       if (draw != null) return DrillStatus(DrillState.failure, '$draw.');
       if (userMoves >= drill.maxMoves) {
-        return DrillStatus(DrillState.failure, 'Out of moves (${drill.maxMoves}).');
+        return DrillStatus(
+          DrillState.failure,
+          'Out of moves (${drill.maxMoves}).',
+        );
       }
     case DrillGoal.promote:
-      if (stalemate) return const DrillStatus(DrillState.failure, 'Stalemate: a draw.');
+      if (stalemate) {
+        return const DrillStatus(DrillState.failure, 'Stalemate: a draw.');
+      }
       if (myPawns == 0 && myPieces > 0 && pos.turn == me) {
-        return const DrillStatus(DrillState.success, 'Promoted, and the new piece is safe.');
+        return const DrillStatus(
+          DrillState.success,
+          'Promoted, and the new piece is safe.',
+        );
       }
       if (myPawns == 0 && myPieces == 0) {
-        return const DrillStatus(DrillState.failure, 'The pawn is lost: a draw.');
+        return const DrillStatus(
+          DrillState.failure,
+          'The pawn is lost: a draw.',
+        );
       }
       if (userMoves >= drill.maxMoves) {
-        return DrillStatus(DrillState.failure, 'Out of moves (${drill.maxMoves}).');
+        return DrillStatus(
+          DrillState.failure,
+          'Out of moves (${drill.maxMoves}).',
+        );
       }
+    case DrillGoal.find:
+      break;
     case DrillGoal.hold:
-      if (stalemate) return const DrillStatus(DrillState.success, 'Stalemate: you held the draw!');
+      if (stalemate) {
+        return const DrillStatus(DrillState.success, 'Stalemate: you held the draw!');
+      }
       if (foePawns == 0 && foePieces == 0) {
-        return const DrillStatus(DrillState.success, 'The pawn is gone: a draw.');
+        return const DrillStatus(
+          DrillState.success,
+          'The pawn is gone: a draw.',
+        );
       }
       if (foePawns == 0 && foePieces > 0 && pos.turn == me) {
         return const DrillStatus(DrillState.failure, 'The pawn promoted.');
       }
-      if (draw != null) return DrillStatus(DrillState.success, '$draw: you held.');
+      if (draw != null) {
+        return DrillStatus(DrillState.success, '$draw: you held.');
+      }
       if (userMoves >= drill.maxMoves) {
-        return DrillStatus(DrillState.success, 'You held for ${drill.maxMoves} moves: the draw stands.');
+        return DrillStatus(
+          DrillState.success,
+          'You held for ${drill.maxMoves} moves: the draw stands.',
+        );
       }
   }
   return const DrillStatus(DrillState.running);

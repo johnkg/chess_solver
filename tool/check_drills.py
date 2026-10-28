@@ -5,6 +5,7 @@ from mirror_search import in_check
 from drills_data import DRILLS
 from lessons_data import LESSONS
 import tb_kpk as TB
+from mirror_structure import concept_targets
 
 fails = 0
 
@@ -27,6 +28,10 @@ for d in DRILLS:
     check(f"{d['id']}: refers to an existing lesson", d.get('lesson') in lesson_ids)
     check(f"{d['id']}: has task, hint and a sensible move limit",
           d['task'] and d['hint'] and 5 <= d['max'] <= 60)
+    if d['goal'] == 'find':
+        got = concept_targets(d['fen'], d['concept'], d['subject'])
+        check(f"{d['id']}: the {d['concept']} answer is {d['answers']}", got == sorted(d['answers']), str(got))
+        continue
     if d['goal'] == 'promote':
         # The user's side owns the pawn and the position must be won.
         check(f"{d['id']}: pawn side wins (tablebase)", TB.kpk(d['fen']))

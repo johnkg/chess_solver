@@ -1,5 +1,6 @@
 import 'package:chess_solver/engine/drill.dart';
 import 'package:chess_solver/engine/piece.dart';
+import 'package:chess_solver/engine/structure.dart';
 import 'package:chess_solver/engine/position.dart';
 import 'package:chess_solver/lessons/drills.dart';
 import 'package:chess_solver/lessons/lessons.dart';
@@ -81,7 +82,19 @@ void main() {
         expect(d.engineLevel, isNotNull, reason: d.id);
         expect(d.task, isNotEmpty);
         expect(d.hint, isNotEmpty);
-        expect(d.maxMoves, inInclusiveRange(5, 60));
+        if (d.goal == DrillGoal.find) {
+          final concept = Concept.values.byName(d.concept!);
+          final got = concept.isFileConcept
+              ? conceptFiles(pos, concept, d.subject).map((f) => String.fromCharCode(97 + f)).toSet()
+              : conceptSquares(pos, concept, d.subject).map(squareName).toSet();
+          final want = concept.isFileConcept
+              ? d.answers.map((a) => a[0]).toSet()
+              : d.answers.toSet();
+          expect(got, want, reason: d.id);
+          expect(d.answers, isNotEmpty, reason: d.id);
+        } else {
+          expect(d.maxMoves, inInclusiveRange(5, 60));
+        }
         if (d.lesson != null) expect(lessonIds, contains(d.lesson), reason: d.id);
         expect(drillStatus(d, pos, 0).over, isFalse, reason: '${d.id} must not start finished');
       }

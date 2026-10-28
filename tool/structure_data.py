@@ -1,0 +1,66 @@
+# Positions for the Level 6 structure lessons and drills, picked from engine
+# self-play by tool/mine_structure.dart. The target squares are re-computed and
+# checked by test/structure_data_test.dart (Dart is the single source of truth).
+
+STRUCTURE = {
+    'passed': [
+        dict(color='black', fen='r1b2rk1/2p2ppp/2n1p3/p5q1/2PP4/3BP3/R2Q1PPP/1KB3R1 w - - 3 19',
+             targets=['a5']),
+        dict(color='white', fen='r2qkbn1/pp1n4/2p1pP1r/3p2p1/3P2b1/5N2/PPPNBPK1/1RBQ2R1 w q - 0 16',
+             targets=['f6']),
+        dict(color='black', fen='rn1k1b1r/pp3pp1/1q2n2p/3p4/1P1p2P1/Kb3N2/P2B1P1P/RN2QR2 w - - 0 19',
+             targets=['d4', 'd5']),
+        dict(color='black', fen='rr4k1/1pp1qpp1/3p1n2/p3n3/3B3Q/4P3/PR3PPP/5KNR w - - 2 19',
+             targets=['c7']),
+    ],
+    'isolated': [
+        dict(color='white', fen='rnbq1r1k/ppp1bp1p/6p1/3pP3/3P4/2PB1N2/P1P3PP/R1BQ1RK1 w - - 0 10',
+             targets=['a2']),
+        dict(color='white', fen='r2q1rk1/ppp1bppp/2n1b3/3pP3/3P4/2PQBN2/P1P3PP/R3KB1R w KQ - 1 10',
+             targets=['a2']),
+        dict(color='black', fen='r1b1r3/1p3pkp/2p5/p3n1P1/4P3/B1P2Q1P/P5P1/3RK1R1 w - - 0 22',
+             targets=['f7', 'h7']),
+        dict(color='black', fen='rnb1k2r/1ppq1p1p/p3pP2/2b3B1/2P3Q1/2P5/PP3PPP/R3KBNR w KQkq - 0 10',
+             targets=['h7']),
+    ],
+    'doubled': [
+        dict(color='white', fen='rn2rqk1/1p1b1p1p/p4Pp1/4b3/1PPpN3/P2Q3P/1B2NP2/2R1KB1R w K - 2 22',
+             targets=['f2', 'f6']),
+        dict(color='black', fen='r1bq1rk1/pp2bp1p/n1p1pn2/4N1p1/P1pP4/2N1B3/1P1QPPPP/R3KB1R w KQ g6 0 10',
+             targets=['c4', 'c6']),
+        dict(color='white', fen='rnb1kb1r/p6p/2p1p1p1/1p2Np1Q/q2P4/1RPBK1BP/2P2PP1/5R2 w - - 0 19',
+             targets=['c2', 'c3']),
+        dict(color='white', fen='r1bq1rk1/ppp2pbp/3Pp1p1/3nP3/1n1P4/2N2N2/PP1Q1PPP/R1B1KB1R w KQ - 1 10',
+             targets=['d4', 'd6']),
+    ],
+    'backward': [
+        dict(color='black', fen='r3qr1k/pppbbp1p/2n3p1/3pP1N1/3P4/2PB4/P1PQ2PP/R1B2R1K w - - 6 13',
+             targets=['f7']),
+        dict(color='white', fen='1rq1r1k1/ppp1b1pp/2n1bp2/1Q1pP3/3P4/P1P2N2/2PBB1PP/RR4K1 w - - 6 16',
+             targets=['c3']),
+        dict(color='black', fen='r2qkbn1/pp1n4/2p1pP1r/3p2p1/3P2b1/5N2/PPPNBPK1/1RBQ2R1 w q - 0 16',
+             targets=['e6']),
+        dict(color='black', fen='1r2kb1r/p2bppp1/2p2n2/qp4Bp/3P4/P1PQ1N1P/B1P2PP1/R4K1R w k - 1 16',
+             targets=['c6']),
+    ],
+    'openFile': [
+        dict(color='white', fen='r1bqr1k1/1p1n1p2/p2p2pp/3Nb3/2P5/1P3QP1/P2B1N1P/3RKB1R w K - 3 22',
+             targets=['e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8']),
+        dict(color='white', fen='r4b1r/1pk2pp1/1qn1n2p/p2p4/1P1p2P1/KP3N2/3BQP1P/RNR5 w - - 2 22',
+             targets=['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8']),
+        dict(color='white', fen='r1b1r1k1/1pBnb1pp/4p3/p4p2/2NPP2P/2qB4/PP3PPK/2R2R2 w - - 0 22',
+             targets=['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8']),
+        dict(color='white', fen='rnb1k2r/1ppq1p1p/p3pP2/2b3B1/2P3Q1/2P5/PP3PPP/R3KBNR w KQkq - 0 10',
+             targets=['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8']),
+    ],
+    'outpost': [
+        dict(color='white', fen='r1b1kb1r/p2nppp1/2p5/qp5p/3Pn3/P1N2N2/BPP2PPP/R1BQK2R w KQkq - 2 10',
+             targets=['c5']),
+        dict(color='white', fen='r2qkbn1/pp1n4/2p1pP1r/3p2p1/3P2b1/5N2/PPPNBPK1/1RBQ2R1 w q - 0 16',
+             targets=['e5', 'e7', 'g7']),
+        dict(color='white', fen='r1bq1k1r/1p1pbpnp/2n1p1p1/p1p3P1/1PP5/P3PN2/1BNPBP1P/1R1QK2R w K a6 0 16',
+             targets=['b5', 'f6', 'h6']),
+        dict(color='black', fen='rn1q1rk1/1p3ppp/2p5/p2pP3/3P4/2P2B2/PBP3PP/2Q3KR w - - 0 19',
+             targets=['c4', 'e4']),
+    ],
+}

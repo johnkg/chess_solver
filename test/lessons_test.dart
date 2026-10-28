@@ -1,6 +1,8 @@
 import 'package:chess_solver/engine/explainer.dart';
 import 'package:chess_solver/engine/insight.dart';
+import 'package:chess_solver/engine/opening_line.dart';
 import 'package:chess_solver/engine/piece.dart';
+import 'package:chess_solver/engine/structure.dart';
 import 'package:chess_solver/engine/position.dart';
 import 'package:chess_solver/lessons/lessons.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -44,6 +46,20 @@ void main() {
             default:
               fail('unknown status ${l.status}');
           }
+        case LessonKind.concept:
+          final concept = Concept.values.byName(l.concept!);
+          final color = l.side == 'black' ? black : white;
+          expect(
+            conceptSquares(pos, concept, color).map(squareName).toSet(),
+            l.targets.toSet(),
+          );
+          expect(l.note, isNotEmpty);
+        case LessonKind.line:
+          final line = OpeningLine.fromSan(l.line);
+          expect(line.length, l.line.length);
+          expect(l.notes, hasLength(l.line.length));
+          expect(l.side, anyOf('white', 'black'));
+          expect(line.positions.first.toFen(), pos.toFen());
         case LessonKind.plan:
           final m = pos.legalMoves().firstWhere((m) => m.uci == l.move);
           expect(l.note, isNotEmpty);

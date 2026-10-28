@@ -30,6 +30,13 @@ def main():
         out.append(f"    level: {ds(d.get('level', 'expert'))},\n")
         if 'lesson' in d:
             out.append(f"    lesson: {ds(d['lesson'])},\n")
+        if 'answers' in d:
+            out.append("    answers: [" + ', '.join(ds(a) for a in d['answers']) + "],\n")
+        if 'explain' in d:
+            out.append(f"    explain: {ds(d['explain'])},\n")
+        if 'concept' in d:
+            out.append(f"    concept: {ds(d['concept'])},\n")
+            out.append(f"    subject: {d.get('subject', 'white')},\n")
         out.append('  ),\n')
     out.append('];\n')
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
