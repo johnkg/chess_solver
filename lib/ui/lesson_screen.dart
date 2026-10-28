@@ -5,16 +5,20 @@ import '../engine/move.dart';
 import '../engine/piece.dart';
 import '../engine/position.dart';
 import '../engine/san.dart';
+import '../lessons/drills.dart';
 import '../lessons/lessons.dart';
 import 'board_view.dart';
+import 'drill_screen.dart';
+import 'progress_store.dart';
 import 'widgets.dart';
 
 /// One lesson: an example board, the idea in plain words, and (for idea and
 /// move lessons) a button that shows the point on the board.
 class LessonScreen extends StatefulWidget {
-  const LessonScreen({super.key, required this.lesson});
+  const LessonScreen({super.key, required this.lesson, this.progress});
 
   final Lesson lesson;
+  final ProgressStore? progress;
 
   @override
   State<LessonScreen> createState() => _LessonScreenState();
@@ -66,11 +70,15 @@ class _LessonScreenState extends State<LessonScreen> {
     final m = _lessonMove();
     if (m == null) return;
     final text = StringBuffer('${colorName(_start.turn)} plays ${san(_start, m)}.');
-    final insights = explainVerified(_start, m);
     final highlights = <int>{};
-    for (final i in insights) {
-      text.write('\n\n${i.text}');
-      highlights.addAll(i.squares);
+    if (_lesson.kind == LessonKind.plan) {
+      final note = _lesson.note;
+      if (note != null) text.write('\n\n$note');
+    } else {
+      for (final i in explainVerified(_start, m)) {
+        text.write('\n\n${i.text}');
+        highlights.addAll(i.squares);
+      }
     }
     setState(() {
       _pos = _start.makeMove(m);
@@ -98,7 +106,10 @@ class _LessonScreenState extends State<LessonScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final canShow = _lesson.kind == LessonKind.idea && _lessonMove() != null;
+    final canShow = (_lesson.kind == LessonKind.idea || _lesson.kind == LessonKind.plan) &&
+        _lessonMove() != null;
+    final drillId = _lesson.drill;
+    final drill = drillId == null ? null : drills.where((d) => d.id == drillId).firstOrNull;
     final status = _lesson.kind == LessonKind.status ? _statusLine() : '';
     return Scaffold(
       appBar: AppBar(title: Text(_lesson.title)),
@@ -143,6 +154,16 @@ class _LessonScreenState extends State<LessonScreen> {
               ),
             if (_demo != null)
               CoachCard(text: _demo!, tone: CoachTone.good),
+            if (drill != null) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => DrillScreen(drill: drill, progress: widget.progress)),
+                ),
+                icon: const Icon(Icons.fitness_center),
+                label: Text('Practise: ${drill.title}'),
+              ),
+            ],
             const SizedBox(height: 8),
             Text(_lesson.why, style: theme.textTheme.bodyLarge),
             const SizedBox(height: 16),

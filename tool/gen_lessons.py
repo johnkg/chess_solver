@@ -19,6 +19,10 @@ enum LessonKind {
 
   /// Playing [Lesson.move] shows [Lesson.idea].
   idea,
+
+  /// Playing [Lesson.move] is the key move of an endgame or a plan; the lesson
+  /// explains it in [Lesson.note].
+  plan,
 }
 
 class Lesson {
@@ -41,6 +45,12 @@ class Lesson {
   /// 'check', 'checkmate' or 'stalemate' for [LessonKind.status].
   final String? status;
 
+  /// What the key move achieves, for [LessonKind.plan].
+  final String? note;
+
+  /// Id of a training drill that practises the lesson.
+  final String? drill;
+
   const Lesson({
     required this.id,
     required this.level,
@@ -55,6 +65,8 @@ class Lesson {
     this.square,
     this.targets = const [],
     this.status,
+    this.note,
+    this.drill,
   });
 }
 
@@ -84,6 +96,10 @@ def main():
             out.append(f"    targets: {dlist(l['targets'])},\n")
         if 'status' in l:
             out.append(f"    status: {ds(l['status'])},\n")
+        if 'note' in l:
+            out.append(f"    note: {ds(l['note'])},\n")
+        if 'drill' in l:
+            out.append(f"    drill: {ds(l['drill'])},\n")
         out.append('  ),\n')
     out.append('];\n')
     os.makedirs(os.path.dirname(OUT), exist_ok=True)

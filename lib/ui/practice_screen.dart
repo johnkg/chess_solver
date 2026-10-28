@@ -4,7 +4,9 @@ import '../engine/daily.dart';
 import '../engine/piece.dart';
 import '../engine/position.dart';
 import '../engine/weakspots.dart';
+import '../lessons/drills.dart';
 import '../puzzles/library.dart';
+import 'drill_screen.dart';
 import 'labels.dart';
 import 'progress_store.dart';
 import 'puzzle_screen.dart';
@@ -174,6 +176,26 @@ class PracticeScreen extends StatelessWidget {
                 _daily(context),
                 const SizedBox(height: 12),
                 _weakSpots(context),
+                const SectionLabel('Training positions'),
+                for (final d in drills)
+                  RowCard(
+                    leading: Icon(
+                      progress.isSolved(d.id)
+                          ? Icons.check_circle
+                          : Icons.radio_button_unchecked,
+                      color: progress.isSolved(d.id)
+                          ? context.coach.good
+                          : theme.colorScheme.onSurfaceVariant,
+                    ),
+                    title: d.title,
+                    subtitle: '${phaseLabel(d.phase)} · you play ${colorName(d.side)}',
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => DrillScreen(drill: d, progress: progress),
+                      ),
+                    ),
+                  ),
                 for (final tier in tiers) ...[
                   SectionLabel(tierTitle(tier)),
                   for (final p in puzzleLibrary.where((p) => p.tier == tier))

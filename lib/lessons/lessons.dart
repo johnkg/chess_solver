@@ -11,6 +11,10 @@ enum LessonKind {
 
   /// Playing [Lesson.move] shows [Lesson.idea].
   idea,
+
+  /// Playing [Lesson.move] is the key move of an endgame or a plan; the lesson
+  /// explains it in [Lesson.note].
+  plan,
 }
 
 class Lesson {
@@ -33,6 +37,12 @@ class Lesson {
   /// 'check', 'checkmate' or 'stalemate' for [LessonKind.status].
   final String? status;
 
+  /// What the key move achieves, for [LessonKind.plan].
+  final String? note;
+
+  /// Id of a training drill that practises the lesson.
+  final String? drill;
+
   const Lesson({
     required this.id,
     required this.level,
@@ -47,6 +57,8 @@ class Lesson {
     this.square,
     this.targets = const [],
     this.status,
+    this.note,
+    this.drill,
   });
 }
 
@@ -359,6 +371,84 @@ const List<Lesson> lessons = [
     fen: '6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1',
     idea: Idea.smotheredMate,
     move: 'g5f7',
+  ),
+  Lesson(
+    id: 'eg-kq',
+    level: 5,
+    kind: LessonKind.plan,
+    title: 'King and queen against king',
+    tagline: 'The queen herds the king to the edge; your king arrives for the mate.',
+    why: 'With a queen you win by force, but there is one trap: stalemate. Use the queen a knight\'s move away from the enemy king to cut off as many squares as possible, shrink the box, and only then bring your own king. Before every move ask: does Black still have a legal move?',
+    spot: ['Keep the queen a knight\'s move from the king so it cannot attack her.', 'Bring your king up only when the box is small.', 'Stalemate is the only way to throw the win away.'],
+    fen: 'k7/8/1K6/8/8/8/8/6Q1 w - - 0 1',
+    move: 'g1g8',
+    note: 'The king on b6 takes a7 and b7, and the queen on the eighth rank takes b8 and gives check: no escape.',
+    drill: 'dr-kq',
+  ),
+  Lesson(
+    id: 'eg-kr',
+    level: 5,
+    kind: LessonKind.plan,
+    title: 'King and rook against king',
+    tagline: 'Cut the king off with the rook, then use the opposition to push it to the edge.',
+    why: 'The rook cannot do it alone: your king must help. Drive the enemy king to an edge, face it with your own king (the opposition), and a rook check along the edge is mate. It takes patience, not tricks.',
+    spot: ['Use the rook to cut the king off along a rank or file.', 'Walk your king forward to face the enemy king.', 'The mate is a rook check on the edge, with your king covering the escape squares.'],
+    fen: '4k3/8/4K3/8/8/8/8/R7 w - - 0 1',
+    move: 'a1a8',
+    note: 'The kings face each other with one square between them: the white king covers d7, e7 and f7, and the rook on the eighth rank covers d8 and f8 and gives check.',
+    drill: 'dr-kr',
+  ),
+  Lesson(
+    id: 'eg-opposition',
+    level: 5,
+    kind: LessonKind.plan,
+    title: 'The opposition',
+    tagline: 'Kings facing each other with one square between them: the side NOT to move has the opposition.',
+    why: 'In a king-and-pawn ending the king has to get in front of its pawn. When the two kings stand on the same file with one square between them, the player who must move has to step aside, and the other king walks in. Here White to move wins only by stepping into the opposition at once.',
+    spot: ['Kings on the same line with exactly one square between them.', 'The player who has to move gives way.', 'Without the opposition you only draw, even with an extra pawn.'],
+    fen: '8/4k3/8/8/3KP3/8/8/8 w - - 0 1',
+    move: 'd4e5',
+    note: 'After Ke5 the black king has to move away from the key squares and White wins. Any other move lets Black take the opposition and hold the draw.',
+    drill: 'dr-opposition',
+  ),
+  Lesson(
+    id: 'eg-keysq',
+    level: 5,
+    kind: LessonKind.plan,
+    title: 'Key squares',
+    tagline: 'If your king reaches a key square in front of the pawn, the pawn promotes.',
+    why: 'Every pawn has key squares: for a pawn on the fifth rank they are the three squares on the sixth rank around it. If the attacking king stands on a key square, the pawn wins by force, whoever is to move. The defending king\'s job is to stop that from happening.',
+    spot: ['A pawn on e4 or e5 has the key squares d6, e6 and f6.', 'King on a key square: it wins, even without the opposition.', 'Do not push the pawn first: bring the king.'],
+    fen: '4k3/8/4K3/4P3/8/8/8/8 w - - 0 1',
+    move: 'e6d6',
+    note: 'Kd6 keeps a key square and prepares e6. Black can never get in front of the pawn.',
+    drill: 'dr-keysq',
+  ),
+  Lesson(
+    id: 'eg-square',
+    level: 5,
+    kind: LessonKind.plan,
+    title: 'The rule of the square',
+    tagline: 'Can the king catch the pawn? Draw the square from the pawn to the promotion square.',
+    why: 'Count the squares the pawn needs to promote and draw a square of that size. If the defending king is inside it when it is his move, he catches the pawn; if he is outside, the pawn runs through. Use it to decide at once whether to push the pawn or to bring your king.',
+    spot: ['Draw a square whose side is the number of moves the pawn needs.', 'Check the square for the side that is to move.', 'A pawn on its start square can jump two, so its square is one smaller.'],
+    fen: '6k1/8/8/2P5/8/8/8/K7 w - - 0 1',
+    move: 'c5c6',
+    note: 'The pawn needs three moves and the black king on g8 is outside its square. Had it been Black\'s move in this position, the king would catch the pawn and it would be a draw.',
+    drill: 'dr-square',
+  ),
+  Lesson(
+    id: 'eg-rookpawn',
+    level: 5,
+    kind: LessonKind.plan,
+    title: 'The rook pawn draws',
+    tagline: 'A pawn on the edge file cannot win if the defending king reaches the corner.',
+    why: 'The king in the corner can never be driven away, and a king in front of the pawn means the pawn has nowhere to go. Extra care: do not stalemate the corner king by accident. Remember this when you are the one with the extra pawn, and choose a different plan.',
+    spot: ['The pawn is on the a- or h-file.', 'The defending king can reach the corner square.', 'Trying harder is no use: it is a draw whatever White does.'],
+    fen: '2k5/8/8/PK6/8/8/8/8 w - - 0 1',
+    move: 'b5b6',
+    note: 'The natural try, but Black answers Kb8 and the king can never be driven away from the corner. Whatever White tries here, it is a draw.',
+    drill: 'dr-hold-rook',
   ),
   Lesson(
     id: 'game-legal',

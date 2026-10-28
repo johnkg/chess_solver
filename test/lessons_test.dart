@@ -44,6 +44,14 @@ void main() {
             default:
               fail('unknown status ${l.status}');
           }
+        case LessonKind.plan:
+          final m = pos.legalMoves().firstWhere((m) => m.uci == l.move);
+          expect(l.note, isNotEmpty);
+          // The pawn endings are checked against a tablebase in
+          // tool/check_lessons.py; here the two mates are checked.
+          if (l.id == 'eg-kq' || l.id == 'eg-kr') {
+            expect(pos.makeMove(m).isCheckmate, isTrue);
+          }
         case LessonKind.idea:
           final m = pos.legalMoves().firstWhere((m) => m.uci == l.move);
           final shown = materialIdeas.contains(l.idea)

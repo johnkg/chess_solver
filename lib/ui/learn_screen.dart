@@ -3,14 +3,17 @@ import 'package:flutter/material.dart';
 import '../lessons/lessons.dart';
 import 'labels.dart';
 import 'lesson_screen.dart';
+import 'progress_store.dart';
 import 'widgets.dart';
 
 /// Lessons grouped by curriculum level.
 class LearnScreen extends StatelessWidget {
-  const LearnScreen({super.key});
+  const LearnScreen({super.key, this.progress});
+
+  final ProgressStore? progress;
 
   void _open(BuildContext context, Lesson lesson) => Navigator.of(context).push(
-        MaterialPageRoute<void>(builder: (_) => LessonScreen(lesson: lesson)),
+        MaterialPageRoute<void>(builder: (_) => LessonScreen(lesson: lesson, progress: progress)),
       );
 
   @override
