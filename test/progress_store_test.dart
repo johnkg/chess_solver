@@ -40,4 +40,18 @@ void main() {
     expect(b.rating, 1000);
     expect(b.games, isEmpty);
   });
+
+  test('daily puzzle days are saved and reset', () async {
+    final a = ProgressStore();
+    await a.markDaily(20000);
+    await a.markDaily(20000);
+    await a.markDaily(20001);
+    expect(a.dailyDays, {20000, 20001});
+
+    final b = ProgressStore();
+    await b.load();
+    expect(b.dailyDays, {20000, 20001});
+    await b.reset();
+    expect(b.dailyDays, isEmpty);
+  });
 }
