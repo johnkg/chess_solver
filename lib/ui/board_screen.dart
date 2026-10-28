@@ -5,12 +5,16 @@ import 'analysis.dart';
 import 'board_controller.dart';
 import 'board_view.dart';
 import 'labels.dart';
+import 'progress_store.dart';
+import 'settings_screen.dart';
 import 'widgets.dart';
 
 /// Free play: move pieces, ask for the best move, or ask why your last move
 /// was good or bad.
 class BoardScreen extends StatefulWidget {
-  const BoardScreen({super.key});
+  const BoardScreen({super.key, this.progress});
+
+  final ProgressStore? progress;
 
   @override
   State<BoardScreen> createState() => _BoardScreenState();
@@ -100,6 +104,7 @@ class _BoardScreenState extends State<BoardScreen> {
       appBar: AppBar(
         title: const Text('Board'),
         actions: [
+          SettingsButton(progress: widget.progress),
           IconButton(
             tooltip: 'Paste FEN',
             icon: const Icon(Icons.content_paste),

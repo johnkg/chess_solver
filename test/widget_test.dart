@@ -12,6 +12,7 @@ void main() {
 
   testWidgets('app starts on the Learn tab with three tabs', (tester) async {
     await tester.pumpWidget(const ChessSolverApp());
+    await tester.pumpAndSettle(); // the saved settings load first
     expect(find.text('Learn chess'), findsOneWidget);
     expect(find.text('Practice'), findsWidgets);
     expect(find.text('Board'), findsWidgets);
@@ -24,6 +25,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(const ChessSolverApp());
+    await tester.pumpAndSettle(); // the saved settings load first
     await tester.tap(find.text('Board').last);
     await tester.pumpAndSettle();
     expect(find.text('White to move'), findsOneWidget);
@@ -37,6 +39,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(const ChessSolverApp());
+    await tester.pumpAndSettle(); // the saved settings load first
     await tester.tap(find.text('Play').last);
     await tester.pumpAndSettle();
     expect(find.text('Your move'), findsOneWidget);
@@ -68,6 +71,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(const ChessSolverApp());
+    await tester.pumpAndSettle(); // the saved settings load first
     await tester.pumpAndSettle();
     await tester.tap(find.text('Practice').last);
     await tester.pumpAndSettle();

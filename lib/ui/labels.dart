@@ -1,3 +1,4 @@
+import '../engine/opponent.dart';
 import '../engine/insight.dart';
 import '../engine/piece.dart';
 import '../engine/review.dart';
@@ -64,3 +65,15 @@ String phaseLabel(String phase) => switch (phase) {
       'endgame' => 'Endgame',
       _ => phase,
     };
+
+/// One line on how a computer level plays, from its real settings.
+String levelBlurb(Level level) {
+  final moves = level.depth == 1 ? '1 move' : '${level.depth} moves';
+  final seconds = level.millis < 1000
+      ? '${(level.millis / 1000).toStringAsFixed(2)} s'
+      : '${(level.millis / 1000).toStringAsFixed(level.millis % 1000 == 0 ? 0 : 1)} s';
+  final mate = level.mateDepth > 0
+      ? 'Spots mate in ${level.mateDepth}.'
+      : 'Finds longer mates on its own.';
+  return 'Looks $moves ahead and thinks up to $seconds a move. $mate';
+}

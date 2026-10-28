@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:chess_solver/engine/clock.dart';
 import 'package:chess_solver/engine/piece.dart';
 import 'package:chess_solver/ui/board_view.dart';
 import 'package:chess_solver/ui/play_screen.dart';
@@ -56,9 +55,11 @@ void main() {
 
   testWidgets('take back works with a clock and hands the turn back', (tester) async {
     await open(tester);
-    await tester.tap(find.byType(DropdownMenu<TimeControl>));
+    await tester.tap(find.byTooltip('New game'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('5 min').last);
+    await tester.tap(find.text('5 min'));
+    await tester.pump();
+    await tester.tap(find.text('Start game'));
     await tester.pumpAndSettle();
     await move(tester, 'e2', 'e4');
     expect(find.textContaining('I played'), findsOneWidget);

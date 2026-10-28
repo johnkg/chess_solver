@@ -19,9 +19,12 @@ import 'board_view.dart';
 import 'game_viewer.dart';
 import 'pgn_dialogs.dart';
 import 'player_bar.dart';
+import 'new_game_sheet.dart';
 import 'progress_store.dart';
 import 'rating_card.dart';
 import 'review_snapshot.dart';
+import 'settings_screen.dart';
+import 'settings_store.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
@@ -43,6 +46,9 @@ class _PlayScreenState extends State<PlayScreen> {
   final BoardController _board = BoardController();
   Level _level = Level.casual;
   int _player = white;
+  SideChoice _sideChoice = SideChoice.white;
+  bool _prefsApplied = false;
+  late final Random _rng = widget.random ?? Random();
   bool _thinking = false;
   Analysis? _coach;
   String? _engineNote;
@@ -74,6 +80,23 @@ class _PlayScreenState extends State<PlayScreen> {
   void initState() {
     super.initState();
     _board.addListener(_onBoardChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_prefsApplied) return;
+    _prefsApplied = true;
+    // The first game starts from the defaults in Settings.
+    final prefs = SettingsScope.of(context);
+    _level = prefs.defaultLevel;
+    _sideChoice = prefs.defaultSide;
+    _player = _sideChoice.resolve(_rng);
+    if (_player == black) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _board.ply == 0 && !_thinking) _engineMove();
+      });
+    }
   }
 
   @override
@@ -178,7 +201,12 @@ class _PlayScreenState extends State<PlayScreen> {
     }
     final name = san(pos, move);
     final why = explainVerified(pos, move);
-    _engineNote = why.isEmpty ? 'I played $name.' : 'I played $name. ${why.first.text}';
+    final coachOn = SettingsScope.of(context).coach;
+    _engineNote = !coachOn
+        ? null
+        : why.isEmpty
+            ? 'I played $name.'
+            : 'I played $name. ${why.first.text}';
     _thinking = false;
     _board.play(move);
     _clock?.moved(1 - _player, DateTime.now());
@@ -204,7 +232,7 @@ class _PlayScreenState extends State<PlayScreen> {
     _entries.add(entry);
     final key = entry.missedKey;
     if (key != null) widget.progress.recordMiss(key);
-    _coach = critiqueWith(before, move, mistake);
+    _coach = SettingsScope.of(context).coach ? critiqueWith(before, move, mistake) : null;
     _clock?.resume(DateTime.now());
     if (_over) {
       setState(() => _thinking = false);
@@ -224,7 +252,7 @@ class _PlayScreenState extends State<PlayScreen> {
     final full = _hintFull!;
     final move = full.move;
     _assisted = true;
-    _hintStage++;
+    _hintStage = SettingsScope.of(context).stepHints ? _hintStage + 1 : 2;
     if (_hintStage == 1 && move != null) {
       _hintFrom = move.from;
       final piece = pieceName(pieceType(_pos.squares[move.from]));
@@ -240,7 +268,10 @@ class _PlayScreenState extends State<PlayScreen> {
     }
   }
 
-  bool get _canUndo => !_over && _board.ply >= (_player == white ? 1 : 2);
+  bool get _canUndo =>
+      SettingsScope.of(context).allowTakeBacks &&
+      !_over &&
+      _board.ply >= (_player == white ? 1 : 2);
 
   /// Takes back your last move and the reply to it, even while the engine is
   /// thinking. The game then counts as practice, not rated. A running clock
@@ -377,6 +408,12 @@ class _PlayScreenState extends State<PlayScreen> {
       appBar: AppBar(
         title: const Text('Play'),
         actions: [
+          IconButton(
+            tooltip: 'New game',
+            icon: const Icon(Icons.add),
+            onPressed: _openNewGame,
+          ),
+          SettingsButton(progress: widget.progress),
           PopupMenuButton<String>(
             tooltip: 'Game file',
             icon: const Icon(Icons.more_vert),
@@ -398,58 +435,7 @@ class _PlayScreenState extends State<PlayScreen> {
           children: [
             RatingCard(progress: widget.progress),
             const SizedBox(height: 12),
-            LayoutBuilder(
-              builder: (context, box) => DropdownMenu<Level>(
-                width: box.maxWidth,
-                initialSelection: _level,
-                label: const Text('Opponent'),
-                requestFocusOnTap: false,
-                dropdownMenuEntries: [
-                  for (final l in Level.values)
-                    DropdownMenuEntry(value: l, label: l.title),
-                ],
-                onSelected: (l) {
-                  if (l != null) setState(() => _level = l);
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              alignment: WrapAlignment.center,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 12,
-              runSpacing: 8,
-              children: [
-                DropdownMenu<TimeControl>(
-                  width: 170,
-                  initialSelection: _control,
-                  label: const Text('Clock'),
-                  requestFocusOnTap: false,
-                  dropdownMenuEntries: [
-                    for (final c in TimeControl.values)
-                      DropdownMenuEntry(value: c, label: c.label),
-                  ],
-                  onSelected: (c) {
-                    if (c != null && c != _control) {
-                      setState(() {
-                        _control = c;
-                        _newGame();
-                      });
-                    }
-                  },
-                ),
-                SegmentedButton<int>(
-                  showSelectedIcon: false,
-                  segments: const [
-                    ButtonSegment(value: white, label: Text('White')),
-                    ButtonSegment(value: black, label: Text('Black')),
-                  ],
-                  selected: {_player},
-                  onSelectionChanged: (s) =>
-                      setState(() => _newGame(player: s.first)),
-                ),
-              ],
-            ),
+            _opponentRow(),
             const SizedBox(height: 12),
             Center(
               child: ConstrainedBox(
@@ -545,6 +531,61 @@ class _PlayScreenState extends State<PlayScreen> {
               _reviewCard(context),
             ],
           ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openNewGame() async {
+    final choice = await showNewGameSheet(
+      context,
+      level: _level,
+      side: _sideChoice,
+      control: _control,
+    );
+    if (choice == null || !mounted) return;
+    setState(() {
+      _level = choice.level;
+      _sideChoice = choice.side;
+      _control = choice.control;
+      _newGame(player: choice.side.resolve(_rng));
+    });
+  }
+
+  /// Who you play and how; tap to change it (this starts a new game).
+  Widget _opponentRow() {
+    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context).textTheme;
+    final side = _player == white ? 'White' : 'Black';
+    final clock = _control == TimeControl.off ? '' : ' · ${_control.label}';
+    return Material(
+      color: scheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: _openNewGame,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 56),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(_level.label, style: theme.titleMedium),
+                      Text(
+                        'About ${_level.elo} · you are $side$clock',
+                        style: theme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+                const Chip(label: Text('Change')),
+              ],
+            ),
+          ),
         ),
       ),
     );

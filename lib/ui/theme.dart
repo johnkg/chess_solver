@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'settings_store.dart';
+
 /// Colours of the board and its overlays; one set per brightness.
 @immutable
 class BoardColors extends ThemeExtension<BoardColors> {
@@ -44,6 +46,29 @@ class BoardColors extends ThemeExtension<BoardColors> {
     best: Color(0xE65CC38C),
     played: Color(0xE6EE8A78),
   );
+
+  /// These colours with the square colours of [palette]; slate is the theme's own.
+  BoardColors withPalette(BoardPalette palette, Brightness brightness) {
+    if (palette == BoardPalette.slate) return this;
+    final dark = brightness == Brightness.dark;
+    final (l, d) = switch (palette) {
+      BoardPalette.green => dark
+          ? (const Color(0xFFB9BDA0), const Color(0xFF5A7545))
+          : (const Color(0xFFEEEED2), const Color(0xFF769656)),
+      _ => dark
+          ? (const Color(0xFFC9B48F), const Color(0xFF8E6B4D))
+          : (const Color(0xFFF0D9B5), const Color(0xFFB58863)),
+    };
+    return BoardColors(
+      light: l,
+      dark: d,
+      pattern: pattern,
+      lastMove: lastMove,
+      selected: selected,
+      best: best,
+      played: played,
+    );
+  }
 
   @override
   BoardColors copyWith() => this;
@@ -233,6 +258,15 @@ ThemeData buildTheme(Brightness brightness) {
         TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: scheme.onSurface),
       ),
       iconTheme: WidgetStatePropertyAll(IconThemeData(color: scheme.onSurface)),
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: const WidgetStatePropertyAll(Color(0xFFFFFFFF)),
+      trackColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.selected)
+            ? (dark ? CoachColors.darkSet.good : CoachColors.lightSet.good)
+            : scheme.outline,
+      ),
+      trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
     ),
     dividerTheme: DividerThemeData(color: scheme.outline, space: 1),
   );
