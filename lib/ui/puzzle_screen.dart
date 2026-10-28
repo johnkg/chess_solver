@@ -26,6 +26,7 @@ class PuzzleScreen extends StatefulWidget {
     required this.progress,
     this.weakMode = false,
     this.seen = const {},
+    this.dailyDay,
   });
 
   final Puzzle puzzle;
@@ -36,6 +37,9 @@ class PuzzleScreen extends StatefulWidget {
 
   /// Puzzle ids already shown in this weak-spot drill.
   final Set<String> seen;
+
+  /// Set when this is the daily puzzle of that day (see `dayNumber`).
+  final int? dailyDay;
 
   @override
   State<PuzzleScreen> createState() => _PuzzleScreenState();
@@ -102,6 +106,8 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
       if (done) {
         _board.setPosition(after);
         widget.progress.markSolved(_puzzle.id);
+        final day = widget.dailyDay;
+        if (day != null) widget.progress.markDaily(day);
         if (!_missed && !_usedHint) {
           widget.progress.relieve(weakKey(_puzzle.idea));
         }

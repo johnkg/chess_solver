@@ -10,10 +10,27 @@ class ProgressStore extends ChangeNotifier {
 
   static const String _missKey = 'missed_ideas';
   static const String _gamesKey = 'rated_games';
+  static const String _dailyKey = 'daily_days';
 
   final Set<String> _solved = {};
   final Map<String, int> _missed = {};
   final List<GameRecord> _games = [];
+  final Set<int> _daily = {};
+
+  /// Day numbers (see `dayNumber`) on which the daily puzzle was solved.
+  Set<int> get dailyDays => Set.unmodifiable(_daily);
+
+  /// The daily puzzle of [day] was solved.
+  Future<void> markDaily(int day) async {
+    if (!_daily.add(day)) return;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(_dailyKey, [for (final d in _daily) '$d']);
+    } catch (_) {
+      // No storage available.
+    }
+  }
 
   /// Rated games against the engine, oldest first.
   List<GameRecord> get games => List.unmodifiable(_games);
@@ -49,6 +66,12 @@ class ProgressStore extends ChangeNotifier {
         ..addAll([
           for (final line in prefs.getStringList(_gamesKey) ?? const <String>[])
             ?GameRecord.decode(line),
+        ]);
+      _daily
+        ..clear()
+        ..addAll([
+          for (final d in prefs.getStringList(_dailyKey) ?? const <String>[])
+            ?int.tryParse(d),
         ]);
       notifyListeners();
     } catch (_) {
@@ -118,12 +141,14 @@ class ProgressStore extends ChangeNotifier {
     _solved.clear();
     _missed.clear();
     _games.clear();
+    _daily.clear();
     notifyListeners();
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_key);
       await prefs.remove(_missKey);
       await prefs.remove(_gamesKey);
+      await prefs.remove(_dailyKey);
     } catch (_) {
       // No storage available.
     }
