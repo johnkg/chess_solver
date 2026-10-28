@@ -29,6 +29,9 @@ class BoardController extends ChangeNotifier {
 
   bool get canUndo => _history.isNotEmpty;
 
+  /// Every move played since the last [setPosition], oldest first.
+  List<Move> get moves => [for (final h in _history) h.$2];
+
   Move? get lastMove => _history.isEmpty ? null : _history.last.$2;
 
   /// Position before [lastMove], or null.

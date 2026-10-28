@@ -54,6 +54,18 @@ class ChessClock {
     _paused = false;
   }
 
+  /// Hands the turn to [side] without a move being played (a take-back): the
+  /// side that was running pays for the time it used, nobody gets an
+  /// increment, and [side]'s clock runs from [now].
+  void giveTurnTo(int side, DateTime now) {
+    if (_stopped) return;
+    final running = _running;
+    if (running != null) _left[running] = remaining(running, now);
+    _running = side;
+    _since = now;
+    _paused = false;
+  }
+
   /// Freezes the running side without switching, for work that should not
   /// cost either player time (such as the coach analysing a move).
   void pause(DateTime now) {

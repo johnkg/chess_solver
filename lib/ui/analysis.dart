@@ -20,12 +20,16 @@ class Analysis {
     required this.fen,
     required this.text,
     this.arrows = const [],
+    this.move,
   });
 
   /// Position the text is about.
   final String fen;
   final String text;
   final List<BoardArrow> arrows;
+
+  /// The move being recommended, for a hint.
+  final Move? move;
 }
 
 String _changeWords(Position pos, Move m) {
@@ -63,6 +67,7 @@ Analysis analysePosition(Position pos, {int depth = 3}) {
     fen: pos.toFen(),
     text: lines.join('\n\n'),
     arrows: [BoardArrow(move.from, move.to, color: _bestColor)],
+    move: move,
   );
 }
 
