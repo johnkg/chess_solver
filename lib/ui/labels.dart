@@ -26,7 +26,10 @@ String levelTitle(int level) => switch (level) {
       2 => 'Level 2 · Finishing the game',
       3 => 'Level 3 · Good habits',
       4 => 'Level 4 · Tactics',
+      5 => 'Level 5 · Endgames',
+      6 => 'Level 6 · Middlegame plans',
       7 => 'Level 7 · Famous games',
+      8 => 'Level 8 · Opening lines',
       _ => 'Level $level',
     };
 
@@ -53,3 +56,11 @@ String statusText(Position pos) {
 String weakLabel(String key) => key == mateKey
     ? 'Forced mates'
     : ideaLabel(Idea.values.byName(key));
+
+/// "Endgame" for a drill's phase key.
+String phaseLabel(String phase) => switch (phase) {
+      'opening' => 'Opening',
+      'middlegame' => 'Middlegame',
+      'endgame' => 'Endgame',
+      _ => phase,
+    };

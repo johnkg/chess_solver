@@ -204,6 +204,14 @@ ThemeData buildTheme(Brightness brightness) {
         fontWeight: FontWeight.w600,
         fontSize: 13,
       ),
+      // A selected chip (a Learn filter, a move in a list) is dark with light text.
+      selectedColor: scheme.onSurface,
+      secondaryLabelStyle: TextStyle(
+        color: scheme.surface,
+        fontWeight: FontWeight.w700,
+        fontSize: 13,
+      ),
+      checkmarkColor: scheme.surface,
     ),
     segmentedButtonTheme: SegmentedButtonThemeData(
       style: SegmentedButton.styleFrom(

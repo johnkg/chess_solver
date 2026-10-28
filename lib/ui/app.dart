@@ -52,7 +52,7 @@ class _HomeShellState extends State<HomeShell> {
       body: IndexedStack(
         index: _index,
         children: [
-          const LearnScreen(),
+          LearnScreen(progress: _progress),
           PracticeScreen(progress: _progress),
           PlayScreen(progress: _progress),
           const BoardScreen(),

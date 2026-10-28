@@ -4,6 +4,9 @@ from perft_mirror import Pos
 from mirror_ideas import explain, explain_verified, MATERIAL_IDEAS, sqname
 from mirror_search import in_check
 from lessons_data import LESSONS
+from drills_data import DRILLS
+import tb_kpk as TB
+from mirror_structure import concept_targets
 
 fails = 0
 
@@ -24,6 +27,9 @@ ids = [l['id'] for l in LESSONS]
 check('lesson ids are unique', len(ids) == len(set(ids)))
 check('every lesson has title, tagline, why and 3 spotting tips',
       all(l['title'] and l['tagline'] and l['why'] and len(l['spot']) == 3 for l in LESSONS))
+drill_ids = {d['id'] for d in DRILLS}
+check('every lesson drill exists and every plan lesson has a note',
+      all(l.get('drill', next(iter(drill_ids))) in drill_ids and (l['kind'] != 'plan' or l.get('note')) for l in LESSONS))
 
 for l in LESSONS:
     pos = Pos(l['fen'])
@@ -43,6 +49,44 @@ for l in LESSONS:
         else:
             ok = not in_check(pos) and not legal
         check(f"{l['id']}: is {st}", ok)
+    elif kind == 'concept':
+        got = concept_targets(l['fen'], l['concept'], l['side'])
+        check(f"{l['id']}: the {l['concept']} squares are {l['targets']}", got == sorted(l['targets']), str(got))
+    elif kind == 'line':
+        from famous import replay
+        sans = [x for _, _, x in replay(' '.join(l['line']))]
+        check(f"{l['id']}: every move of the line is legal, one note per move",
+              sans == l['line'] and len(l['notes']) == len(l['line']) and l['side'] in ('white', 'black'))
+    elif kind == 'plan':
+        lid = l['id']
+        mv = [m for m in pos.legal() if uci_of(m) == l['move']]
+        if not mv:
+            check(f"{lid}: move {l['move']} is legal", False)
+            continue
+        if lid in ('eg-kq', 'eg-kr'):
+            after = pos.make(mv[0])
+            check(f"{lid}: {l['move']} is checkmate", in_check(after) and not after.legal())
+        else:
+            fen = l['fen']
+            wins_after = lambda f, u: TB.kpk_after(f, u)
+            others = [uci_of(m) for m in pos.legal()]
+            result = {u: wins_after(fen, u) for u in others}
+            if lid == 'eg-opposition':
+                check(f"{lid}: {l['move']} wins and nothing else does",
+                      result[l['move']] is True and sum(1 for v in result.values() if v) == 1, str(result))
+            elif lid == 'eg-keysq':
+                other = fen.replace(' w ', ' b ')
+                check(f"{lid}: wins with either side to move and {l['move']} keeps it",
+                      TB.kpk(fen) and TB.kpk(other) and result[l['move']] is True)
+            elif lid == 'eg-square':
+                other = fen.replace(' w ', ' b ')
+                check(f"{lid}: {l['move']} wins; with Black to move it is a draw",
+                      result[l['move']] is True and TB.kpk(fen) and not TB.kpk(other))
+            elif lid == 'eg-rookpawn':
+                check(f"{lid}: a draw whatever White plays",
+                      not TB.kpk(fen) and not any(result.values()), str(result))
+            else:
+                check(f"{lid}: no check defined for this plan lesson", False)
     else:
         mv = [m for m in pos.legal() if uci_of(m) == l['move']]
         if not mv:

@@ -19,6 +19,18 @@ enum LessonKind {
 
   /// Playing [Lesson.move] shows [Lesson.idea].
   idea,
+
+  /// Playing [Lesson.move] is the key move of an endgame or a plan; the lesson
+  /// explains it in [Lesson.note].
+  plan,
+
+  /// An opening line: [Lesson.line] with a note per move, studied from the
+  /// side [Lesson.side].
+  line,
+
+  /// A middlegame idea (pawn structure, files, outposts): [Lesson.targets] are
+  /// the squares that show [Lesson.concept] for [Lesson.side] in [Lesson.fen].
+  concept,
 }
 
 class Lesson {
@@ -41,6 +53,22 @@ class Lesson {
   /// 'check', 'checkmate' or 'stalemate' for [LessonKind.status].
   final String? status;
 
+  /// What the key move achieves, for [LessonKind.plan].
+  final String? note;
+
+  /// Id of a training drill that practises the lesson.
+  final String? drill;
+
+  /// The moves of an opening line in SAN, and one note per move (may be empty).
+  final List<String> line;
+  final List<String> notes;
+
+  /// 'white' or 'black': the side you study and are tested on.
+  final String? side;
+
+  /// Name of the structure concept for [LessonKind.concept].
+  final String? concept;
+
   const Lesson({
     required this.id,
     required this.level,
@@ -55,6 +83,12 @@ class Lesson {
     this.square,
     this.targets = const [],
     this.status,
+    this.note,
+    this.drill,
+    this.line = const [],
+    this.notes = const [],
+    this.side,
+    this.concept,
   });
 }
 
@@ -84,6 +118,17 @@ def main():
             out.append(f"    targets: {dlist(l['targets'])},\n")
         if 'status' in l:
             out.append(f"    status: {ds(l['status'])},\n")
+        if 'note' in l:
+            out.append(f"    note: {ds(l['note'])},\n")
+        if 'drill' in l:
+            out.append(f"    drill: {ds(l['drill'])},\n")
+        if 'concept' in l:
+            out.append(f"    concept: {ds(l['concept'])},\n")
+            out.append(f"    side: {ds(l['side'])},\n")
+        if 'line' in l:
+            out.append(f"    line: {dlist(l['line'])},\n")
+            out.append(f"    notes: {dlist(l['notes'])},\n")
+            out.append(f"    side: {ds(l['side'])},\n")
         out.append('  ),\n')
     out.append('];\n')
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
