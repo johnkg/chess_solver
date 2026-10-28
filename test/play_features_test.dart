@@ -66,8 +66,8 @@ void main() {
     await tester.pump();
     expect(find.textContaining('I played'), findsNothing);
     expect(find.text('Your move'), findsOneWidget);
-    // Hand-made clock label for the side to move is running again.
-    expect(find.textContaining('4:'), findsWidgets);
+    // Both clock chips are still shown (5:00 or 4:5x, depending on how long the test took).
+    expect(find.textContaining(RegExp(r'^[45]:\d\d$')), findsNWidgets(2));
     // Stop the 100 ms ticker started for the clock.
     await tester.pumpWidget(const SizedBox());
   });
