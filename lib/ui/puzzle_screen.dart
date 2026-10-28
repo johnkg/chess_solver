@@ -15,6 +15,7 @@ import 'board_controller.dart';
 import 'board_view.dart';
 import 'labels.dart';
 import 'progress_store.dart';
+import 'settings_store.dart';
 import 'widgets.dart';
 
 /// Solve one puzzle: tap a piece, tap its destination. A wrong move is
@@ -172,7 +173,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
     if (m == null || _solved || _busy) return;
     setState(() {
       _usedHint = true;
-      _hints = _hints < 3 ? _hints + 1 : 3;
+      _hints = !SettingsScope.of(context).stepHints ? 3 : (_hints < 3 ? _hints + 1 : 3);
       switch (_hints) {
         case 1:
           _feedback = _puzzle.mateIn > 0

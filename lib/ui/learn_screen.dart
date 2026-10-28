@@ -4,6 +4,7 @@ import '../lessons/lessons.dart';
 import 'labels.dart';
 import 'lesson_screen.dart';
 import 'progress_store.dart';
+import 'settings_screen.dart';
 import 'widgets.dart';
 
 /// Which lessons the Learn tab shows.
@@ -50,7 +51,10 @@ class _LearnScreenState extends State<LearnScreen> {
     ];
     final levels = {for (final l in shown) l.level}.toList()..sort();
     return Scaffold(
-      appBar: AppBar(title: const Text('Learn chess')),
+      appBar: AppBar(
+        title: const Text('Learn chess'),
+        actions: [SettingsButton(progress: widget.progress)],
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),

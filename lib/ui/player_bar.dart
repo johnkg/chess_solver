@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../engine/clock.dart';
 import '../engine/piece.dart';
 import 'piece_painter.dart';
+import 'settings_store.dart';
 import 'theme.dart';
 
 /// One side's strip above or below the board: who it is, the pieces it has
@@ -117,7 +118,12 @@ class _Pieces extends StatelessWidget {
       final piece = SizedBox(
         width: size,
         height: size,
-        child: CustomPaint(painter: PiecePainter(makePiece(types[i], color))),
+        child: CustomPaint(
+          painter: PiecePainter(
+            makePiece(types[i], color),
+            flat: SettingsScope.of(context).pieces == PieceStyle.flat,
+          ),
+        ),
       );
       children.add(sameNext
           ? Align(alignment: Alignment.centerLeft, widthFactor: 0.55, child: piece)

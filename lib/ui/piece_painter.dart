@@ -6,9 +6,12 @@ import '../engine/piece.dart';
 /// left, a soft glossy highlight, a dark outline and a shadow on the square.
 /// Shapes are drawn in a 100 x 100 box and scaled to the cell.
 class PiecePainter extends CustomPainter {
-  const PiecePainter(this.piece);
+  const PiecePainter(this.piece, {this.flat = false});
 
   final int piece;
+
+  /// Flat style: solid colours and an outline, no shading.
+  final bool flat;
 
   static final Map<int, List<Path>> _shapes = {};
 
@@ -139,14 +142,18 @@ class PiecePainter extends CustomPainter {
     canvas.save();
     canvas.scale(size.shortestSide / 100);
 
-    canvas.drawOval(
-      Rect.fromCenter(center: const Offset(52, 91), width: 62, height: 9),
+    if (!flat) {
+      canvas.drawOval(
+        Rect.fromCenter(center: const Offset(52, 91), width: 62, height: 9),
       Paint()
-        ..color = const Color(0x66000000)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
-    );
+          ..color = const Color(0x66000000)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+      );
+    }
 
-    final fill = Paint()
+    final fill = flat
+        ? (Paint()..color = isWhite ? const Color(0xFFFFFFFF) : const Color(0xFF101A19))
+        : (Paint()
       ..shader = RadialGradient(
         center: const Alignment(-0.45, -0.55),
         radius: 1.15,
@@ -154,10 +161,10 @@ class PiecePainter extends CustomPainter {
             ? const [Color(0xFFFFFFFF), Color(0xFFE9E2D0), Color(0xFFA39A84)]
             : const [Color(0xFF72828A), Color(0xFF2E383C), Color(0xFF0B1113)],
         stops: const [0, 0.5, 1],
-      ).createShader(box);
+      ).createShader(box));
     final edge = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.7
+      ..strokeWidth = flat ? 2.2 : 1.7
       ..strokeJoin = StrokeJoin.round
       ..color = isWhite ? const Color(0xFF2B2A26) : const Color(0xFF000000);
     final gloss = Paint()
@@ -173,11 +180,13 @@ class PiecePainter extends CustomPainter {
     for (final p in shapes) {
       canvas.drawPath(p, fill);
     }
-    for (final p in shapes) {
-      canvas.save();
-      canvas.clipPath(p);
-      canvas.drawRect(box, gloss);
-      canvas.restore();
+    if (!flat) {
+      for (final p in shapes) {
+        canvas.save();
+        canvas.clipPath(p);
+        canvas.drawRect(box, gloss);
+        canvas.restore();
+      }
     }
     for (final p in shapes) {
       canvas.drawPath(p, edge);
@@ -200,5 +209,5 @@ class PiecePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(PiecePainter old) => old.piece != piece;
+  bool shouldRepaint(PiecePainter old) => old.piece != piece || old.flat != flat;
 }

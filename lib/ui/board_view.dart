@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../engine/piece.dart';
 import '../engine/position.dart';
 import 'piece_painter.dart';
+import 'settings_store.dart';
 import 'theme.dart';
 
 /// An arrow drawn over the board, from one square to another.
@@ -45,7 +46,8 @@ class BoardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.board;
+    final prefs = SettingsScope.of(context);
+    final colors = context.board.withPalette(prefs.palette, Theme.of(context).brightness);
     return AspectRatio(
       aspectRatio: 1,
       child: LayoutBuilder(
@@ -62,7 +64,7 @@ class BoardView extends StatelessWidget {
                   top: row * cell,
                   width: cell,
                   height: cell,
-                  child: _buildCell(colors, sq, cell, row, col),
+                  child: _buildCell(prefs, colors, sq, cell, row, col),
                 ),
               );
             }
@@ -95,7 +97,14 @@ class BoardView extends StatelessWidget {
     );
   }
 
-  Widget _buildCell(BoardColors colors, int sq, double cell, int row, int col) {
+  Widget _buildCell(
+    SettingsStore prefs,
+    BoardColors colors,
+    int sq,
+    double cell,
+    int row,
+    int col,
+  ) {
     final dark = (rankOf(sq) + fileOf(sq)) % 2 == 0;
     final piece = position.squares[sq];
     final labelColor = dark ? colors.light : colors.dark;
@@ -115,30 +124,30 @@ class BoardView extends StatelessWidget {
           if (lastMove.contains(sq)) ColoredBox(color: colors.lastMove),
           if (highlights.contains(sq)) ColoredBox(color: colors.pattern),
           if (selected == sq) ColoredBox(color: colors.selected),
-          if (row == 7)
+          if (prefs.showCoordinates && row == 7)
             Positioned(
               right: 2,
               bottom: 0,
               child: Text('abcdefgh'[fileOf(sq)], style: labelStyle),
             ),
-          if (col == 0)
+          if (prefs.showCoordinates && col == 0)
             Positioned(
               left: 2,
               top: 0,
               child: Text('${rankOf(sq) + 1}', style: labelStyle),
             ),
-          if (piece != empty) Center(child: _pieceGlyph(piece, cell)),
-          if (targets.contains(sq))
+          if (piece != empty) Center(child: _pieceGlyph(piece, cell, prefs.pieces)),
+          if (prefs.showLegalMoves && targets.contains(sq))
             Center(child: piece == empty ? _dot(cell) : _ring(cell)),
         ],
       ),
     );
   }
 
-  Widget _pieceGlyph(int piece, double cell) => Center(
+  Widget _pieceGlyph(int piece, double cell, PieceStyle style) => Center(
         child: CustomPaint(
           size: Size.square(cell * 0.94),
-          painter: PiecePainter(piece),
+          painter: PiecePainter(piece, flat: style == PieceStyle.flat),
         ),
       );
 

@@ -5,20 +5,53 @@ import 'learn_screen.dart';
 import 'play_screen.dart';
 import 'practice_screen.dart';
 import 'progress_store.dart';
+import 'settings_store.dart';
 import 'theme.dart';
 
-/// The whole app: four tabs.
-class ChessSolverApp extends StatelessWidget {
+/// The whole app: four tabs, and Settings behind the gear in each top bar.
+class ChessSolverApp extends StatefulWidget {
   const ChessSolverApp({super.key});
 
   @override
+  State<ChessSolverApp> createState() => _ChessSolverAppState();
+}
+
+class _ChessSolverAppState extends State<ChessSolverApp> {
+  final SettingsStore _settings = SettingsStore();
+
+  /// The saved settings have been read; screens start from them.
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _settings.load().then((_) {
+      if (mounted) setState(() => _ready = true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _settings.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Chess Technique Teacher',
-      debugShowCheckedModeBanner: false,
-      theme: buildTheme(Brightness.light),
-      darkTheme: buildTheme(Brightness.dark),
-      home: const HomeShell(),
+    if (!_ready) return const SizedBox.shrink();
+    return SettingsScope(
+      settings: _settings,
+      child: ListenableBuilder(
+        listenable: _settings,
+        builder: (context, _) => MaterialApp(
+          title: 'Chess Technique Teacher',
+          debugShowCheckedModeBanner: false,
+          theme: buildTheme(Brightness.light),
+          darkTheme: buildTheme(Brightness.dark),
+          themeMode: _settings.themeMode,
+          home: const HomeShell(),
+        ),
+      ),
     );
   }
 }
@@ -55,7 +88,7 @@ class _HomeShellState extends State<HomeShell> {
           LearnScreen(progress: _progress),
           PracticeScreen(progress: _progress),
           PlayScreen(progress: _progress),
-          const BoardScreen(),
+          BoardScreen(progress: _progress),
         ],
       ),
       bottomNavigationBar: NavigationBar(

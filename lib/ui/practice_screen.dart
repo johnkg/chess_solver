@@ -12,6 +12,7 @@ import 'drill_screen.dart';
 import 'labels.dart';
 import 'line_trainer.dart';
 import 'progress_store.dart';
+import 'settings_screen.dart';
 import 'puzzle_screen.dart';
 import 'theme.dart';
 import 'widgets.dart';
@@ -151,7 +152,10 @@ class PracticeScreen extends StatelessWidget {
     final tiers = {for (final p in puzzleLibrary) p.tier}.toList()..sort();
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Practice')),
+      appBar: AppBar(
+        title: const Text('Practice'),
+        actions: [SettingsButton(progress: progress)],
+      ),
       body: SafeArea(
         child: ListenableBuilder(
           listenable: progress,
