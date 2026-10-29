@@ -122,6 +122,13 @@ GAMES = [
     dict(id='elephant', intro='The Elephant Trap. ', white='White', black='Black', place='anywhere', year=1900,
          moves='1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5 Nbd7 5.cxd5 exd5 6.Nxd5 Nxd5 7.Bxd8 Bb4+ 8.Qd2 Bxd2+ 9.Kxd2 Kxd8',
          key='Bb4+'),
+    dict(id='rotlewi-rubinstein', white='Georg Rotlewi', black='Akiba Rubinstein', place='Lodz', year=1907,
+         moves='1.d4 d5 2.Nf3 e6 3.e3 c5 4.c4 Nc6 5.Nc3 Nf6 6.dxc5 Bxc5 7.a3 a6 8.b4 Bd6 9.Bb2 O-O 10.Qd2 Qe7 '
+               '11.Bd3 dxc4 12.Bxc4 b5 13.Bd3 Rd8 14.Qe2 Bb7 15.O-O Ne5 16.Nxe5 Bxe5 17.f4 Bc7 18.e4 Rac8 19.e5 Bb6+ '
+               '20.Kh1 Ng4 21.Be4 Qh4 22.g3 Rxc3 23.gxh4 Rd2 24.Qxd2 Bxe4+ 25.Qg2 Rh3',
+         key='Rxc3'),
+    dict(id='budapest-miniature', intro='The Budapest Gambit trap. ', white='White', black='Black', place='anywhere', year=1900,
+         moves='1.d4 Nf6 2.c4 e5 3.dxe5 Ng4 4.Bf4 Nc6 5.Nf3 Bb4+ 6.Nbd2 Qe7 7.a3 Ngxe5 8.axb4 Nd3#', key='Nd3#'),
 ]
 
 

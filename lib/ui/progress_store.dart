@@ -8,7 +8,7 @@ import '../engine/rating.dart';
 class ProgressStore extends ChangeNotifier {
   /// Puzzle ids were renumbered when the library grew, so earlier saved marks
   /// (key 'solved_puzzles') are not read any more.
-  static const String _key = 'solved_puzzles_v3';
+  static const String _key = 'solved_puzzles_v4';
 
   static const String _missKey = 'missed_ideas';
   static const String _gamesKey = 'rated_games';

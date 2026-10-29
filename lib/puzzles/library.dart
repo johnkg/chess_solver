@@ -764,6 +764,17 @@ const List<Puzzle> puzzleLibrary = [
   ),
   Puzzle(
     id: 'smotheredMate-2',
+    fen: 'r1b1k2r/ppppqppp/2n5/4n3/1PP2B2/5N2/1P1NPPPP/R2QKB1R b KQkq - 0 8',
+    solutions: ['e5d3'],
+    san: 'Nd3#',
+    idea: Idea.smotheredMate,
+    mateIn: 1,
+    tier: 3,
+    text: 'The Budapest Gambit trap. Smothered mate. The white king on e1 is boxed in by its own pieces, so the knight on d3 gives check and nothing can capture it or help the king.',
+    source: 'famous-budapest-miniature',
+  ),
+  Puzzle(
+    id: 'smotheredMate-3',
     fen: 'r1b1kbnr/pppp1Npp/8/8/3nq3/8/PPPPBP1P/RNBQKR2 b Qkq - 0 1',
     solutions: ['d4f3'],
     san: 'Nf3#',
@@ -774,7 +785,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'famous-shilling',
   ),
   Puzzle(
-    id: 'smotheredMate-3',
+    id: 'smotheredMate-4',
     fen: 'r1bqkb1r/pp1npppp/2p2n2/8/3PN3/8/PPP1QPPP/R1B1KBNR w KQkq - 0 1',
     solutions: ['e4d6'],
     san: 'Nd6#',

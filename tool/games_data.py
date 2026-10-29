@@ -182,6 +182,41 @@ GAME_LESSONS = [
                 '7...Bb4+': 'The check wins the queen back.',
                 '8.Qd2': 'White blocks with the queen.',
                 '9...Kxd8': 'Black has won a knight for a pawn.'}),
+    dict(game='rotlewi-rubinstein', side='black', title='Rotlewi vs Rubinstein (1907)',
+         tagline="Rubinstein's Immortal: two rook sacrifices in a row.",
+         why='Akiba Rubinstein played this game in Lodz against Georg Rotlewi. White pushed forward on the kingside, '
+             'and Black answered with two rook sacrifices in a row: first on c3, then on d2. After the white queen '
+             'took, the bishop gave check, and the rook went to h3 with an unstoppable mating attack. Many '
+             'players rank it among the most beautiful games ever played.',
+         spot=["Black's pieces all aim at the white king after e5 and f4.",
+               'A rook sacrifice that opens the c-file and pulls the white pawns apart.',
+               'The second rook sacrifice, on d2, deflects the queen from the defence of g2.'],
+         notes={'8.b4': 'White grabs space on the queenside, but it loosens the squares around the c3 knight.',
+                '15...Ne5': 'The knight trades off a defender and heads for the kingside.',
+                '19.e5': 'White pushes the pawn and gives up the long diagonal, which Black will use.',
+                '19...Bb6+': 'The bishop checks along the diagonal toward the king.',
+                '20...Ng4': 'The knight joins in: it eyes h2 and f2.',
+                '21...Qh4': 'The queen swings to the kingside and threatens mate.',
+                '22...Rxc3': "The first rook sacrifice: it pulls a defender away and opens the c-file.",
+                '23.gxh4': 'White takes the queen.',
+                '23...Rd2': 'The second rook sacrifice. If the queen takes, the bishop checks and White is lost.',
+                '24.Qxd2': 'The queen takes the rook.',
+                '24...Bxe4+': 'The bishop takes with check and the white queen has to block on g2.',
+                '25...Rh3': 'The last move: Black threatens mate and White resigned.'}),
+    dict(game='budapest-miniature', side='black', title='The Budapest Gambit trap',
+         tagline='A knight check on d3 is checkmate on move 8.',
+         why='In the Budapest Gambit Black gives up a pawn for quick development. If White takes the bishop on '
+             'move 8, a knight check on d3 is checkmate: the queen on e7 covers e2 and the white knight on d2 '
+             'blocks its own king.',
+         spot=['The queen on e7 aims down the e-file, covering e2.',
+               "White's own knight on d2 blocks the king's escape.",
+               'A knight check on d3 that cannot be captured.'],
+         notes={'3...Ng4': 'The knight hits the pawn on e5 and the Budapest Gambit is on.',
+                '5...Bb4+': 'The bishop checks and a white piece has to block.',
+                '6...Qe7': 'The queen adds to the pressure on the e-file.',
+                '7...Ngxe5': 'Black wins the pawn back; the knight now has d3 in sight.',
+                '8.axb4': 'White takes the bishop. This blunder loses on the spot.',
+                '8...Nd3': 'Checkmate: the king cannot reach e2, d2 or d1.'}),
 ]
 
 

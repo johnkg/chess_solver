@@ -4,6 +4,7 @@
 // puzzle, with the full rating, for tool/curate.py to add to the library.
 //   python3 tool/famous.py                        (writes famous_games.json)
 //   dart run tool/famous_scan.dart [part] [parts] > picks_part.jsonl
+// Set ONLY=id1,id2 to scan just those games.
 import 'dart:convert';
 import 'dart:io';
 
@@ -15,9 +16,11 @@ void main(List<String> args) {
   final part = args.isNotEmpty ? int.parse(args[0]) : 0;
   final parts = args.length > 1 ? int.parse(args[1]) : 1;
   final games = jsonDecode(File('tool/famous_games.json').readAsStringSync()) as List;
+  final only = Platform.environment['ONLY']?.split(',');
   var job = 0;
   for (final g in games) {
     final id = g['id'] as String;
+    if (only != null && !only.contains(id)) continue;
     final line = OpeningLine.fromSan([for (final s in g['sans'] as List) s as String]);
     for (var ply = 0; ply < line.length; ply++) {
       if (job++ % parts != part) continue;
