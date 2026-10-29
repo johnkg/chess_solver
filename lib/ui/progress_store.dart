@@ -6,7 +6,9 @@ import '../engine/rating.dart';
 /// Remembers which puzzles are solved. Storage failures are ignored: the
 /// app still works, it just forgets between runs.
 class ProgressStore extends ChangeNotifier {
-  static const String _key = 'solved_puzzles';
+  /// Puzzle ids were renumbered when the library grew, so earlier saved marks
+  /// (key 'solved_puzzles') are not read any more.
+  static const String _key = 'solved_puzzles_v2';
 
   static const String _missKey = 'missed_ideas';
   static const String _gamesKey = 'rated_games';

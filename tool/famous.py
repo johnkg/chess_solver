@@ -95,4 +95,42 @@ GAMES = [
          moves='1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Nd7 5.Ng5 Ngf6 6.Bd3 e6 7.N1f3 h6 8.Nxe6 Qe7 9.O-O fxe6 10.Bg6+ Kd8 '
                '11.Bf4 b5 12.a4 Bb7 13.Re1 Nd5 14.Bg3 Kc8 15.axb5 cxb5 16.Qd3 Bc6 17.Bf5 exf5 18.Rxe7 Bxe7 19.c4',
          key='c4'),
+    dict(id='lasker-bauer', white='Emanuel Lasker', black='Johann Bauer', place='Amsterdam', year=1889,
+         moves='1.f4 d5 2.e3 Nf6 3.b3 e6 4.Bb2 Be7 5.Bd3 b6 6.Nc3 Bb7 7.Nf3 Nbd7 8.O-O O-O 9.Ne2 c5 10.Ng3 Qc7 '
+               '11.Ne5 Nxe5 12.Bxe5 Qc6 13.Qe2 a6 14.Nh5 Nxh5 15.Bxh7+ Kxh7 16.Qxh5+ Kg8 17.Bxg7 Kxg7 18.Qg4+ Kh7 '
+               '19.Rf3 e5 20.Rh3+ Qh6 21.Rxh6+ Kxh6 22.Qd7 Bf6 23.Qxb7 Kg7 24.Rf1 Rab8 25.Qd7 Rfd8 26.Qg4+ Kf8 '
+               '27.fxe5 Bg7 28.e6 Rb7 29.Qg6 f6 30.Rxf6+ Bxf6 31.Qxf6+ Kg8 32.e7',
+         key='Bxh7+'),
+    dict(id='steinitz-bardeleben', white='Wilhelm Steinitz', black='Curt von Bardeleben', place='Hastings', year=1895,
+         moves='1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4 exd4 6.cxd4 Bb4+ 7.Nc3 d5 8.exd5 Nxd5 9.O-O Be6 10.Bg5 Be7 '
+               '11.Bxd5 Bxd5 12.Nxd5 Qxd5 13.Bxe7 Nxe7 14.Re1 f6 15.Qe2 Qd7 16.Rac1 c6 17.d5 cxd5 18.Nd4 Kf7 '
+               '19.Ne6 Rhc8 20.Qg4 g6 21.Ng5+ Ke8 22.Rxe7+ Kf8 23.Rf7+ Kg8 24.Rg7+ Kh8 25.Rxh7+',
+         key='Rxh7+'),
+    dict(id='karpov-kasparov16', white='Anatoly Karpov', black='Garry Kasparov', place='Moscow', year=1985,
+         moves='1.e4 c5 2.Nf3 e6 3.d4 cxd4 4.Nxd4 Nc6 5.Nb5 d6 6.c4 Nf6 7.N1c3 a6 8.Na3 d5 9.cxd5 exd5 10.exd5 Nb4 '
+               '11.Be2 Bc5 12.O-O O-O 13.Bf3 Bf5 14.Bg5 Re8 15.Qd2 b5 16.Rad1 Nd3 17.Nab1 h6 18.Bh4 b4 19.Na4 Bd6 '
+               '20.Bg3 Rc8 21.b3 g5 22.Bxd6 Qxd6 23.g3 Nd7 24.Bg2 Qf6 25.a3 a5 26.axb4 axb4 27.Qa2 Bg6 28.d6 g4 '
+               '29.Qd2 Kg7 30.f3 Qxd6 31.fxg4 Qd4+ 32.Kh1 Nf6 33.Rf4 Ne4 34.Qxd3 Nf2+ 35.Rxf2 Bxd3 36.Rfd2 Qe3 '
+               '37.Rxd3 Rc1 38.Nb2 Qf2 39.Nd2 Rxd1+ 40.Nxd1 Re1+',
+         key='Nf2+'),
+    dict(id='shilling', intro='The Blackburne Shilling Gambit. ', white='Beginner', black='Blackburne', place='London', year=1880,
+         moves='1.e4 e5 2.Nf3 Nc6 3.Bc4 Nd4 4.Nxe5 Qg5 5.Nxf7 Qxg2 6.Rf1 Qxe4+ 7.Be2 Nf3#', key='Nf3#'),
+    dict(id='scholar', intro="Scholar's mate. ", white='White', black='Black', place='anywhere', year=1600,
+         moves='1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6 4.Qxf7#', key='Qxf7#'),
+    dict(id='caro-miniature', intro='The Caro-Kann miniature. ', white='White', black='Black', place='anywhere', year=1900,
+         moves='1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Nd7 5.Qe2 Ngf6 6.Nd6#', key='Nd6#'),
+    dict(id='elephant', intro='The Elephant Trap. ', white='White', black='Black', place='anywhere', year=1900,
+         moves='1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5 Nbd7 5.cxd5 exd5 6.Nxd5 Nxd5 7.Bxd8 Bb4+ 8.Qd2 Bxd2+ 9.Kxd2 Kxd8',
+         key='Bb4+'),
 ]
+
+
+if __name__ == '__main__':
+    # famous_games.json: the games as SAN lists, for tool/famous_scan.dart.
+    import json
+    import os
+    out = [dict(id=g['id'], sans=[san_ for _, _, san_ in replay(g['moves'])]) for g in GAMES]
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'famous_games.json')
+    with open(path, 'w') as f:
+        json.dump(out, f)
+    print('wrote', len(out), 'games to', path)
