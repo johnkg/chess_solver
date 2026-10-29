@@ -58,6 +58,10 @@ class Lesson {
   /// 'white' or 'black': the side you study and are tested on.
   final String? side;
 
+  /// For famous games: the move (ply index) where the combination starts, so
+  /// the trainer can begin from that position.
+  final int? start;
+
   /// Name of the structure concept for [LessonKind.concept].
   final String? concept;
 
@@ -80,6 +84,7 @@ class Lesson {
     this.line = const [],
     this.notes = const [],
     this.side,
+    this.start,
     this.concept,
   });
 }
@@ -633,6 +638,7 @@ const List<Lesson> lessons = [
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     line: ['d4', 'e6', 'Nf3', 'f5', 'Nc3', 'Nf6', 'Bg5', 'Be7', 'Bxf6', 'Bxf6', 'e4', 'fxe4', 'Nxe4', 'b6', 'Ne5', 'O-O', 'Bd3', 'Bb7', 'Qh5', 'Qe7', 'Qxh7+', 'Kxh7', 'Nxf6+', 'Kh6', 'Neg4+', 'Kg5', 'h4+', 'Kf4', 'g3+', 'Kf3', 'Be2+', 'Kg2', 'Rh2+', 'Kg1', 'Kd2#'],
     notes: ['', '', '', '', '', '', '', '', '', '', 'White opens the center against Black\'s Dutch setup (...e6 and ...f5).', '', '', '', '', '', '', '', 'The queen and the knight on e5 aim at h7, with the bishop on d3 behind them.', '', 'The queen sacrifice: Black\'s king has to take.', '', 'The knight takes the bishop with check and the king is pulled further out.', '', 'Another knight check, this time from the e5 knight.', '', 'The pawn joins the hunt with check.', '', '', '', 'The bishop checks from the other side.', '', 'The rook checks along the second rank.', '', 'Checkmate: moving the king uncovers the rook on a1, which gives check along the first rank.'],
+    start: 20,
     side: 'white',
   ),
   Lesson(
@@ -646,6 +652,7 @@ const List<Lesson> lessons = [
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     line: ['Nf3', 'Nf6', 'c4', 'g6', 'Nc3', 'Bg7', 'd4', 'O-O', 'Bf4', 'd5', 'Qb3', 'dxc4', 'Qxc4', 'c6', 'e4', 'Nbd7', 'Rd1', 'Nb6', 'Qc5', 'Bg4', 'Bg5', 'Na4', 'Qa3', 'Nxc3', 'bxc3', 'Nxe4', 'Bxe7', 'Qb6', 'Bc4', 'Nxc3', 'Bc5', 'Rfe8+', 'Kf1', 'Be6', 'Bxb6', 'Bxc4+', 'Kg1', 'Ne2+', 'Kf1', 'Nxd4+', 'Kg1', 'Ne2+', 'Kf1', 'Nc3+', 'Kg1', 'axb6', 'Qb4', 'Ra4', 'Qxb6', 'Nxd1', 'h3', 'Rxa2', 'Kh2', 'Nxf2', 'Re1', 'Rxe1', 'Qd8+', 'Bf8', 'Nxe1', 'Bd5', 'Nf3', 'Ne4', 'Qb8', 'b5', 'h4', 'h5', 'Ne5', 'Kg7', 'Kg1', 'Bc5+', 'Kf1', 'Ng3+', 'Ke1', 'Bb4+', 'Kd1', 'Bb3+', 'Kc1', 'Ne2+', 'Kb1', 'Nc3+', 'Kc1', 'Rc2#'],
     notes: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'The knight goes to the edge of the board but hits the queen and the knight on c3.', '', '', '', '', '', '', '', '', '', '', '', 'The queen sacrifice that made the game famous: the bishop leaves the queen to be taken.', 'White takes the queen.', 'Black takes a bishop with check.', '', 'The knight starts a series of checks that wins a lot of material.', '', '', '', '', '', '', '', '', '', '', '', 'Black collects a rook.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Checkmate: the white king is boxed in by its own pieces.'],
+    start: 33,
     side: 'black',
   ),
   Lesson(
@@ -659,6 +666,7 @@ const List<Lesson> lessons = [
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     line: ['c4', 'e6', 'Nf3', 'd5', 'd4', 'Nf6', 'Nc3', 'Be7', 'Bg5', 'O-O', 'e3', 'h6', 'Bh4', 'b6', 'cxd5', 'Nxd5', 'Bxe7', 'Qxe7', 'Nxd5', 'exd5', 'Rc1', 'Be6', 'Qa4', 'c5', 'Qa3', 'Rc8', 'Bb5', 'a6', 'dxc5', 'bxc5', 'O-O', 'Ra7', 'Be2', 'Nd7', 'Nd4', 'Qf8', 'Nxe6', 'fxe6', 'e4', 'd4', 'f4', 'Qe7', 'e5', 'Rb8', 'Bc4', 'Kh8', 'Qh3', 'Nf8', 'b3', 'a5', 'f5', 'exf5', 'Rxf5', 'Nh7', 'Rcf1', 'Qd8', 'Qg3', 'Re7', 'h4', 'Rbb7', 'e6', 'Rbc7', 'Qe5', 'Qe8', 'a4', 'Qd8', 'R1f2', 'Qe8', 'R2f3', 'Qd8', 'Bd3', 'Qe8', 'Qe4', 'Nf6', 'Rxf6', 'gxf6', 'Rxf6', 'Kg8', 'Bc4', 'Kh8', 'Qf4'],
     notes: ['Fischer, a lifelong 1.e4 player, opens with the English move.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'The knight heads for e6.', '', 'White trades a knight for the bishop and wrecks Black\'s pawn structure.', '', 'White takes the center with the pawn.', '', '', '', 'The pawn advances again and cramps Black.', '', '', '', '', '', '', '', 'Opens lines against the black king.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Black resigned. White\'s pieces dominate the board.'],
+    start: 50,
     side: 'white',
   ),
   Lesson(
@@ -672,6 +680,7 @@ const List<Lesson> lessons = [
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     line: ['e4', 'd6', 'd4', 'Nf6', 'Nc3', 'g6', 'Be3', 'Bg7', 'Qd2', 'c6', 'f3', 'b5', 'Nge2', 'Nbd7', 'Bh6', 'Bxh6', 'Qxh6', 'Bb7', 'a3', 'e5', 'O-O-O', 'Qe7', 'Kb1', 'a6', 'Nc1', 'O-O-O', 'Nb3', 'exd4', 'Rxd4', 'c5', 'Rd1', 'Nb6', 'g3', 'Kb8', 'Na5', 'Ba8', 'Bh3', 'd5', 'Qf4+', 'Ka7', 'Rhe1', 'd4', 'Nd5', 'Nbxd5', 'exd5', 'Qd6', 'Rxd4', 'cxd4', 'Re7+', 'Kb6', 'Qxd4+', 'Kxa5', 'b4+', 'Ka4', 'Qc3', 'Qxd5', 'Ra7', 'Bb7', 'Rxb7', 'Qc4', 'Qxf6', 'Kxa3', 'Qxa6+', 'Kxb4', 'c3+', 'Kxc3', 'Qa1+', 'Kd2', 'Qb2+', 'Kd1', 'Bf1', 'Rd2', 'Rd7', 'Rxd7', 'Bxc4', 'bxc4', 'Qxh8', 'Rd3', 'Qa8', 'c3', 'Qa4+', 'Ke1', 'f4', 'f5', 'Kc1', 'Rd2', 'Qa7'],
     notes: ['Black chooses the Pirc Defence.', '', '', '', '', '', 'White sets up Be3, Qd2 and Bh6, aiming at the kingside.', '', '', '', '', '', '', '', 'White trades off Black\'s dark-squared bishop to weaken the king.', '', '', '', '', '', '', '', '', '', '', 'Both kings are now on the queenside.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'The rook sacrifice that starts the famous combination.', '', 'The second rook joins in with check.', '', 'The queen takes with check and the king is dragged forward.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'The quiet bishop move: Black has no defence.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Black resigned.'],
+    start: 46,
     side: 'white',
   ),
   Lesson(
@@ -685,6 +694,7 @@ const List<Lesson> lessons = [
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     line: ['e4', 'c6', 'd4', 'd5', 'Nc3', 'dxe4', 'Nxe4', 'Nd7', 'Ng5', 'Ngf6', 'Bd3', 'e6', 'N1f3', 'h6', 'Nxe6', 'Qe7', 'O-O', 'fxe6', 'Bg6+', 'Kd8', 'Bf4', 'b5', 'a4', 'Bb7', 'Re1', 'Nd5', 'Bg3', 'Kc8', 'axb5', 'cxb5', 'Qd3', 'Bc6', 'Bf5', 'exf5', 'Rxe7', 'Bxe7', 'c4'],
     notes: ['', 'Kasparov plays the Caro-Kann Defence.', '', '', '', '', '', '', '', '', '', '', '', '', 'A known knight sacrifice that breaks open Black\'s position.', '', '', '', 'The check drives the king to d8.', '', '', '', '', '', '', '', '', '', '', '', '', '', 'White gives a bishop to open the e-file.', '', 'The rook takes the queen and Black is lost.', '', 'Kasparov resigned.'],
+    start: 14,
     side: 'white',
   ),
   Lesson(
@@ -698,6 +708,7 @@ const List<Lesson> lessons = [
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     line: ['f4', 'd5', 'e3', 'Nf6', 'b3', 'e6', 'Bb2', 'Be7', 'Bd3', 'b6', 'Nc3', 'Bb7', 'Nf3', 'Nbd7', 'O-O', 'O-O', 'Ne2', 'c5', 'Ng3', 'Qc7', 'Ne5', 'Nxe5', 'Bxe5', 'Qc6', 'Qe2', 'a6', 'Nh5', 'Nxh5', 'Bxh7+', 'Kxh7', 'Qxh5+', 'Kg8', 'Bxg7', 'Kxg7', 'Qg4+', 'Kh7', 'Rf3', 'e5', 'Rh3+', 'Qh6', 'Rxh6+', 'Kxh6', 'Qd7', 'Bf6', 'Qxb7', 'Kg7', 'Rf1', 'Rab8', 'Qd7', 'Rfd8', 'Qg4+', 'Kf8', 'fxe5', 'Bg7', 'e6', 'Rb7', 'Qg6', 'f6', 'Rxf6+', 'Bxf6', 'Qxf6+', 'Kg8', 'e7'],
     notes: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'The knight reaches e5, backed up by the bishop on b2.', '', '', '', '', '', 'The knight jumps to h5, hitting the knight on f6 and the pawn on g7.', '', 'The first bishop sacrifice: the king has to take.', '', 'The queen takes the knight with check.', '', 'The second bishop sacrifice tears the king\'s shelter away.', '', '', '', 'The rook joins the attack along the third rank.', '', 'The rook checks on the h-file.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'The pawn will promote and Black resigned.'],
+    start: 28,
     side: 'white',
   ),
   Lesson(
@@ -711,6 +722,7 @@ const List<Lesson> lessons = [
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     line: ['e4', 'e5', 'Nf3', 'Nc6', 'Bc4', 'Bc5', 'c3', 'Nf6', 'd4', 'exd4', 'cxd4', 'Bb4+', 'Nc3', 'd5', 'exd5', 'Nxd5', 'O-O', 'Be6', 'Bg5', 'Be7', 'Bxd5', 'Bxd5', 'Nxd5', 'Qxd5', 'Bxe7', 'Nxe7', 'Re1', 'f6', 'Qe2', 'Qd7', 'Rac1', 'c6', 'd5', 'cxd5', 'Nd4', 'Kf7', 'Ne6', 'Rhc8', 'Qg4', 'g6', 'Ng5+', 'Ke8', 'Rxe7+', 'Kf8', 'Rf7+', 'Kg8', 'Rg7+', 'Kh8', 'Rxh7+'],
     notes: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'The pawn break opens the center.', '', '', '', 'The knight lands on e6, where it attacks c7 and g7.', '', '', '', '', '', 'A rook sacrifice: the king is dragged into the open.', '', '', '', '', '', 'The rook takes with check. The game continued only a few more moves; legend says von Bardeleben walked out rather than resign.'],
+    start: 42,
     side: 'white',
   ),
   Lesson(
@@ -724,6 +736,7 @@ const List<Lesson> lessons = [
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     line: ['e4', 'c5', 'Nf3', 'e6', 'd4', 'cxd4', 'Nxd4', 'Nc6', 'Nb5', 'd6', 'c4', 'Nf6', 'N1c3', 'a6', 'Na3', 'd5', 'cxd5', 'exd5', 'exd5', 'Nb4', 'Be2', 'Bc5', 'O-O', 'O-O', 'Bf3', 'Bf5', 'Bg5', 'Re8', 'Qd2', 'b5', 'Rad1', 'Nd3', 'Nab1', 'h6', 'Bh4', 'b4', 'Na4', 'Bd6', 'Bg3', 'Rc8', 'b3', 'g5', 'Bxd6', 'Qxd6', 'g3', 'Nd7', 'Bg2', 'Qf6', 'a3', 'a5', 'axb4', 'axb4', 'Qa2', 'Bg6', 'd6', 'g4', 'Qd2', 'Kg7', 'f3', 'Qxd6', 'fxg4', 'Qd4+', 'Kh1', 'Nf6', 'Rf4', 'Ne4', 'Qxd3', 'Nf2+', 'Rxf2', 'Bxd3', 'Rfd2', 'Qe3', 'Rxd3', 'Rc1', 'Nb2', 'Qf2', 'Nd2', 'Rxd1+', 'Nxd1', 'Re1+'],
     notes: ['Kasparov (Black) answers with the Sicilian Defence.', '', '', '', '', '', '', '', '', '', 'White takes space in the center.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'The knight lands on d3: no white pawn can ever attack it.', '', '', '', '', '', '', '', '', '', 'Black gains space on the kingside.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'The knight forks the king and the queen.', '', 'The bishop takes the white queen.', '', '', '', '', '', '', '', '', '', 'White resigned.'],
+    start: 65,
     side: 'black',
   ),
   Lesson(
@@ -776,6 +789,33 @@ const List<Lesson> lessons = [
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     line: ['d4', 'd5', 'c4', 'e6', 'Nc3', 'Nf6', 'Bg5', 'Nbd7', 'cxd5', 'exd5', 'Nxd5', 'Nxd5', 'Bxd8', 'Bb4+', 'Qd2', 'Bxd2+', 'Kxd2', 'Kxd8'],
     notes: ['', '', '', '', '', '', 'The bishop pins the knight on f6 against the queen.', '', '', '', 'White takes the pawn. This is the mistake.', 'Black takes the knight, and the bishop on g5 now takes the queen.', 'White takes the queen.', 'The check wins the queen back.', 'White blocks with the queen.', '', '', 'Black has won a knight for a pawn.'],
+    side: 'black',
+  ),
+  Lesson(
+    id: 'gm-rotlewi-rubinstein',
+    level: 7,
+    kind: LessonKind.line,
+    title: 'Rotlewi vs Rubinstein (1907)',
+    tagline: 'Rubinstein\'s Immortal: two rook sacrifices in a row.',
+    why: 'Akiba Rubinstein played this game in Lodz against Georg Rotlewi. White pushed forward on the kingside, and Black answered with two rook sacrifices in a row: first on c3, then on d2. After the white queen took, the bishop gave check, and the rook went to h3 with an unstoppable mating attack. Many players rank it among the most beautiful games ever played.',
+    spot: ['Black\'s pieces all aim at the white king after e5 and f4.', 'A rook sacrifice that opens the c-file and pulls the white pawns apart.', 'The second rook sacrifice, on d2, deflects the queen from the defence of g2.'],
+    fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+    line: ['d4', 'd5', 'Nf3', 'e6', 'e3', 'c5', 'c4', 'Nc6', 'Nc3', 'Nf6', 'dxc5', 'Bxc5', 'a3', 'a6', 'b4', 'Bd6', 'Bb2', 'O-O', 'Qd2', 'Qe7', 'Bd3', 'dxc4', 'Bxc4', 'b5', 'Bd3', 'Rd8', 'Qe2', 'Bb7', 'O-O', 'Ne5', 'Nxe5', 'Bxe5', 'f4', 'Bc7', 'e4', 'Rac8', 'e5', 'Bb6+', 'Kh1', 'Ng4', 'Be4', 'Qh4', 'g3', 'Rxc3', 'gxh4', 'Rd2', 'Qxd2', 'Bxe4+', 'Qg2', 'Rh3'],
+    notes: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', 'White grabs space on the queenside, but it loosens the squares around the c3 knight.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'The knight trades off a defender and heads for the kingside.', '', '', '', '', '', '', 'White pushes the pawn and gives up the long diagonal, which Black will use.', 'The bishop checks along the diagonal toward the king.', '', 'The knight joins in: it eyes h2 and f2.', '', 'The queen swings to the kingside and threatens mate.', '', 'The first rook sacrifice: it pulls a defender away and opens the c-file.', 'White takes the queen.', 'The second rook sacrifice. If the queen takes, the bishop checks and White is lost.', 'The queen takes the rook.', 'The bishop takes with check and the white queen has to block on g2.', '', 'The last move: Black threatens mate and White resigned.'],
+    start: 43,
+    side: 'black',
+  ),
+  Lesson(
+    id: 'gm-budapest-miniature',
+    level: 7,
+    kind: LessonKind.line,
+    title: 'The Budapest Gambit trap',
+    tagline: 'A knight check on d3 is checkmate on move 8.',
+    why: 'In the Budapest Gambit Black gives up a pawn for quick development. If White takes the bishop on move 8, a knight check on d3 is checkmate: the queen on e7 covers e2 and the white knight on d2 blocks its own king.',
+    spot: ['The queen on e7 aims down the e-file, covering e2.', 'White\'s own knight on d2 blocks the king\'s escape.', 'A knight check on d3 that cannot be captured.'],
+    fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+    line: ['d4', 'Nf6', 'c4', 'e5', 'dxe5', 'Ng4', 'Bf4', 'Nc6', 'Nf3', 'Bb4+', 'Nbd2', 'Qe7', 'a3', 'Ngxe5', 'axb4', 'Nd3#'],
+    notes: ['', '', '', '', '', 'The knight hits the pawn on e5 and the Budapest Gambit is on.', '', '', '', 'The bishop checks and a white piece has to block.', '', 'The queen adds to the pressure on the e-file.', '', 'Black wins the pawn back; the knight now has d3 in sight.', 'White takes the bishop. This blunder loses on the spot.', 'Checkmate: the king cannot reach e2, d2 or d1.'],
     side: 'black',
   ),
   Lesson(

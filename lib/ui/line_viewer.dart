@@ -97,6 +97,18 @@ class _LineViewerState extends State<LineViewer> {
           ],
         ),
         const SizedBox(height: 12),
+        if (lesson.start != null) ...[
+          FilledButton.icon(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => LineTrainer(lesson: lesson, progress: widget.progress, fromPly: lesson.start!),
+              ),
+            ),
+            icon: const Icon(Icons.bolt),
+            label: const Text('Start at the combination'),
+          ),
+          const SizedBox(height: 8),
+        ],
         FilledButton.icon(
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
