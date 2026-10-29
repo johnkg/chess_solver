@@ -66,6 +66,10 @@ class Lesson {
   /// 'white' or 'black': the side you study and are tested on.
   final String? side;
 
+  /// For famous games: the move (ply index) where the combination starts, so
+  /// the trainer can begin from that position.
+  final int? start;
+
   /// Name of the structure concept for [LessonKind.concept].
   final String? concept;
 
@@ -88,6 +92,7 @@ class Lesson {
     this.line = const [],
     this.notes = const [],
     this.side,
+    this.start,
     this.concept,
   });
 }
@@ -128,6 +133,8 @@ def main():
         if 'line' in l:
             out.append(f"    line: {dlist(l['line'])},\n")
             out.append(f"    notes: {dlist(l['notes'])},\n")
+            if 'start' in l:
+                out.append(f"    start: {l['start']},\n")
             out.append(f"    side: {ds(l['side'])},\n")
         out.append('  ),\n')
     out.append('];\n')

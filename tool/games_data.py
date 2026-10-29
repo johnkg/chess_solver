@@ -6,7 +6,7 @@
 from famous import GAMES, replay
 
 GAME_LESSONS = [
-    dict(game='lasker-thomas', side='white', title='Lasker vs Thomas (1912)',
+    dict(game='lasker-thomas', start='11.Qxh7', side='white', title='Lasker vs Thomas (1912)',
          tagline='A queen sacrifice and a king hunted across the whole board.',
          why='Edward Lasker, a strong amateur master, played this attack against George Thomas in London. White built up '
              'on h7 with queen, knight and bishop, sacrificed the queen there, and then chased the king from h7 all the '
@@ -23,7 +23,7 @@ GAME_LESSONS = [
                 '16.Be2+': 'The bishop checks from the other side.',
                 '17.Rh2+': 'The rook checks along the second rank.',
                 '18.Kd2#': 'Checkmate: moving the king uncovers the rook on a1, which gives check along the first rank.'}),
-    dict(game='byrne-fischer', side='black', title='The Game of the Century (1956)',
+    dict(game='byrne-fischer', start='17...Be6', side='black', title='The Game of the Century (1956)',
          tagline='Thirteen-year-old Bobby Fischer sacrifices his queen against Donald Byrne.',
          why='In New York in 1956 the young Fischer played one of the most celebrated games ever. After 17...Be6!! he '
              'let White take his queen, and in return his pieces gave check after check and won a great deal of '
@@ -38,7 +38,7 @@ GAME_LESSONS = [
                 '19...Ne2+': 'The knight starts a series of checks that wins a lot of material.',
                 '25...Nxd1': 'Black collects a rook.',
                 '41...Rc2#': 'Checkmate: the white king is boxed in by its own pieces.'}),
-    dict(game='fischer-spassky6', side='white', title='Fischer vs Spassky, game 6 (1972)',
+    dict(game='fischer-spassky6', start='26.f5', side='white', title='Fischer vs Spassky, game 6 (1972)',
          tagline='The game many call the best of the World Championship match.',
          why='In Reykjavik Bobby Fischer, who nearly always opened with 1.e4, started with 1.c4 and played a Queen\'s '
              'Gambit. He built up slowly, broke open the center with e4 and e5, and used a kingside pawn advance to '
@@ -53,7 +53,7 @@ GAME_LESSONS = [
                 '22.e5': 'The pawn advances again and cramps Black.',
                 '26.f5': 'Opens lines against the black king.',
                 '41.Qf4': 'Black resigned. White\'s pieces dominate the board.'}),
-    dict(game='kasparov-topalov', side='white', title='Kasparov\'s Immortal (1999)',
+    dict(game='kasparov-topalov', start='24.Rxd4', side='white', title='Kasparov\'s Immortal (1999)',
          tagline='A rook sacrifice and a king driven from one end of the board to the other.',
          why='At Wijk aan Zee Garry Kasparov played 24.Rxd4!! against Veselin Topalov. Over the next ten moves the black '
              'king was drawn out of its shelter on b8 and chased all the way to d1, where 36.Bf1 left Black with no '
@@ -70,7 +70,7 @@ GAME_LESSONS = [
                 '26.Qxd4+': 'The queen takes with check and the king is dragged forward.',
                 '36.Bf1': 'The quiet bishop move: Black has no defence.',
                 '44.Qa7': 'Black resigned.'}),
-    dict(game='deepblue-kasparov6', side='white', title='Deep Blue vs Kasparov, game 6 (1997)',
+    dict(game='deepblue-kasparov6', start='8.Nxe6', side='white', title='Deep Blue vs Kasparov, game 6 (1997)',
          tagline='The game in which a computer beat the world champion in a match.',
          why='In 1997 the IBM computer Deep Blue won the deciding game of its rematch against Garry Kasparov in just 19 '
              'moves. White sacrificed a knight on e6 to break open the black position, and Kasparov, playing the '
@@ -84,7 +84,7 @@ GAME_LESSONS = [
                 '17.Bf5': 'White gives a bishop to open the e-file.',
                 '18.Rxe7': 'The rook takes the queen and Black is lost.',
                 '19.c4': 'Kasparov resigned.'}),
-    dict(game='lasker-bauer', side='white', title='Lasker vs Bauer (1889)',
+    dict(game='lasker-bauer', start='15.Bxh7', side='white', title='Lasker vs Bauer (1889)',
          tagline='The double bishop sacrifice, played by a future world champion.',
          why='In Amsterdam in 1889 the young Emanuel Lasker played a famous double bishop sacrifice against Johann Bauer: '
              'the bishop took h7 with check, and after the black king took it the queen came in with check, the second '
@@ -100,7 +100,7 @@ GAME_LESSONS = [
                 '19.Rf3': 'The rook joins the attack along the third rank.',
                 '20.Rh3+': 'The rook checks on the h-file.',
                 '32.e7': 'The pawn will promote and Black resigned.'}),
-    dict(game='steinitz-bardeleben', side='white', title='Steinitz vs von Bardeleben (1895)',
+    dict(game='steinitz-bardeleben', start='22.Rxe7', side='white', title='Steinitz vs von Bardeleben (1895)',
          tagline='A rook sacrifice on e7 that rips the king out of the position, at Hastings.',
          why='Wilhelm Steinitz, the first official world champion, won this game against Curt von Bardeleben at Hastings. '
              'White played d5 to open the center, put a knight on e6, and sacrificed a rook on e7. Legend says von '
@@ -112,7 +112,7 @@ GAME_LESSONS = [
                 '19.Ne6': 'The knight lands on e6, where it attacks c7 and g7.',
                 '22.Rxe7+': 'A rook sacrifice: the king is dragged into the open.',
                 '25.Rxh7+': 'The rook takes with check. The game continued only a few more moves; legend says von Bardeleben walked out rather than resign.'}),
-    dict(game='karpov-kasparov16', side='black', title='Karpov vs Kasparov, game 16 (1985)',
+    dict(game='karpov-kasparov16', start='33...Ne4', side='black', title='Karpov vs Kasparov, game 16 (1985)',
          tagline='A knight on d3 that Karpov could never remove.',
          why='In the 1985 world championship match in Moscow Garry Kasparov, Black, planted a knight on d3 on move 16 and '
              'kept it there for almost twenty moves. White\'s pieces were tied up around it, and in the end Kasparov won '
@@ -182,7 +182,7 @@ GAME_LESSONS = [
                 '7...Bb4+': 'The check wins the queen back.',
                 '8.Qd2': 'White blocks with the queen.',
                 '9...Kxd8': 'Black has won a knight for a pawn.'}),
-    dict(game='rotlewi-rubinstein', side='black', title='Rotlewi vs Rubinstein (1907)',
+    dict(game='rotlewi-rubinstein', start='22...Rxc3', side='black', title='Rotlewi vs Rubinstein (1907)',
          tagline="Rubinstein's Immortal: two rook sacrifices in a row.",
          why='Akiba Rubinstein played this game in Lodz against Georg Rotlewi. White pushed forward on the kingside, '
              'and Black answered with two rook sacrifices in a row: first on c3, then on d2. After the white queen '
@@ -238,7 +238,12 @@ def build():
             assert bare in labels, (g['game'], key)
             notes[labels.index(bare)] = text
         assert len(g['spot']) == 3
-        out.append(dict(id=f"gm-{g['game']}", level=7, kind='line', title=g['title'], tagline=g['tagline'],
+        extra = {}
+        if 'start' in g:
+            # Where "start at the combination" begins: the ply of this move.
+            assert g['start'].rstrip('+#') in labels, (g['game'], g['start'])
+            extra['start'] = labels.index(g['start'].rstrip('+#'))
+        out.append(dict(**extra, id=f"gm-{g['game']}", level=7, kind='line', title=g['title'], tagline=g['tagline'],
                         why=g['why'], spot=g['spot'], fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
                         side=g['side'], line=sans, notes=notes))
     return out

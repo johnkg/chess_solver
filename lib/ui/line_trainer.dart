@@ -12,12 +12,16 @@ import 'widgets.dart';
 /// Id under which a finished opening line is saved in [ProgressStore].
 String lineProgressId(Lesson lesson) => 'line-${lesson.id}';
 
-/// Play your side of an opening line from memory. The other side answers with
+/// Play your side of an opening line (or of a famous game) from memory. The other side answers with
 /// the book move; a wrong move is taken back and counted.
 class LineTrainer extends StatefulWidget {
-  const LineTrainer({super.key, required this.lesson, this.progress});
+  const LineTrainer({super.key, required this.lesson, this.progress, this.fromPly = 0});
 
   final Lesson lesson;
+
+  /// Start from the position before this move of the line instead of the
+  /// beginning. A run from the middle does not count as the line learned.
+  final int fromPly;
   final ProgressStore? progress;
 
   @override
@@ -55,14 +59,16 @@ class _LineTrainerState extends State<LineTrainer> {
 
   void _restart() {
     _run++;
-    _ply = 0;
+    _ply = widget.fromPly;
     _mistakes = 0;
     _hints = 0;
     _waiting = false;
     _arrows = const [];
-    _feedback = 'Play the ${_me == white ? 'White' : 'Black'} moves of ${widget.lesson.title} from memory.';
+    _feedback = widget.fromPly > 0
+        ? 'The combination begins here. Find the ${_me == white ? 'White' : 'Black'} moves, or press Hint.'
+        : 'Play the ${_me == white ? 'White' : 'Black'} moves of ${widget.lesson.title} from memory.';
     _tone = CoachTone.neutral;
-    _board.setPosition(_line.positions.first);
+    _board.setPosition(_line.positions[widget.fromPly]);
     _bookReply();
   }
 
@@ -85,11 +91,11 @@ class _LineTrainerState extends State<LineTrainer> {
   }
 
   void _finish() {
-    widget.progress?.markSolved(lineProgressId(widget.lesson));
+    if (widget.fromPly == 0) widget.progress?.markSolved(lineProgressId(widget.lesson));
     setState(() {
       _tone = CoachTone.good;
       _feedback = _mistakes == 0
-          ? 'Line complete with no mistakes!'
+          ? (widget.fromPly > 0 ? 'Combination complete with no mistakes!' : 'Line complete with no mistakes!')
           : 'Line complete with $_mistakes ${_mistakes == 1 ? 'mistake' : 'mistakes'}. Try again for a clean run.';
     });
   }
