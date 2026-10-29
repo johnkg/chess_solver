@@ -122,7 +122,7 @@ void main() {
     });
 
     testWidgets('reset progress needs a second tap', (tester) async {
-      SharedPreferences.setMockInitialValues({'solved_puzzles_v2': ['checkmate-1']});
+      SharedPreferences.setMockInitialValues({'solved_puzzles_v3': ['checkmate-1']});
       final progress = ProgressStore();
       await progress.load();
       tester.view.physicalSize = const Size(390, 2200);
