@@ -79,7 +79,7 @@ class _LineViewerState extends State<LineViewer> {
           title: _ply == 0 ? 'The starting position' : '${_line.numberAt(_ply - 1)} ${_line.sans[_ply - 1]}',
           text: _ply == 0
               ? 'Press Next move to step through the line. You study the ${lesson.side} side.'
-              : (note == null || note.isEmpty ? 'A natural move.' : note),
+              : (note == null || note.isEmpty ? 'No comment on this move.' : note),
         ),
         const SizedBox(height: 12),
         Wrap(

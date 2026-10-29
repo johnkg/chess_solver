@@ -188,19 +188,21 @@ class PracticeScreen extends StatelessWidget {
                 _daily(context),
                 const SizedBox(height: 12),
                 _weakSpots(context),
-                const SectionLabel('Opening lines'),
-                for (final l in lessons.where((l) => l.kind == LessonKind.line))
-                  RowCard(
-                    leading: _check(context, progress.isSolved(lineProgressId(l))),
-                    title: l.title,
-                    subtitle: 'You play ${l.side == 'black' ? 'Black' : 'White'} · ${(l.line.length + 1) ~/ 2} moves',
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => LineTrainer(lesson: l, progress: progress),
+                for (final (title, level) in [('Opening lines', 8), ('Famous games', 7)]) ...[
+                  SectionLabel(title),
+                  for (final l in lessons.where((l) => l.kind == LessonKind.line && l.level == level))
+                    RowCard(
+                      leading: _check(context, progress.isSolved(lineProgressId(l))),
+                      title: l.title,
+                      subtitle: 'You play ${l.side == 'black' ? 'Black' : 'White'} · ${(l.line.length + 1) ~/ 2} moves',
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => LineTrainer(lesson: l, progress: progress),
+                        ),
                       ),
                     ),
-                  ),
+                ],
                 for (final phase in ['middlegame', 'endgame']) ...[
                   SectionLabel('${phaseLabel(phase)} training'),
                   for (final d in drills.where((d) => d.phase == phase))

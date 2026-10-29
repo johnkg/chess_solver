@@ -369,4 +369,8 @@ LESSONS += _build_openings()
 from structure_build import lessons as _structure_lessons  # noqa: E402
 
 LESSONS += _structure_lessons()
+
+from games_data import build as _build_games  # noqa: E402
+
+LESSONS += _build_games()
 LESSONS.sort(key=lambda l: l['level'])  # stable: keeps the order inside a level
