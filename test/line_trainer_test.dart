@@ -57,6 +57,19 @@ void main() {
     expect(progress.isSolved(lineProgressId(lesson)), isTrue);
   });
 
+  testWidgets('a whole famous game can be replayed from the winner\'s side', (tester) async {
+    final lesson = lessons.firstWhere((l) => l.id == 'gm-lasker-thomas');
+    final progress = ProgressStore();
+    await show(tester, LineTrainer(lesson: lesson, progress: progress));
+    final line = OpeningLine.fromSan(lesson.line);
+    for (var i = 0; i < line.length; i += 2) {
+      await play(tester, line.moves[i].uci);
+    }
+    await tester.pumpAndSettle();
+    expect(find.text('Line complete with no mistakes!'), findsOneWidget);
+    expect(progress.isSolved(lineProgressId(lesson)), isTrue);
+  });
+
   testWidgets('a wrong move is taken back and counted', (tester) async {
     final lesson = lessons.firstWhere((l) => l.id == 'op-italian');
     await show(tester, LineTrainer(lesson: lesson));

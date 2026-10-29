@@ -89,6 +89,7 @@ void main() {
   testWidgets('the Practice tab lists the training positions', (tester) async {
     await show(tester, PracticeScreen(progress: ProgressStore()), height: 7000);
     expect(find.text('OPENING LINES'), findsOneWidget);
+    expect(find.text('FAMOUS GAMES'), findsOneWidget);
     expect(find.text('MIDDLEGAME TRAINING'), findsOneWidget);
     expect(find.text('ENDGAME TRAINING'), findsOneWidget);
     expect(find.text(drills.first.title), findsOneWidget);

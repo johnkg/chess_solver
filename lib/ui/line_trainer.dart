@@ -60,7 +60,7 @@ class _LineTrainerState extends State<LineTrainer> {
     _hints = 0;
     _waiting = false;
     _arrows = const [];
-    _feedback = 'Play the ${_me == white ? 'White' : 'Black'} moves of the ${widget.lesson.title} from memory.';
+    _feedback = 'Play the ${_me == white ? 'White' : 'Black'} moves of ${widget.lesson.title} from memory.';
     _tone = CoachTone.neutral;
     _board.setPosition(_line.positions.first);
     _bookReply();
@@ -131,7 +131,11 @@ class _LineTrainerState extends State<LineTrainer> {
       final note = widget.lesson.notes[_ply];
       setState(() {
         _tone = CoachTone.neutral;
-        _feedback = note.isEmpty ? 'Think about development and the center.' : 'Hint: $note';
+        _feedback = note.isEmpty
+            ? (widget.lesson.level == 7
+                ? 'Look for forcing moves: checks, captures and threats.'
+                : 'Think about development and the center.')
+            : 'Hint: $note';
       });
     } else {
       setState(() {

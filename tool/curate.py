@@ -18,7 +18,7 @@ from mirror_search import random_game_positions
 from famous import GAMES, before
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-QUOTA = 16
+QUOTA = 30
 PROPOSERS = {'hangingPiece', 'fork', 'skewer', 'removingDefender', 'discoveredAttack', 'doubleCheck'}
 
 SEEDS = [
@@ -108,7 +108,8 @@ def main(minutes, start=1):
         b = f"mate{e['mate_in']}" if e['mate_in'] >= 2 else e['idea']
         if key in boards or counts.get(b, 0) >= QUOTA or not plausible(e['fen']):
             return False
-        if e['source'] != 'hand' and e['source'][-1:].isdigit() and e['source'] in used_sources:
+        if e['source'] != 'hand' and not e['source'].startswith('famous-') and e['source'][-1:].isdigit() \
+                and e['source'] in used_sources:
             return False  # one puzzle per game: neighbours in one game look alike
         used_sources.add(e['source'])
         boards.add(key)
@@ -124,6 +125,16 @@ def main(minutes, start=1):
             print('famous position rejected by rater:', gid)
         else:
             add(entry(pos, r, f'famous-{gid}'))
+
+    picks_file = os.path.join(HERE, 'famous_picks.json')  # from famous_scan.dart + a pick per game (see famous_picks.py)
+    if os.path.exists(picks_file):
+        with open(picks_file) as f:
+            for pk in json.load(f):
+                pos = Pos(pk['fen'])
+                src = f"famous-{pk['game']}"
+                add({'fen': to_fen(pos), 'solutions': pk['solutions'], 'san': pk['san'], 'idea': pk['idea'],
+                     'tier': pk['tier'], 'mate_in': pk['mateIn'], 'text': famous_intro(src) + pk['text'], 'source': src})
+    print('after famous games:', counts, flush=True)
 
     old = os.path.join(HERE, 'library.json')
     if os.path.exists(old):  # keep earlier finds, re-rated with the current rater
