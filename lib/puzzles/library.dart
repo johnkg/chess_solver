@@ -324,17 +324,6 @@ const List<Puzzle> puzzleLibrary = [
   ),
   Puzzle(
     id: 'hangingPiece-18',
-    fen: 'rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P1b1/2N5/PPPP1PPP/R1BQK2R b KQkq - 0 1',
-    solutions: ['g4d1'],
-    san: 'Bxd1',
-    idea: Idea.hangingPiece,
-    mateIn: 0,
-    tier: 1,
-    text: 'From Saint Brie vs Legal, Paris 1750. Bishop takes the queen on d1. It can be recaptured, but the queen is worth more than the bishop, so Black still comes out ahead.',
-    source: 'famous-legal',
-  ),
-  Puzzle(
-    id: 'hangingPiece-19',
     fen: 'rn2kbnr/p3p2p/2p2p2/q2p2p1/pP2b3/P1P4P/3PPPPR/1RBQKBN1 w kq - 0 1',
     solutions: ['b4a5'],
     san: 'bxa5',
@@ -345,7 +334,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game6',
   ),
   Puzzle(
-    id: 'hangingPiece-20',
+    id: 'hangingPiece-19',
     fen: 'rn3bn1/pp2pk1r/2p5/6pp/2P3q1/3P1P2/PN5P/R1B1K1NR w KQ - 0 1',
     solutions: ['f3g4'],
     san: 'fxg4',
@@ -356,7 +345,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game30010',
   ),
   Puzzle(
-    id: 'hangingPiece-21',
+    id: 'hangingPiece-20',
     fen: 'rnb1k1nr/p1p1p2p/6pb/1p1p4/NP3p1P/1N4Pq/P1PPPP2/R1BQKB2 w Qkq - 0 1',
     solutions: ['f1h3'],
     san: 'Bxh3',
@@ -367,7 +356,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game5004',
   ),
   Puzzle(
-    id: 'hangingPiece-22',
+    id: 'hangingPiece-21',
     fen: 'rnb1k1nr/p2p1ppp/3B4/1pbN1N1P/4P1P1/3P1Q2/PqP5/R4KR1 b kq - 0 1',
     solutions: ['b2a1'],
     san: 'Qxa1+',
@@ -378,7 +367,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'famous-immortal',
   ),
   Puzzle(
-    id: 'hangingPiece-23',
+    id: 'hangingPiece-22',
     fen: 'rnb1kb1r/pp3ppp/2p2n2/4q3/4N3/3Q4/PPPB1PPP/2KR1BNR b kq - 0 1',
     solutions: ['f6e4'],
     san: 'Nxe4',
@@ -389,7 +378,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'famous-reti',
   ),
   Puzzle(
-    id: 'hangingPiece-24',
+    id: 'hangingPiece-23',
     fen: 'rnb2rk1/p1p1qpp1/1p2p2p/3N4/3P4/4PN2/PP3PPP/R2QKB1R b KQ - 0 1',
     solutions: ['e6d5'],
     san: 'exd5',
@@ -400,7 +389,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'famous-fischer-spassky6',
   ),
   Puzzle(
-    id: 'hangingPiece-25',
+    id: 'hangingPiece-24',
     fen: 'rnbqk2r/ppp4p/3b3n/3pPp2/1P5p/4P1P1/P1P1NP1P/R1B1KBNR w KQkq - 0 1',
     solutions: ['e5d6'],
     san: 'exd6',
@@ -411,7 +400,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game5017',
   ),
   Puzzle(
-    id: 'hangingPiece-26',
+    id: 'hangingPiece-25',
     fen: 'rnbqkb1r/ppp1ppp1/8/3p2np/P6Q/2P4P/1P1PNPP1/RNB1KB1R w Qkq - 0 1',
     solutions: ['h4g5'],
     san: 'Qxg5',

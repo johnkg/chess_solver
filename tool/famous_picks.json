@@ -196,19 +196,6 @@
  },
  {
   "game": "legal",
-  "ply": 9,
-  "fen": "rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P1b1/2N5/PPPP1PPP/R1BQK2R b KQkq - 0 5",
-  "solutions": [
-   "g4d1"
-  ],
-  "san": "Bxd1",
-  "idea": "hangingPiece",
-  "tier": 1,
-  "mateIn": 0,
-  "text": "Bishop takes the queen on d1. It can be recaptured, but the queen is worth more than the bishop, so Black still comes out ahead."
- },
- {
-  "game": "legal",
   "ply": 10,
   "fen": "rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P3/2N5/PPPP1PPP/R1BbK2R w KQkq - 0 6",
   "solutions": [
