@@ -18,7 +18,7 @@ from mirror_search import random_game_positions
 from famous import GAMES, before
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-QUOTA = 30
+QUOTA = 40
 PROPOSERS = {'hangingPiece', 'fork', 'skewer', 'removingDefender', 'discoveredAttack', 'doubleCheck'}
 
 SEEDS = [
