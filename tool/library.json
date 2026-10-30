@@ -26,6 +26,19 @@
   "id": "checkmate-2"
  },
  {
+  "fen": "2Qnkb1r/2p2ppp/3p4/1p2p1B1/2Pr1Pn1/P2P3B/RP2P2P/1N3RK1 w k - 0 1",
+  "solutions": [
+   "c8d8"
+  ],
+  "san": "Qxd8#",
+  "idea": "checkmate",
+  "tier": 1,
+  "mate_in": 1,
+  "text": "Checkmate. The queen to d8 attacks the king on e8 and it has no safe square and nothing can block or capture.",
+  "source": "game3173",
+  "id": "checkmate-3"
+ },
+ {
   "fen": "2n5/2r5/2k2N2/8/3P4/2q1bp2/8/3K4 b - - 0 1",
   "solutions": [
    "c3c1",
@@ -37,7 +50,60 @@
   "mate_in": 1,
   "text": "Checkmate. The queen to c1 attacks the king on d1 and it has no safe square and nothing can block or capture.",
   "source": "mate5096",
-  "id": "checkmate-3"
+  "id": "checkmate-4"
+ },
+ {
+  "fen": "3rb1R1/1p3k2/8/2ppp1R1/5P2/KpP5/4q3/8 b - - 0 1",
+  "solutions": [
+   "e2a2"
+  ],
+  "san": "Qa2#",
+  "idea": "checkmate",
+  "tier": 1,
+  "mate_in": 1,
+  "text": "Checkmate. The queen to a2 attacks the king on a3 and it has no safe square and nothing can block or capture.",
+  "source": "mate3089",
+  "id": "checkmate-5"
+ },
+ {
+  "fen": "4k1r1/4p2P/3nP3/p2P1pp1/1R4p1/8/6K1/b7 w - - 0 1",
+  "solutions": [
+   "h7g8q",
+   "h7g8r"
+  ],
+  "san": "hxg8=Q#",
+  "idea": "checkmate",
+  "tier": 1,
+  "mate_in": 1,
+  "text": "Checkmate. The pawn to g8 attacks the king on e8 and it has no safe square and nothing can block or capture.",
+  "source": "mate3218",
+  "id": "checkmate-6"
+ },
+ {
+  "fen": "4kb1r/1r2ppp1/1p3n1p/p1pp1Q2/6nP/P1P2N2/1P1PPPB1/RNB2K2 w k - 0 1",
+  "solutions": [
+   "f5c8"
+  ],
+  "san": "Qc8#",
+  "idea": "checkmate",
+  "tier": 1,
+  "mate_in": 1,
+  "text": "Checkmate. The queen to c8 attacks the king on e8 and it has no safe square and nothing can block or capture.",
+  "source": "game3073",
+  "id": "checkmate-7"
+ },
+ {
+  "fen": "r1b3kr/1ppp1p1p/3b3B/3Q2q1/p1P1P1Pp/P4P2/RP2K3/1N3BNR w - - 0 1",
+  "solutions": [
+   "d5g5"
+  ],
+  "san": "Qxg5#",
+  "idea": "checkmate",
+  "tier": 1,
+  "mate_in": 1,
+  "text": "Checkmate. The queen to g5 attacks the king on g8 and it has no safe square and nothing can block or capture.",
+  "source": "game3191",
+  "id": "checkmate-8"
  },
  {
   "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 1",
@@ -50,7 +116,7 @@
   "mate_in": 1,
   "text": "Scholar's mate. Checkmate. The queen to f7 attacks the king on e8 and it has no safe square and nothing can block or capture.",
   "source": "famous-scholar",
-  "id": "checkmate-4"
+  "id": "checkmate-9"
  },
  {
   "fen": "r1bqkbn1/ppppp1pr/8/7p/n4P2/3B1P2/PP1P2PP/RNB1K1NR w KQq - 0 1",
@@ -63,7 +129,7 @@
   "mate_in": 1,
   "text": "Checkmate. The bishop to g6 attacks the king on e8 and it has no safe square and nothing can block or capture.",
   "source": "game30012",
-  "id": "checkmate-5"
+  "id": "checkmate-10"
  },
  {
   "fen": "r2q1bn1/4p1pr/np1pb2p/p4k2/P2Q3P/2N1BP2/1PP1B1PR/R3K1N1 w - - 0 1",
@@ -76,7 +142,7 @@
   "mate_in": 1,
   "text": "Checkmate. The bishop to d3 attacks the king on f5 and it has no safe square and nothing can block or capture.",
   "source": "game135",
-  "id": "checkmate-6"
+  "id": "checkmate-11"
  },
  {
   "fen": "r2qkbnr/2p1p3/3p1pp1/n1PNP2p/8/p4PPB/P2P3P/RQ2K2R w KQk - 0 1",
@@ -89,7 +155,7 @@
   "mate_in": 1,
   "text": "Checkmate. The queen to g6 attacks the king on e8 and it has no safe square and nothing can block or capture.",
   "source": "game52",
-  "id": "checkmate-7"
+  "id": "checkmate-12"
  },
  {
   "fen": "rn1q1bnr/ppp1kB1p/3p2p1/4N3/4P3/2N5/PPPP1PPP/R1BbK2R w KQ - 0 1",
@@ -102,7 +168,7 @@
   "mate_in": 1,
   "text": "From Saint Brie vs Legal, Paris 1750. Checkmate. The knight to d5 attacks the king on e7 and it has no safe square and nothing can block or capture.",
   "source": "famous-legal",
-  "id": "checkmate-8"
+  "id": "checkmate-13"
  },
  {
   "fen": "rn2kBQ1/p1qp1p2/1pp4p/4p2b/4NP2/1PP5/P2P3P/R3KB1R w KQq - 0 1",
@@ -118,7 +184,7 @@
   "mate_in": 1,
   "text": "Checkmate. The bishop to a3 attacks the king on e8 and it has no safe square and nothing can block or capture.",
   "source": "game5082",
-  "id": "checkmate-9"
+  "id": "checkmate-14"
  },
  {
   "fen": "rn4k1/pbp1n1pr/1p1q1p1p/2bpp2P/Q3P3/1BPR4/PP1P1PP1/RNB1K1N1 w - - 0 1",
@@ -131,7 +197,46 @@
   "mate_in": 1,
   "text": "Checkmate. The queen to e8 attacks the king on g8 and it has no safe square and nothing can block or capture.",
   "source": "game5057",
-  "id": "checkmate-10"
+  "id": "checkmate-15"
+ },
+ {
+  "fen": "rnbqk1nr/1p1p1pb1/7p/p1p1p1p1/2B3PP/2N1PQ2/PPPP1P2/R1B1K1NR w KQkq e6 0 1",
+  "solutions": [
+   "f3f7"
+  ],
+  "san": "Qxf7#",
+  "idea": "checkmate",
+  "tier": 1,
+  "mate_in": 1,
+  "text": "Checkmate. The queen to f7 attacks the king on e8 and it has no safe square and nothing can block or capture.",
+  "source": "game3225",
+  "id": "checkmate-16"
+ },
+ {
+  "fen": "rnbqkb1r/1p1pp2p/p1p5/6p1/2P1pP2/7P/PPPK2P1/R1BQ1BNR w kq g6 0 1",
+  "solutions": [
+   "d1h5"
+  ],
+  "san": "Qh5#",
+  "idea": "checkmate",
+  "tier": 1,
+  "mate_in": 1,
+  "text": "Checkmate. The queen to h5 attacks the king on e8 and it has no safe square and nothing can block or capture.",
+  "source": "game3132",
+  "id": "checkmate-17"
+ },
+ {
+  "fen": "rnbqkbnr/1pppp2p/8/p5p1/P1B2p2/2P1P3/1P1P1PPP/RNBQK1NR w KQkq g6 0 1",
+  "solutions": [
+   "d1h5"
+  ],
+  "san": "Qh5#",
+  "idea": "checkmate",
+  "tier": 1,
+  "mate_in": 1,
+  "text": "Checkmate. The queen to h5 attacks the king on e8 and it has no safe square and nothing can block or capture.",
+  "source": "game3015",
+  "id": "checkmate-18"
  },
  {
   "fen": "rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq g3 0 1",
@@ -144,7 +249,7 @@
   "mate_in": 1,
   "text": "Fool's mate, the shortest possible game. Checkmate. The queen to h4 attacks the king on e1 and it has no safe square and nothing can block or capture.",
   "source": "famous-fool",
-  "id": "checkmate-11"
+  "id": "checkmate-19"
  },
  {
   "fen": "rrk5/4p3/1P2n3/1pNb3P/6n1/3p2PR/3P3B/3K4 b - - 0 1",
@@ -157,7 +262,7 @@
   "mate_in": 1,
   "text": "Checkmate. The rook to a1 attacks the king on d1 and it has no safe square and nothing can block or capture.",
   "source": "mate5105",
-  "id": "checkmate-12"
+  "id": "checkmate-20"
  },
  {
   "fen": "1n3b1r/rb2k2p/1p2p1p1/p3p1P1/P1qpN3/1P3P2/3RP2P/3QKBR1 w - - 0 1",
@@ -173,6 +278,19 @@
   "id": "hangingPiece-1"
  },
  {
+  "fen": "1nb2bn1/1p1p1kpr/4p2p/p1pr1p1q/P1P4P/1Q2PNP1/RPN1KP2/2B2BR1 w - - 0 1",
+  "solutions": [
+   "c4d5"
+  ],
+  "san": "cxd5",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Pawn takes the rook on d5. It can be recaptured, but the rook is worth more than the pawn, so White still comes out ahead.",
+  "source": "game3046",
+  "id": "hangingPiece-2"
+ },
+ {
   "fen": "1r2k2r/1bpp1p1p/ppn3pn/4p1b1/P1P1P1P1/N1Q2q1P/1P1PN3/R1B2BKR w k - 0 1",
   "solutions": [
    "c3f3"
@@ -183,7 +301,7 @@
   "mate_in": 0,
   "text": "Queen takes the queen on f3. Nothing can recapture, so White wins a free queen.",
   "source": "game5000",
-  "id": "hangingPiece-2"
+  "id": "hangingPiece-3"
  },
  {
   "fen": "1r2k3/pppbp1br/2n1q2n/3p2pp/1P3p2/N1P2PP1/P1QPP1BP/1RBK1R1N w - - 0 1",
@@ -196,7 +314,7 @@
   "mate_in": 0,
   "text": "Queen takes the rook on h7. Nothing can recapture, so White wins a free rook.",
   "source": "game30028",
-  "id": "hangingPiece-3"
+  "id": "hangingPiece-4"
  },
  {
   "fen": "1rb2b1r/1p1p1kpp/4p2n/pqp1p3/4P1P1/B4P2/R1nPQ2P/1N4KR w - - 0 1",
@@ -209,7 +327,20 @@
   "mate_in": 0,
   "text": "Queen takes the queen on b5. Nothing can recapture, so White wins a free queen.",
   "source": "game5001",
-  "id": "hangingPiece-4"
+  "id": "hangingPiece-5"
+ },
+ {
+  "fen": "1rbqkb1r/1p1ppppn/7p/p1p5/Q1P1PP2/PnNP2P1/1P5P/R1BK1BNR w k - 0 1",
+  "solutions": [
+   "a4b3"
+  ],
+  "san": "Qxb3",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Queen takes the knight on b3. Nothing can recapture, so White wins a free knight.",
+  "source": "game3042",
+  "id": "hangingPiece-6"
  },
  {
   "fen": "1rbqkb1r/1p2ppp1/3p3p/pPp5/P2P1P1P/N4N2/1R2PP2/2BnKB1R w Kk - 0 1",
@@ -222,7 +353,7 @@
   "mate_in": 0,
   "text": "King takes the knight on d1. Nothing can recapture, so White wins a free knight.",
   "source": "game5016",
-  "id": "hangingPiece-5"
+  "id": "hangingPiece-7"
  },
  {
   "fen": "2rqr1k1/5p2/p2B1n1p/3P1bp1/Np6/1P1n1B2/P2Q1PPP/1N1R1RK1 b - - 0 1",
@@ -235,7 +366,7 @@
   "mate_in": 0,
   "text": "From Anatoly Karpov vs Garry Kasparov, Moscow 1985. Queen takes the bishop on d6. Nothing can recapture, so Black wins a free bishop.",
   "source": "famous-karpov-kasparov16",
-  "id": "hangingPiece-6"
+  "id": "hangingPiece-8"
  },
  {
   "fen": "3rkb1r/p2Rqppp/5n2/1B2p1B1/4P3/1Q6/PPP2PPP/2K4R b k - 0 1",
@@ -248,7 +379,7 @@
   "mate_in": 0,
   "text": "From Paul Morphy vs Duke of Brunswick and Count Isouard, Paris Opera 1858. Rook takes the rook on d7. It can be recaptured, but the rook is worth more than the rook, so Black still comes out ahead.",
   "source": "famous-opera",
-  "id": "hangingPiece-7"
+  "id": "hangingPiece-9"
  },
  {
   "fen": "4k3/8/8/3q4/8/8/8/3RK3 w - - 0 1",
@@ -261,7 +392,20 @@
   "mate_in": 0,
   "text": "Rook takes the queen on d5. Nothing can recapture, so White wins a free queen.",
   "source": "hand",
-  "id": "hangingPiece-8"
+  "id": "hangingPiece-10"
+ },
+ {
+  "fen": "r1b1k1n1/p1ppq1p1/1p2pr2/2n2p1p/1bP1P2P/1P1P1PP1/P2BQ1BK/RN4NR w q - 0 1",
+  "solutions": [
+   "d2b4"
+  ],
+  "san": "Bxb4",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Bishop takes the bishop on b4. Nothing can recapture, so White wins a free bishop.",
+  "source": "game3049",
+  "id": "hangingPiece-11"
  },
  {
   "fen": "r1b1k1nr/2qn1p2/4pb2/p2p2Np/7P/3P3R/P3P1P1/1NQ1KBB1 w kq - 0 1",
@@ -274,7 +418,20 @@
   "mate_in": 0,
   "text": "Queen takes the queen on c7. Nothing can recapture, so White wins a free queen.",
   "source": "game5",
-  "id": "hangingPiece-9"
+  "id": "hangingPiece-12"
+ },
+ {
+  "fen": "r1b1k3/p1qp3r/1p1bn1pn/2p1pp1p/P4P1P/4PQPN/RPPP4/1NB1KB1R w q - 0 1",
+  "solutions": [
+   "f3a8"
+  ],
+  "san": "Qxa8",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Queen takes the rook on a8. Nothing can recapture, so White wins a free rook.",
+  "source": "game3003",
+  "id": "hangingPiece-13"
  },
  {
   "fen": "r1b1kb1r/pp1nqpp1/2p1Nn1p/8/3P4/3B1N2/PPP2PPP/R1BQ1RK1 b kq - 0 1",
@@ -287,7 +444,7 @@
   "mate_in": 0,
   "text": "From Deep Blue vs Garry Kasparov, New York 1997. Pawn takes the knight on e6. Nothing can recapture, so Black wins a free knight.",
   "source": "famous-deepblue-kasparov6",
-  "id": "hangingPiece-10"
+  "id": "hangingPiece-14"
  },
  {
   "fen": "r1b1kb1r/pp5p/n1pp1n2/q3pp2/1P4p1/P4P2/RNPPP1PP/1NBQKB1R w Kkq - 0 1",
@@ -300,7 +457,7 @@
   "mate_in": 0,
   "text": "Pawn takes the queen on a5. Nothing can recapture, so White wins a free queen.",
   "source": "game5006",
-  "id": "hangingPiece-11"
+  "id": "hangingPiece-15"
  },
  {
   "fen": "r1bqk2r/p2npp1p/2pp1npb/1p6/3PP3/2N2P2/PPPQN1PP/R3KB1R w KQkq - 0 1",
@@ -313,7 +470,20 @@
   "mate_in": 0,
   "text": "From Garry Kasparov vs Veselin Topalov, Wijk aan Zee 1999. Queen takes the bishop on h6. Nothing can recapture, so White wins a free bishop.",
   "source": "famous-kasparov-topalov",
-  "id": "hangingPiece-12"
+  "id": "hangingPiece-16"
+ },
+ {
+  "fen": "r1bqkb1r/1Qp1pn1p/p1np4/5pp1/P7/2P5/1P1PPPPP/RNBK1BNR w kq - 0 1",
+  "solutions": [
+   "b7a8"
+  ],
+  "san": "Qxa8",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Queen takes the rook on a8. Nothing can recapture, so White wins a free rook.",
+  "source": "game3035",
+  "id": "hangingPiece-17"
  },
  {
   "fen": "r1bqkb1r/p1ppp3/np5n/7R/1PP2p2/2Q2N2/P2PPPP1/RNB1KB2 w Qkq - 0 1",
@@ -326,7 +496,7 @@
   "mate_in": 0,
   "text": "Queen takes the rook on h8. Nothing can recapture, so White wins a free rook.",
   "source": "game30014",
-  "id": "hangingPiece-13"
+  "id": "hangingPiece-18"
  },
  {
   "fen": "r1bqkbn1/p1ppp1pr/8/1P3p2/3P3p/1P2n2P/P3PPP1/RN1QKBNR w KQq - 0 1",
@@ -339,7 +509,20 @@
   "mate_in": 0,
   "text": "Pawn takes the knight on e3. Nothing can recapture, so White wins a free knight.",
   "source": "game10",
-  "id": "hangingPiece-14"
+  "id": "hangingPiece-19"
+ },
+ {
+  "fen": "r1bqkn1r/pppp1p2/2n4p/4p1p1/3P2P1/bNQ1P2P/PPP2P2/R1B1KBR1 w Qkq - 0 1",
+  "solutions": [
+   "b2a3"
+  ],
+  "san": "bxa3",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Pawn takes the bishop on a3. Nothing can recapture, so White wins a free bishop.",
+  "source": "game3043",
+  "id": "hangingPiece-20"
  },
  {
   "fen": "r2q1rk1/pp2ppbp/2p2np1/6B1/3PP1b1/Q1n2N2/PP3PPP/3RKB1R w K - 0 1",
@@ -352,7 +535,7 @@
   "mate_in": 0,
   "text": "From Donald Byrne vs Bobby Fischer, New York 1956. Pawn takes the knight on c3. Nothing can recapture, so White wins a free knight.",
   "source": "famous-byrne-fischer",
-  "id": "hangingPiece-15"
+  "id": "hangingPiece-21"
  },
  {
   "fen": "r3kb1r/p2b1p2/2Pppqpp/1n6/1P2P3/3PQP2/R1P1K1PP/5BNR w q - 0 1",
@@ -365,7 +548,20 @@
   "mate_in": 0,
   "text": "Pawn takes the bishop on d7. It can be recaptured, but the bishop is worth more than the pawn, so White still comes out ahead.",
   "source": "game30027",
-  "id": "hangingPiece-16"
+  "id": "hangingPiece-22"
+ },
+ {
+  "fen": "r3nb1r/pkpb2p1/np1qp3/3pB2p/P2Pp3/2P3PP/1P2PP2/RN2KBNR w KQ - 0 1",
+  "solutions": [
+   "e5d6"
+  ],
+  "san": "Bxd6",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Bishop takes the queen on d6. It can be recaptured, but the queen is worth more than the bishop, so White still comes out ahead.",
+  "source": "game3018",
+  "id": "hangingPiece-23"
  },
  {
   "fen": "r4r2/1b2bppk/ppq1p3/2ppB2n/5P2/1P2P3/P1PPQ1PP/R4RK1 w - - 0 1",
@@ -378,7 +574,46 @@
   "mate_in": 0,
   "text": "From Emanuel Lasker vs Johann Bauer, Amsterdam 1889. Queen takes the knight on h5. Nothing can recapture, so White wins a free knight.",
   "source": "famous-lasker-bauer",
-  "id": "hangingPiece-17"
+  "id": "hangingPiece-24"
+ },
+ {
+  "fen": "rn1qk1nr/pp2p2p/2p3pb/3p4/P3P3/2PB3b/1P1NQ1PP/R1B1K2R w KQkq - 0 1",
+  "solutions": [
+   "g2h3"
+  ],
+  "san": "gxh3",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Pawn takes the bishop on h3. Nothing can recapture, so White wins a free bishop.",
+  "source": "game3012",
+  "id": "hangingPiece-25"
+ },
+ {
+  "fen": "rn2k1nr/1bpp1p2/p3p3/4q2p/P6P/b4pPR/1RPPPP2/1N1QKB2 w kq - 0 1",
+  "solutions": [
+   "b2b7"
+  ],
+  "san": "Rxb7",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Rook takes the bishop on b7. Nothing can recapture, so White wins a free bishop.",
+  "source": "game3048",
+  "id": "hangingPiece-26"
+ },
+ {
+  "fen": "rn2kb1r/4p1pp/p1p4n/qp3p2/1P1B4/3bPPPB/P2P1K1P/RN2Q1NR w kq - 0 1",
+  "solutions": [
+   "b4a5"
+  ],
+  "san": "bxa5",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Pawn takes the queen on a5. Nothing can recapture, so White wins a free queen.",
+  "source": "game3044",
+  "id": "hangingPiece-27"
  },
  {
   "fen": "rn2kbnr/p3p2p/2p2p2/q2p2p1/pP2b3/P1P4P/3PPPPR/1RBQKBN1 w kq - 0 1",
@@ -391,7 +626,7 @@
   "mate_in": 0,
   "text": "Pawn takes the queen on a5. Nothing can recapture, so White wins a free queen.",
   "source": "game6",
-  "id": "hangingPiece-18"
+  "id": "hangingPiece-28"
  },
  {
   "fen": "rn3bn1/pp2pk1r/2p5/6pp/2P3q1/3P1P2/PN5P/R1B1K1NR w KQ - 0 1",
@@ -404,7 +639,7 @@
   "mate_in": 0,
   "text": "Pawn takes the queen on g4. It can be recaptured, but the queen is worth more than the pawn, so White still comes out ahead.",
   "source": "game30010",
-  "id": "hangingPiece-19"
+  "id": "hangingPiece-29"
  },
  {
   "fen": "rnb1k1nr/p1p1p2p/6pb/1p1p4/NP3p1P/1N4Pq/P1PPPP2/R1BQKB2 w Qkq - 0 1",
@@ -417,7 +652,20 @@
   "mate_in": 0,
   "text": "Bishop takes the queen on h3. It can be recaptured, but the queen is worth more than the bishop, so White still comes out ahead.",
   "source": "game5004",
-  "id": "hangingPiece-20"
+  "id": "hangingPiece-30"
+ },
+ {
+  "fen": "rnb1k1nr/p2p1pbp/1p2p1pq/8/3pP1P1/1PPP1P1P/P5B1/RNBQ1K1R w - - 0 1",
+  "solutions": [
+   "c1h6"
+  ],
+  "san": "Bxh6",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Bishop takes the queen on h6. It can be recaptured, but the queen is worth more than the bishop, so White still comes out ahead.",
+  "source": "game3031",
+  "id": "hangingPiece-31"
  },
  {
   "fen": "rnb1k1nr/p2p1ppp/3B4/1pbN1N1P/4P1P1/3P1Q2/PqP5/R4KR1 b kq - 0 1",
@@ -430,7 +678,7 @@
   "mate_in": 0,
   "text": "From Adolf Anderssen vs Lionel Kieseritzky, London 1851. Queen takes the rook on a1. Nothing can recapture, so Black wins a free rook.",
   "source": "famous-immortal",
-  "id": "hangingPiece-21"
+  "id": "hangingPiece-32"
  },
  {
   "fen": "rnb1kb1r/pp3ppp/2p2n2/4q3/4N3/3Q4/PPPB1PPP/2KR1BNR b kq - 0 1",
@@ -443,7 +691,33 @@
   "mate_in": 0,
   "text": "From Richard Reti vs Savielly Tartakower, Vienna 1910. Knight takes the knight on e4. It can be recaptured, but the knight is worth more than the knight, so Black still comes out ahead.",
   "source": "famous-reti",
-  "id": "hangingPiece-22"
+  "id": "hangingPiece-33"
+ },
+ {
+  "fen": "rnb2k2/1ppp3r/p2q1pP1/3B3p/4P3/P4R1P/1PPP2P1/RNB3K1 w - - 0 1",
+  "solutions": [
+   "g6h7"
+  ],
+  "san": "gxh7",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Pawn takes the rook on h7. Nothing can recapture, so White wins a free rook.",
+  "source": "game3051",
+  "id": "hangingPiece-34"
+ },
+ {
+  "fen": "rnb2k2/3p1pbr/p3pN1p/Ppq3p1/1P1PP3/2P2P1P/3BK1P1/RQ3BNR w - - 0 1",
+  "solutions": [
+   "f6h7"
+  ],
+  "san": "Nxh7+",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Knight takes the rook on h7. Nothing can recapture, so White wins a free rook.",
+  "source": "game3001",
+  "id": "hangingPiece-35"
  },
  {
   "fen": "rnb2rk1/p1p1qpp1/1p2p2p/3N4/3P4/4PN2/PP3PPP/R2QKB1R b KQ - 0 1",
@@ -456,7 +730,7 @@
   "mate_in": 0,
   "text": "From Bobby Fischer vs Boris Spassky, Reykjavik 1972. Pawn takes the knight on d5. Nothing can recapture, so Black wins a free knight.",
   "source": "famous-fischer-spassky6",
-  "id": "hangingPiece-23"
+  "id": "hangingPiece-36"
  },
  {
   "fen": "rnbqk2r/ppp4p/3b3n/3pPp2/1P5p/4P1P1/P1P1NP1P/R1B1KBNR w KQkq - 0 1",
@@ -469,7 +743,33 @@
   "mate_in": 0,
   "text": "Pawn takes the bishop on d6. It can be recaptured, but the bishop is worth more than the pawn, so White still comes out ahead.",
   "source": "game5017",
-  "id": "hangingPiece-24"
+  "id": "hangingPiece-37"
+ },
+ {
+  "fen": "rnbqk3/1pp5/3ppnp1/p4p2/P2P1bP1/2P2P1N/1PQ1P1B1/RN2K3 w - - 0 1",
+  "solutions": [
+   "h3f4"
+  ],
+  "san": "Nxf4",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Knight takes the bishop on f4. Nothing can recapture, so White wins a free bishop.",
+  "source": "game3039",
+  "id": "hangingPiece-38"
+ },
+ {
+  "fen": "rnbqkb1r/ppp1p2p/8/3pnpP1/3P4/1PN2PP1/P1P1P3/R1BQKBNR w KQkq - 0 1",
+  "solutions": [
+   "d4e5"
+  ],
+  "san": "dxe5",
+  "idea": "hangingPiece",
+  "tier": 1,
+  "mate_in": 0,
+  "text": "Pawn takes the knight on e5. Nothing can recapture, so White wins a free knight.",
+  "source": "game3053",
+  "id": "hangingPiece-39"
  },
  {
   "fen": "rnbqkb1r/ppp1ppp1/8/3p2np/P6Q/2P4P/1P1PNPP1/RNB1KB1R w Qkq - 0 1",
@@ -482,7 +782,7 @@
   "mate_in": 0,
   "text": "Queen takes the knight on g5. Nothing can recapture, so White wins a free knight.",
   "source": "game30005",
-  "id": "hangingPiece-25"
+  "id": "hangingPiece-40"
  },
  {
   "fen": "3r2k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1",
@@ -524,6 +824,19 @@
   "id": "backRankMate-3"
  },
  {
+  "fen": "1n1k2nr/pp6/1N1pp1pp/8/2P2BP1/1P5N/P2QPP1P/R3K2b w Q - 0 1",
+  "solutions": [
+   "d2d6"
+  ],
+  "san": "Qxd6+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Queen to d6 forks the knight on b8, the king on d8 and the pawn on e6. Black must answer the check, so White then wins the other piece.",
+  "source": "game3202",
+  "id": "fork-1"
+ },
+ {
   "fen": "1nb2bnr/4k1pp/rp3q2/p3pp2/Q1Pp1N2/P3P3/R3KPPP/1NB2B1R w - - 0 1",
   "solutions": [
    "f4d5"
@@ -534,7 +847,7 @@
   "mate_in": 0,
   "text": "Knight to d5 forks the queen on f6 and the king on e7. Black must answer the check, so White then wins the other piece.",
   "source": "game19",
-  "id": "fork-1"
+  "id": "fork-2"
  },
  {
   "fen": "1nb3nr/1pp1kppp/r1q2b2/3p2N1/pP1Pp3/N3BPP1/P1PKP2P/R1Q2B1R w - - 0 1",
@@ -547,7 +860,7 @@
   "mate_in": 0,
   "text": "Pawn to b5 forks the rook on a6 and the queen on c6. Black can only save one of them.",
   "source": "game30066",
-  "id": "fork-2"
+  "id": "fork-3"
  },
  {
   "fen": "1r1qkbnr/pb1p1p2/np4pp/2pPp1P1/3Q4/1P6/P1P1PP1P/RNB1KBNR w KQk c6 0 1",
@@ -560,7 +873,59 @@
   "mate_in": 0,
   "text": "Queen to e5 forks the rook on h8 and the king on e8. Black must answer the check, so White then wins the other piece.",
   "source": "game30045",
-  "id": "fork-3"
+  "id": "fork-4"
+ },
+ {
+  "fen": "1r2k2r/p3ppbp/b4npn/PNp3q1/2P5/4PP2/1B1QK1PP/R4BNR w k - 0 1",
+  "solutions": [
+   "b5c7"
+  ],
+  "san": "Nc7+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Knight to c7 forks the king on e8 and the bishop on a6. Black must answer the check, so White then wins the other piece.",
+  "source": "game3195",
+  "id": "fork-5"
+ },
+ {
+  "fen": "2b1kb1r/1ppqppp1/r1n2n2/3p3p/pPPP1P1P/P1N5/3NP1P1/R1BQKB1R w KQk - 0 1",
+  "solutions": [
+   "b4b5"
+  ],
+  "san": "b5",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Pawn to b5 forks the rook on a6 and the knight on c6. Black can only save one of them.",
+  "source": "game3140",
+  "id": "fork-6"
+ },
+ {
+  "fen": "2bq1b1r/rp2kppp/2p2n2/2npp3/p3P1PP/BPP2PK1/P2P4/RN1Q1BNR w - - 0 1",
+  "solutions": [
+   "a3c5"
+  ],
+  "san": "Bxc5+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Bishop to c5 forks the king on e7 and the rook on a7. Black must answer the check, so White then wins the other piece.",
+  "source": "game3252",
+  "id": "fork-7"
+ },
+ {
+  "fen": "2bqk2r/rp1p1p2/n3p2n/p6p/3pP1p1/1PN2PPP/P1P1B2R/1R1Q1KN1 w k - 0 1",
+  "solutions": [
+   "d1d4"
+  ],
+  "san": "Qxd4",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Queen to d4 forks the rook on h8 and the rook on a7. Black can only save one of them.",
+  "source": "game3074",
+  "id": "fork-8"
  },
  {
   "fen": "3k2nr/p4p1p/b1Qpp2b/1p3pN1/1Pp4P/P1N1P3/R1PP2P1/2BK1BR1 w - - 0 1",
@@ -573,7 +938,7 @@
   "mate_in": 0,
   "text": "Knight to f7 forks the rook on h8 and the king on d8. Black must answer the check, so White then wins the other piece.",
   "source": "game7",
-  "id": "fork-4"
+  "id": "fork-9"
  },
  {
   "fen": "3k3r/8/8/4N3/8/8/8/4K3 w - - 0 1",
@@ -586,7 +951,33 @@
   "mate_in": 0,
   "text": "Knight to f7 forks the rook on h8 and the king on d8. Black must answer the check, so White then wins the other piece.",
   "source": "hand",
-  "id": "fork-5"
+  "id": "fork-10"
+ },
+ {
+  "fen": "5bnr/1Q2p3/2pp1pk1/7p/2pP4/2P4P/r2BP1P1/2KR1BNR w - - 0 1",
+  "solutions": [
+   "b7b1"
+  ],
+  "san": "Qb1+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Queen to b1 forks the king on g6 and the rook on a2. Black must answer the check, so White then wins the other piece.",
+  "source": "game3277",
+  "id": "fork-11"
+ },
+ {
+  "fen": "Qnb1q1n1/p1pppk2/1p4pr/1PP2p1p/3b3N/B5P1/P3PP1P/RN2KB1R w KQ - 0 1",
+  "solutions": [
+   "a8d5"
+  ],
+  "san": "Qd5+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Queen to d5 forks the king on f7 and the bishop on d4. Black must answer the check, so White then wins the other piece.",
+  "source": "game3005",
+  "id": "fork-12"
  },
  {
   "fen": "r1b1kb1r/p3ppp1/1p3n2/1Np5/PP4Pp/1P2p1PP/3P3Q/R1B1KBR1 w Q - 0 1",
@@ -599,7 +990,7 @@
   "mate_in": 0,
   "text": "Knight to c7 forks the king on e8 and the rook on a8. Black must answer the check, so White then wins the other piece.",
   "source": "game30065",
-  "id": "fork-6"
+  "id": "fork-13"
  },
  {
   "fen": "r1b1kbnr/pp4p1/2npp2p/1Np2p2/2P2P1P/1P2P2N/P5P1/RKB2B1R w kq - 0 1",
@@ -612,7 +1003,7 @@
   "mate_in": 0,
   "text": "Knight to c7 forks the king on e8 and the rook on a8. Black must answer the check, so White then wins the other piece.",
   "source": "game30021",
-  "id": "fork-7"
+  "id": "fork-14"
  },
  {
   "fen": "r1b4r/pppkbppp/n2p3n/8/4Pp2/N2B1NQ1/PPPP2PP/R1B1K2R w KQ - 0 1",
@@ -625,7 +1016,7 @@
   "mate_in": 0,
   "text": "Queen to g7 forks the rook on h8 and the knight on h6. Black can only save one of them.",
   "source": "game11",
-  "id": "fork-8"
+  "id": "fork-15"
  },
  {
   "fen": "r1bk2nr/ppnpq1p1/5p2/4N2p/P1pP4/2P2Q2/1P2PPPP/R1B1KBR1 w Q - 0 1",
@@ -638,7 +1029,46 @@
   "mate_in": 0,
   "text": "Knight to g6 forks the rook on h8 and the queen on e7. Black can only save one of them.",
   "source": "game30015",
-  "id": "fork-9"
+  "id": "fork-16"
+ },
+ {
+  "fen": "r1bkr3/ppp2p2/n6n/3p2bp/1P1P4/P5PP/B4PQ1/1N3KNR w - - 0 1",
+  "solutions": [
+   "g2d5"
+  ],
+  "san": "Qxd5+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Queen to d5 forks the king on d8 and the bishop on g5. Black must answer the check, so White then wins the other piece.",
+  "source": "game3241",
+  "id": "fork-17"
+ },
+ {
+  "fen": "r1bq1bk1/p2pp1p1/1p3p1n/1Pp4Q/5P2/1PPPP3/4R1PP/1NB1KB1R w K - 0 1",
+  "solutions": [
+   "h5d5"
+  ],
+  "san": "Qd5+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Queen to d5 forks the king on g8 and the rook on a8. Black must answer the check, so White then wins the other piece.",
+  "source": "game3101",
+  "id": "fork-18"
+ },
+ {
+  "fen": "r1bq2nr/p1ppbkp1/n4p2/PQ2p2p/1P5P/R1P1PPN1/3P2P1/1NB1KBR1 w - - 0 1",
+  "solutions": [
+   "b5d5"
+  ],
+  "san": "Qd5+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Queen to d5 forks the king on f7 and the rook on a8. Black must answer the check, so White then wins the other piece.",
+  "source": "game3062",
+  "id": "fork-19"
  },
  {
   "fen": "r1bq3r/ppppkppp/8/n3p2n/Pb2N3/1PN5/2PPPPPP/1RBQKB1R w - - 0 1",
@@ -651,7 +1081,20 @@
   "mate_in": 0,
   "text": "Knight to d5 forks the king on e7 and the bishop on b4. Black must answer the check, so White then wins the other piece.",
   "source": "game5033",
-  "id": "fork-10"
+  "id": "fork-20"
+ },
+ {
+  "fen": "r1q2bnr/1ppkpp2/4b1pp/p7/1nP1Q3/2N1P2P/P2P1PP1/R1B1KBNR w KQ - 0 1",
+  "solutions": [
+   "e4d4"
+  ],
+  "san": "Qd4+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Queen to d4 forks the rook on h8 and the king on d7. Black must answer the check, so White then wins the other piece.",
+  "source": "game3142",
+  "id": "fork-21"
  },
  {
   "fen": "r1qk3r/2pp1p1p/1pbbp2n/6PP/1n1P4/p4QPB/2P1P2R/RNB2KN1 w - - 0 1",
@@ -664,7 +1107,7 @@
   "mate_in": 0,
   "text": "Queen to f6 forks the rook on h8 and the king on d8. Black must answer the check, so White then wins the other piece.",
   "source": "game5029",
-  "id": "fork-11"
+  "id": "fork-22"
  },
  {
   "fen": "r3kb1r/4pppp/1p1p3n/1N6/2B1P3/7P/PPPPQP1P/R1B1K2R w KQkq - 0 1",
@@ -677,7 +1120,46 @@
   "mate_in": 0,
   "text": "Knight to c7 forks the king on e8 and the rook on a8. Black must answer the check, so White then wins the other piece.",
   "source": "game5036",
-  "id": "fork-12"
+  "id": "fork-23"
+ },
+ {
+  "fen": "r3kb2/p2nqpp1/3p1n1r/1Np3Q1/PP2p1Pp/2PPP3/3K1P1P/R1B2BNR w q - 0 1",
+  "solutions": [
+   "b5c7"
+  ],
+  "san": "Nc7+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Knight to c7 forks the king on e8 and the rook on a8. Black must answer the check, so White then wins the other piece.",
+  "source": "game3248",
+  "id": "fork-24"
+ },
+ {
+  "fen": "r3kbnr/p1p3p1/bpn4p/8/Q7/N4P1P/Pq1PP3/R3KBNR w KQkq - 0 1",
+  "solutions": [
+   "a4c6"
+  ],
+  "san": "Qxc6+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Queen to c6 forks the king on e8, the rook on a8 and the pawn on c7. Black must answer the check, so White then wins the other piece.",
+  "source": "game3082",
+  "id": "fork-25"
+ },
+ {
+  "fen": "r4b2/pb1n1kpr/n1ppq3/Pp2p2p/1P6/R1PPPP1N/6PP/1NB2BKR w - - 0 1",
+  "solutions": [
+   "h3g5"
+  ],
+  "san": "Ng5+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Knight to g5 forks the rook on h7, the king on f7 and the queen on e6. Black must answer the check, so White then wins the other piece.",
+  "source": "game3097",
+  "id": "fork-26"
  },
  {
   "fen": "rnb1k1r1/pp1p3p/2p1pq2/1N3p1P/3P4/5PP1/PbP1P2R/R2QKBN1 w Qq - 0 1",
@@ -690,7 +1172,46 @@
   "mate_in": 0,
   "text": "Knight to c7 forks the king on e8 and the rook on a8. Black must answer the check, so White then wins the other piece.",
   "source": "game30059",
-  "id": "fork-13"
+  "id": "fork-27"
+ },
+ {
+  "fen": "rnb1kb1r/p2p3p/6p1/3N1p2/1p2p2q/1Pp1P2N/P3QPPP/R1B1KBR1 w kq - 0 1",
+  "solutions": [
+   "d5c7"
+  ],
+  "san": "Nc7+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Knight to c7 forks the king on e8 and the rook on a8. Black must answer the check, so White then wins the other piece.",
+  "source": "game3006",
+  "id": "fork-28"
+ },
+ {
+  "fen": "rnb1kbn1/1p2pp2/1p5r/1N5p/6p1/4P1PP/PB1P1PB1/R3K2R w KQq - 0 1",
+  "solutions": [
+   "b5c7"
+  ],
+  "san": "Nc7+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Knight to c7 forks the king on e8 and the rook on a8. Black must answer the check, so White then wins the other piece.",
+  "source": "game3235",
+  "id": "fork-29"
+ },
+ {
+  "fen": "rnb1kbnr/1p1qp1p1/p7/2Pp1pBp/N7/5P2/PPP1P1PP/R2QKBNR w KQkq - 0 1",
+  "solutions": [
+   "a4b6"
+  ],
+  "san": "Nb6",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Knight to b6 forks the queen on d7 and the rook on a8. Black can only save one of them.",
+  "source": "game3081",
+  "id": "fork-30"
  },
  {
   "fen": "rnb1qr2/1p1p1pp1/4k2n/p1pN4/P3PP1p/7N/RPPB2PP/3K1B1R w - - 0 1",
@@ -703,7 +1224,7 @@
   "mate_in": 0,
   "text": "Knight to c7 forks the queen on e8, the rook on a8 and the king on e6. Black must answer the check, so White then wins the other piece.",
   "source": "game5086",
-  "id": "fork-14"
+  "id": "fork-31"
  },
  {
   "fen": "rnb2b1r/pp1p1p1p/2pk2p1/7P/2Qp4/NPP1P2P/P5P1/R1B1KBNR w - - 0 1",
@@ -716,7 +1237,59 @@
   "mate_in": 0,
   "text": "Queen to d4 forks the rook on h8 and the king on d6. Black must answer the check, so White then wins the other piece.",
   "source": "game5118",
-  "id": "fork-15"
+  "id": "fork-32"
+ },
+ {
+  "fen": "rnb3nr/2pp1kp1/pp5p/Q4pqP/1P6/P1P2Pb1/3PP3/RNBK1BNR w - - 0 1",
+  "solutions": [
+   "a5d5"
+  ],
+  "san": "Qd5+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Queen to d5 forks the king on f7 and the rook on a8. Black must answer the check, so White then wins the other piece.",
+  "source": "game3259",
+  "id": "fork-33"
+ },
+ {
+  "fen": "rnbk1b1r/pp1p1ppp/4pq1n/3p4/3P1PP1/4P3/PPPNN2P/R1BQK1R1 w Q - 0 1",
+  "solutions": [
+   "g4g5"
+  ],
+  "san": "g5",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Pawn to g5 forks the queen on f6 and the knight on h6. Black can only save one of them.",
+  "source": "game3193",
+  "id": "fork-34"
+ },
+ {
+  "fen": "rnbk1bn1/pp1ppp2/3r4/2p3N1/8/P1P1P2P/1P1P1P2/RNBK1B1R w - - 0 1",
+  "solutions": [
+   "g5f7"
+  ],
+  "san": "Nxf7+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Knight to f7 forks the king on d8 and the rook on d6. Black must answer the check, so White then wins the other piece.",
+  "source": "game3171",
+  "id": "fork-35"
+ },
+ {
+  "fen": "rnbq1bnr/p2p1ppp/1p2pk2/1Np5/2P5/4P2P/PP1P1PP1/R1BQKBNR w KQ - 0 1",
+  "solutions": [
+   "d1f3"
+  ],
+  "san": "Qf3+",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Queen to f3 forks the rook on a8 and the king on f6. Black must answer the check, so White then wins the other piece.",
+  "source": "game3007",
+  "id": "fork-36"
  },
  {
   "fen": "rnbq2nr/2pp1kbp/p4p2/6p1/3QP3/2N2P2/P1P3PP/R1B1KBNR w KQ - 0 1",
@@ -729,7 +1302,20 @@
   "mate_in": 0,
   "text": "Queen to d5 forks the king on f7 and the rook on a8. Black must answer the check, so White then wins the other piece.",
   "source": "game5090",
-  "id": "fork-16"
+  "id": "fork-37"
+ },
+ {
+  "fen": "rnbqkb1r/1p2pppp/3p4/p1p3NB/8/4P3/PPPP1PPP/RNBQK2R w KQkq c6 0 1",
+  "solutions": [
+   "g5f7"
+  ],
+  "san": "Nxf7",
+  "idea": "fork",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "Knight to f7 forks the rook on h8 and the queen on d8. Black can only save one of them.",
+  "source": "game3009",
+  "id": "fork-38"
  },
  {
   "fen": "1nbq1b1r/2ppk2p/1p1n2p1/rN2p3/p1P1P1P1/3P3Q/PP3K1P/R1B2BNR w - - 0 1",
@@ -771,6 +1357,32 @@
   "id": "skewer-3"
  },
  {
+  "fen": "r1k2bnr/pp2p1p1/8/PQB2p2/4p2p/1P4PN/R1PP1P1R/1N2KB2 w - - 0 1",
+  "solutions": [
+   "b5e8"
+  ],
+  "san": "Qe8+",
+  "idea": "skewer",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "The queen on e8 skewers the king on c8: the king must move, and then White takes the rook on a8.",
+  "source": "game3254",
+  "id": "skewer-4"
+ },
+ {
+  "fen": "r4bn1/p1qpp2r/n7/3k1NP1/7p/N1P1K2P/1PQ1P1P1/R1B2B1R w - - 0 1",
+  "solutions": [
+   "c2e4"
+  ],
+  "san": "Qe4+",
+  "idea": "skewer",
+  "tier": 2,
+  "mate_in": 0,
+  "text": "The queen on e4 skewers the king on d5: the king must move, and then White takes the rook on a8.",
+  "source": "game3230",
+  "id": "skewer-5"
+ },
+ {
   "fen": "rnb1k3/1p1p2br/p1n2pp1/q1p1p2p/B1Q1PP1P/N5P1/PPPP4/1RB1K1NR w Kq - 0 1",
   "solutions": [
    "c4g8"
@@ -781,7 +1393,7 @@
   "mate_in": 0,
   "text": "The queen on g8 skewers the king on e8: the king must move, and then White takes the bishop on c8.",
   "source": "game5074",
-  "id": "skewer-4"
+  "id": "skewer-6"
  },
  {
   "fen": "rnb1qbnr/pp1p1k2/5p1p/2p1p1p1/2P1QPB1/4P3/PP1P1KPP/RNB3NR w - - 0 1",
@@ -794,7 +1406,7 @@
   "mate_in": 0,
   "text": "The bishop on h5 skewers the king on f7: the king must move, and then White takes the queen on e8.",
   "source": "game1078",
-  "id": "skewer-5"
+  "id": "skewer-7"
  },
  {
   "fen": "rnb2bnr/pp1p1p2/3kp2p/6p1/3P4/1N4P1/PQP1PP1P/R3KBNR w KQ - 0 1",
@@ -807,7 +1419,7 @@
   "mate_in": 0,
   "text": "The queen on a3 skewers the king on d6: the king must move, and then White takes the bishop on f8.",
   "source": "game30025",
-  "id": "skewer-6"
+  "id": "skewer-8"
  },
  {
   "fen": "rnbq1b2/ppp1k1pr/4p2n/1P1p1p1p/3P4/2N1B2P/P1PKPPP1/R2Q1BNR w - - 0 1",
@@ -820,7 +1432,46 @@
   "mate_in": 0,
   "text": "The bishop on g5 skewers the king on e7: the king must move, and then White takes the queen on d8.",
   "source": "game30036",
-  "id": "skewer-7"
+  "id": "skewer-9"
+ },
+ {
+  "fen": "1nb1kr2/3p3p/rqp1p1pb/pp3p2/1P1P3P/B1P3PN/PQ2PK2/RN3BR1 w - - 0 1",
+  "solutions": [
+   "b4a5"
+  ],
+  "san": "bxa5",
+  "idea": "discoveredAttack",
+  "tier": 3,
+  "mate_in": 0,
+  "text": "Moving the pawn uncovers the bishop on a3, which now attacks the rook on f8, while the pawn makes a threat of its own. Black cannot meet both.",
+  "source": "game3104",
+  "id": "discoveredAttack-1"
+ },
+ {
+  "fen": "2b1k3/2p1nppr/rpn1p2p/p1qp4/P2b1PP1/2N4P/RPPBP3/3QKBNR w K - 0 1",
+  "solutions": [
+   "e2e3"
+  ],
+  "san": "e3",
+  "idea": "discoveredAttack",
+  "tier": 3,
+  "mate_in": 0,
+  "text": "Moving the pawn uncovers the bishop on f1, which now attacks the rook on a6, while the pawn makes a threat of its own. Black cannot meet both.",
+  "source": "game3192",
+  "id": "discoveredAttack-2"
+ },
+ {
+  "fen": "2b1qb1r/1p1p4/r2k1pp1/pQ5p/P3P2P/1PPB1P1N/3K2P1/RN5R w - - 0 1",
+  "solutions": [
+   "b5d5"
+  ],
+  "san": "Qd5+",
+  "idea": "discoveredAttack",
+  "tier": 3,
+  "mate_in": 0,
+  "text": "Moving the queen gives check and uncovers the bishop on d3, which attacks the rook on a6. Black must answer the check, so there is no time to save it.",
+  "source": "game3244",
+  "id": "discoveredAttack-3"
  },
  {
   "fen": "2r1r3/5pk1/6bp/8/Np1qnRP1/1P1Q2P1/6BP/1N1R3K b - - 0 1",
@@ -833,7 +1484,20 @@
   "mate_in": 0,
   "text": "From Anatoly Karpov vs Garry Kasparov, Moscow 1985. Moving the knight gives check and uncovers the bishop on g6, which attacks the queen on d3. White must answer the check, so there is no time to save it.",
   "source": "famous-karpov-kasparov16",
-  "id": "discoveredAttack-1"
+  "id": "discoveredAttack-4"
+ },
+ {
+  "fen": "4kbnr/4pp1p/b1np2p1/q7/2P4P/2R1P1P1/1B1PBP2/1N2K2R w k - 0 1",
+  "solutions": [
+   "c3a3"
+  ],
+  "san": "Ra3",
+  "idea": "discoveredAttack",
+  "tier": 3,
+  "mate_in": 0,
+  "text": "Moving the rook uncovers the bishop on b2, which now attacks the rook on h8, while the rook makes a threat of its own. Black cannot meet both.",
+  "source": "game3264",
+  "id": "discoveredAttack-5"
  },
  {
   "fen": "b2r3r/k3qp1p/p4np1/Nppn4/3pPQ2/P4PPB/1PP4P/1K1RR3 w - - 0 1",
@@ -846,7 +1510,7 @@
   "mate_in": 0,
   "text": "From Garry Kasparov vs Veselin Topalov, Wijk aan Zee 1999. Moving the pawn uncovers the rook on e1, which now attacks the queen on e7, while the pawn makes a threat of its own. Black cannot meet both.",
   "source": "famous-kasparov-topalov",
-  "id": "discoveredAttack-2"
+  "id": "discoveredAttack-6"
  },
  {
   "fen": "r1b2b1r/pp2pk1p/n5pn/1qp2p2/1P2p3/P1P4N/1B1PPPBP/RNR3K1 w - - 0 1",
@@ -859,7 +1523,46 @@
   "mate_in": 0,
   "text": "Moving the pawn uncovers the bishop on b2, which now attacks the rook on h8, while the pawn makes a threat of its own. Black cannot meet both.",
   "source": "game1085",
-  "id": "discoveredAttack-3"
+  "id": "discoveredAttack-7"
+ },
+ {
+  "fen": "r1b2bnr/ppq1p1pp/4k3/2p1NpP1/1P3B2/P1P4P/4PPB1/RN2K2R w KQ - 0 1",
+  "solutions": [
+   "e5g6"
+  ],
+  "san": "Ng6",
+  "idea": "discoveredAttack",
+  "tier": 3,
+  "mate_in": 0,
+  "text": "Moving the knight uncovers the bishop on f4, which now attacks the queen on c7, while the knight makes a threat of its own. Black cannot meet both.",
+  "source": "game3176",
+  "id": "discoveredAttack-8"
+ },
+ {
+  "fen": "r2q1k1r/pbp1pp1p/p2p2pb/8/5Pn1/2P1P2P/PP1P2P1/RNB1K1NR w KQ - 0 1",
+  "solutions": [
+   "h3g4"
+  ],
+  "san": "hxg4",
+  "idea": "discoveredAttack",
+  "tier": 3,
+  "mate_in": 0,
+  "text": "Moving the pawn uncovers the rook on h1, which now attacks the bishop on h6, while the pawn makes a threat of its own. Black cannot meet both.",
+  "source": "game3002",
+  "id": "discoveredAttack-9"
+ },
+ {
+  "fen": "rn2k1nr/pb2ppbp/2pp2P1/1P6/Q7/P5R1/1P1PPqP1/RNBK1BN1 w kq - 0 1",
+  "solutions": [
+   "g6f7"
+  ],
+  "san": "gxf7+",
+  "idea": "discoveredAttack",
+  "tier": 3,
+  "mate_in": 0,
+  "text": "Moving the pawn gives check and uncovers the rook on g3, which attacks the bishop on g7. Black must answer the check, so there is no time to save it.",
+  "source": "game3169",
+  "id": "discoveredAttack-10"
  },
  {
   "fen": "rn2k3/p1Qpqp1p/b1p2n2/1p4r1/7p/P2PP2N/1P2PK2/RNB2B1R w q - 0 1",
@@ -872,7 +1575,7 @@
   "mate_in": 0,
   "text": "Moving the knight uncovers the rook on h1, which now attacks the pawn on h4, while the knight makes a threat of its own. Black cannot meet both.",
   "source": "game5027",
-  "id": "discoveredAttack-4"
+  "id": "discoveredAttack-11"
  },
  {
   "fen": "rnb1k1nr/3p3p/p2b1Pp1/1P6/4P2R/P2P1N2/1B1N1PP1/R2QKB2 w Q - 0 1",
@@ -885,7 +1588,20 @@
   "mate_in": 0,
   "text": "Moving the pawn gives check and uncovers the bishop on b2, which attacks the rook on h8. Black must answer the check, so there is no time to save it.",
   "source": "game107",
-  "id": "discoveredAttack-5"
+  "id": "discoveredAttack-12"
+ },
+ {
+  "fen": "rnq2k1r/p1p2ppp/1p5n/4p1b1/2P5/4PPPP/P2PN1BR/1QB1K1N1 w - - 0 1",
+  "solutions": [
+   "f3f4"
+  ],
+  "san": "f4",
+  "idea": "discoveredAttack",
+  "tier": 3,
+  "mate_in": 0,
+  "text": "Moving the pawn uncovers the bishop on g2, which now attacks the rook on a8, while the pawn makes a threat of its own. Black cannot meet both.",
+  "source": "game3033",
+  "id": "discoveredAttack-13"
  },
  {
   "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
@@ -901,7 +1617,7 @@
   "id": "smotheredMate-1"
  },
  {
-  "fen": "r1b1k2r/ppppqppp/2n5/4n3/1PP2B2/5N2/1P1NPPPP/R2QKB1R b KQkq - 0 8",
+  "fen": "r1b1k2r/ppppqppp/2n5/4n3/1PP2B2/5N2/1P1NPPPP/R2QKB1R b KQkq - 0 1",
   "solutions": [
    "e5d3"
   ],
