@@ -333,6 +333,7 @@ class _PlayScreenState extends State<PlayScreen> {
     final score = _score;
     if (score == null || _recorded) return;
     _recorded = true;
+    if (_board.ply >= 2) widget.progress.saveGame(_pgnText());
     if (_assisted) {
       _ratingNote = 'Practice game (hints or take-backs used): rating unchanged.';
       return;
@@ -354,32 +355,31 @@ class _PlayScreenState extends State<PlayScreen> {
     return (s == 1) == (_player == white) ? '1-0' : '0-1';
   }
 
-  void _exportPgn() {
+  String _pgnText() {
     final now = DateTime.now();
     final date = '${now.year}.${now.month.toString().padLeft(2, '0')}.${now.day.toString().padLeft(2, '0')}';
     final me = 'You';
     final opp = _level.title;
-    showPgnExport(
-      context,
-      toPgn(
-        _board.moves,
-        result: _pgnResult,
-        headers: {
-          'Date': date,
-          'White': _player == white ? me : opp,
-          'Black': _player == white ? opp : me,
-          'WhiteElo': '${_player == white ? widget.progress.rating : _level.elo}',
-          'BlackElo': '${_player == white ? _level.elo : widget.progress.rating}',
-        },
-      ),
+    return toPgn(
+      _board.moves,
+      result: _pgnResult,
+      headers: {
+        'Date': date,
+        'White': _player == white ? me : opp,
+        'Black': _player == white ? opp : me,
+        'WhiteElo': '${_player == white ? widget.progress.rating : _level.elo}',
+        'BlackElo': '${_player == white ? _level.elo : widget.progress.rating}',
+      },
     );
   }
+
+  void _exportPgn() => showPgnExport(context, _pgnText());
 
   Future<void> _importPgn() async {
     final game = await showPgnImport(context);
     if (game == null || !mounted) return;
     await Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => GameViewer(game: game)),
+      MaterialPageRoute<void>(builder: (_) => GameViewer(game: game, progress: widget.progress)),
     );
   }
 

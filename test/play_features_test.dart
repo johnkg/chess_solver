@@ -99,5 +99,9 @@ void main() {
     expect(progress.games.length, 1);
     expect(progress.rating, lessThan(1000));
     expect(find.textContaining('Rating'), findsWidgets);
+    // The finished game is kept for review later, newest first.
+    expect(progress.savedGames, hasLength(1));
+    expect(progress.savedGames.first, contains('1. e4'));
+    expect(progress.savedGames.first, contains('[White "You"]'));
   });
 }
