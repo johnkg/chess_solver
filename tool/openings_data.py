@@ -129,6 +129,39 @@ OPENINGS = [
 ]
 
 
+# Alternative lines: the other side's different replies (name, moves from move 1). The
+# trainer merges them with the main line into a tree.
+BRANCHES = {'op-italian': [('Two Knights Defence', 'e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Na5 Bb5+ c6 dxc6 bxc6 Be2 h6 Nf3 e4 Ne5 Bd6 d4'),
+     ('Hungarian Defence', 'e4 e5 Nf3 Nc6 Bc4 Be7 d4 exd4 Nxd4 Nf6 Nc3 O-O')], 'op-ruy': [('Berlin Defence', 'e4 e5 Nf3 Nc6 Bb5 Nf6 O-O Nxe4 d4 Nd6 Bxc6 dxc6 dxe5 Nf5 Qxd8+ Kxd8'),
+     ('Steinitz Defence', 'e4 e5 Nf3 Nc6 Bb5 d6 d4 Bd7 Nc3 Nf6 O-O Be7 Re1 exd4 Nxd4 O-O'),
+     ('Open Defence', 'e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Nxe4 d4 b5 Bb3 d5 dxe5 Be6 c3 Be7')], 'op-qgd': [("Queen's Gambit Accepted", 'd4 d5 c4 dxc4 Nf3 Nf6 e3 e6 Bxc4 c5 O-O a6'),
+     ('Slav Defence', 'd4 d5 c4 c6 Nf3 Nf6 Nc3 dxc4 a4 Bf5 e3 e6 Bxc4 Bb4 O-O Nbd7'),
+     ('Tarrasch Defence', 'd4 d5 c4 e6 Nc3 c5 cxd5 exd5 Nf3 Nc6 g3 Nf6 Bg2 Be7 O-O O-O'),
+     ('Albin Countergambit', 'd4 d5 c4 e5 dxe5 d4 Nf3 Nc6 g3 Be6 Nbd2 Qd7')], 'op-london': [('Black plays ...e6', 'd4 d5 Bf4 Nf6 e3 e6 Nf3 Bd6 Bg3 O-O Nbd2 b6 Bd3 Bb7'),
+     ("King's Indian setup", 'd4 Nf6 Bf4 g6 e3 Bg7 Nf3 O-O Be2 d6 h3 Nbd7 O-O'),
+     ('Black plays ...c5 and ...Qb6', 'd4 d5 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 c4 Qxb6 axb6 Nd2 Bf5')], 'op-najdorf': [('6.Bg5', 'e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 Bg5 e6 f4 Be7 Qf3 Qc7 O-O-O Nbd7'),
+     ('6.Be2', 'e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 Be2 e5 Nb3 Be7 O-O O-O Be3 Be6'),
+     ('6.Bc4', 'e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 Bc4 e6 Bb3 b5 O-O Be7 Qf3 Qc7')], 'op-french': [('Advance Variation', 'e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 a3 c4 Nbd2 Bd7'),
+     ('Exchange Variation', 'e4 e6 d4 d5 exd5 exd5 Nf3 Nf6 Bd3 Bd6 O-O O-O'),
+     ('Tarrasch Variation', 'e4 e6 d4 d5 Nd2 c5 exd5 exd5 Ngf3 Nc6 Bb5 Bd6 dxc5 Bxc5 O-O Ne7')], 'op-caro': [('Advance Variation', 'e4 c6 d4 d5 e5 Bf5 Nf3 e6 Be2 c5 Be3 cxd4 Nxd4 Ne7'),
+     ('Exchange Variation', 'e4 c6 d4 d5 exd5 cxd5 Bd3 Nc6 c3 Nf6 Bf4 Bg4 Qb3 Qd7'),
+     ('Panov Attack', 'e4 c6 d4 d5 exd5 cxd5 c4 Nf6 Nc3 e6 Nf3 Be7 cxd5 Nxd5 Bd3 Nc6 O-O O-O')], 'op-kid': [('Sämisch Variation', 'd4 Nf6 c4 g6 Nc3 Bg7 e4 d6 f3 O-O Be3 e5 d5 Nh5 Qd2 f5'),
+     ('Fianchetto Variation', 'd4 Nf6 c4 g6 g3 Bg7 Bg2 O-O Nc3 d6 Nf3 Nbd7 O-O e5 e4 c6'),
+     ('Four Pawns Attack', 'd4 Nf6 c4 g6 Nc3 Bg7 e4 d6 f4 O-O Nf3 c5 d5 e6 Be2 exd5 cxd5 Bg4')]}
+
+
+def branches_of(oid, main):
+    """The extra lines of an opening as canonical SAN, checked to branch off the main line."""
+    names, lines = [], []
+    for name, moves in BRANCHES.get(oid, []):
+        sans = [s for _, _, s in replay(moves)]
+        assert sans != main and sans[:len(main)] != main and main[:len(sans)] != sans, (oid, name)
+        assert all(sans[:len(o)] != o and o[:len(sans)] != sans for o in lines), (oid, name)
+        names.append(name)
+        lines.append(sans)
+    return dict(branch_names=names, branches=[' '.join(l) for l in lines]) if lines else {}
+
+
 def build():
     """Lesson dicts (level 8, kind 'line') with canonical SAN."""
     out = []
@@ -138,7 +171,7 @@ def build():
         assert len(o['spot']) == 3, o['id']
         out.append(dict(id=o['id'], level=8, kind='line', title=o['title'], tagline=o['tagline'],
                         why=o['why'], spot=o['spot'], fen=START, side=o['side'],
-                        line=sans, notes=o['notes']))
+                        line=sans, notes=o['notes'], **branches_of(o['id'], sans)))
     return out
 
 

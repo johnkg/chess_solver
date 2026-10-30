@@ -15,6 +15,7 @@ import 'drill_screen.dart';
 import 'labels.dart';
 import 'line_trainer.dart';
 import 'progress_store.dart';
+import 'repertoire_trainer.dart';
 import 'settings_screen.dart';
 import 'puzzle_screen.dart';
 import 'rush_screen.dart';
@@ -323,11 +324,14 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     RowCard(
                       leading: _check(context, progress.isSolved(lineProgressId(l))),
                       title: l.title,
-                      subtitle: 'You play ${l.side == 'black' ? 'Black' : 'White'} · ${(l.line.length + 1) ~/ 2} moves',
+                      subtitle: 'You play ${l.side == 'black' ? 'Black' : 'White'} · ${(l.line.length + 1) ~/ 2} moves'
+                          '${l.branches.isEmpty ? '' : ' · ${l.branches.length + 1} variations'}',
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
-                          builder: (_) => LineTrainer(lesson: l, progress: progress),
+                          builder: (_) => l.branches.isEmpty
+                              ? LineTrainer(lesson: l, progress: progress)
+                              : RepertoireTrainer(lesson: l, progress: progress),
                         ),
                       ),
                     ),
