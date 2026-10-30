@@ -20,6 +20,7 @@ import 'game_viewer.dart';
 import 'pgn_dialogs.dart';
 import 'player_bar.dart';
 import 'new_game_sheet.dart';
+import 'progress_screen.dart';
 import 'progress_store.dart';
 import 'rating_card.dart';
 import 'review_snapshot.dart';
@@ -413,6 +414,7 @@ class _PlayScreenState extends State<PlayScreen> {
             icon: const Icon(Icons.add),
             onPressed: _openNewGame,
           ),
+          ProgressButton(progress: widget.progress),
           SettingsButton(progress: widget.progress),
           PopupMenuButton<String>(
             tooltip: 'Game file',

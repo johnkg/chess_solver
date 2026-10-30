@@ -14,6 +14,7 @@ import '../puzzles/library.dart';
 import 'drill_screen.dart';
 import 'labels.dart';
 import 'line_trainer.dart';
+import 'progress_screen.dart';
 import 'progress_store.dart';
 import 'repertoire_trainer.dart';
 import 'settings_screen.dart';
@@ -281,7 +282,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Practice'),
-        actions: [SettingsButton(progress: progress)],
+        actions: [ProgressButton(progress: progress), SettingsButton(progress: progress)],
       ),
       body: SafeArea(
         child: ListenableBuilder(

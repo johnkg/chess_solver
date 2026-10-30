@@ -106,7 +106,7 @@ void main() {
       final none = badgesFor(const ProgressStats());
       expect(none.every((b) => !b.earned), isTrue);
       final some = badgesFor(const ProgressStats(puzzlesSolved: 30, wins: 1, peakRating: 1250));
-      Badge byId(String id) => some.firstWhere((b) => b.id == id);
+      Achievement byId(String id) => some.firstWhere((b) => b.id == id);
       expect(byId('first-puzzle').earned, isTrue);
       expect(byId('puzzles-25').earned, isTrue);
       expect(byId('puzzles-100').earned, isFalse);
