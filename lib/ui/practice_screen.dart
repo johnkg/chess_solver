@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../engine/daily.dart';
 import '../engine/piece.dart';
+import '../engine/puzzle.dart';
+import '../engine/review.dart' show weakKey;
+import '../engine/rush.dart';
 import '../engine/position.dart';
 import '../engine/weakspots.dart';
 import '../engine/drill.dart';
@@ -14,17 +17,140 @@ import 'line_trainer.dart';
 import 'progress_store.dart';
 import 'settings_screen.dart';
 import 'puzzle_screen.dart';
+import 'rush_screen.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
 /// Puzzles grouped by difficulty tier, with a tick on solved ones.
-class PracticeScreen extends StatelessWidget {
+class PracticeScreen extends StatefulWidget {
   const PracticeScreen({super.key, required this.progress, this.now});
 
   final ProgressStore progress;
 
   /// Clock for tests; defaults to the real time.
   final DateTime Function()? now;
+
+  @override
+  State<PracticeScreen> createState() => _PracticeScreenState();
+}
+
+class _PracticeScreenState extends State<PracticeScreen> {
+  ProgressStore get progress => widget.progress;
+  DateTime Function()? get now => widget.now;
+
+  /// A [weakKey] to show only that theme's puzzles in the list and the path.
+  String? _theme;
+
+  int get _today => dayNumber(now?.call() ?? DateTime.now());
+
+  bool _inTheme(Puzzle p) => _theme == null || weakKey(p.idea) == _theme;
+
+  void _openPuzzle(Puzzle p, {Puzzle? Function(Set<String>)? next, String label = 'Next puzzle'}) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => PuzzleScreen(
+          puzzle: p,
+          progress: progress,
+          nextPuzzle: next,
+          nextLabel: label,
+          today: _today,
+        ),
+      ),
+    );
+  }
+
+  Puzzle? _pathNext(Set<String> seen) =>
+      nextPathPuzzle(puzzleLibrary, progress.solved, only: (p) => _inTheme(p) && !seen.contains(p.id));
+
+  Puzzle? _dueNext(Set<String> seen) {
+    for (final id in progress.dueForReview(_today)) {
+      if (seen.contains(id)) continue;
+      for (final p in puzzleLibrary) {
+        if (p.id == id) return p;
+      }
+    }
+    return null;
+  }
+
+  Widget _review(BuildContext context) {
+    final first = _dueNext(const {});
+    final n = progress.dueForReview(_today).length;
+    if (first == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: HeroCard(
+        eyebrow: 'Spaced review',
+        title: '$n ${n == 1 ? 'puzzle' : 'puzzles'} to review',
+        body: 'Puzzles you missed come back after a day, then 3, 7, 14 and 30 days '
+            'until you solve them cleanly every time.',
+        action: FilledButton.icon(
+          onPressed: () => _openPuzzle(first, next: _dueNext, label: 'Next review'),
+          icon: const Icon(Icons.history),
+          label: const Text('Start review'),
+        ),
+      ),
+    );
+  }
+
+  Widget _tools(BuildContext context) {
+    final path = _pathNext(const {});
+    final themes = <String, int>{};
+    for (final p in puzzleLibrary) {
+      themes.update(weakKey(p.idea), (n) => n + 1, ifAbsent: () => 1);
+    }
+    final keys = themes.keys.toList()..sort((a, b) => weakLabel(a).compareTo(weakLabel(b)));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: FilledButton.icon(
+                onPressed: path == null ? null : () => _openPuzzle(path, next: _pathNext),
+                icon: const Icon(Icons.route),
+                label: Text(path == null ? 'All solved' : 'Next for you'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => RushScreen(progress: progress)),
+                ),
+                icon: const Icon(Icons.bolt),
+                label: Text(progress.rushBest > 0 ? 'Puzzle Rush · best ${progress.rushBest}' : 'Puzzle Rush'),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ChoiceChip(
+                  label: const Text('All themes'),
+                  selected: _theme == null,
+                  onSelected: (_) => setState(() => _theme = null),
+                ),
+              ),
+              for (final k in keys)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text('${weakLabel(k)} · ${themes[k]}'),
+                    selected: _theme == k,
+                    onSelected: (_) => setState(() => _theme = _theme == k ? null : k),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _daily(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -187,7 +313,10 @@ class PracticeScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 _daily(context),
                 const SizedBox(height: 12),
+                _review(context),
                 _weakSpots(context),
+                const SizedBox(height: 12),
+                _tools(context),
                 for (final (title, level) in [('Opening lines', 8), ('Famous games', 7)]) ...[
                   SectionLabel(title),
                   for (final l in lessons.where((l) => l.kind == LessonKind.line && l.level == level))
@@ -221,8 +350,8 @@ class PracticeScreen extends StatelessWidget {
                     ),
                 ],
                 for (final tier in tiers) ...[
-                  SectionLabel(tierTitle(tier)),
-                  for (final p in puzzleLibrary.where((p) => p.tier == tier))
+                  if (puzzleLibrary.any((p) => p.tier == tier && _inTheme(p))) SectionLabel(tierTitle(tier)),
+                  for (final p in puzzleLibrary.where((p) => p.tier == tier && _inTheme(p)))
                     RowCard(
                       leading: Icon(
                         progress.isSolved(p.id)
