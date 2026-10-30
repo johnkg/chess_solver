@@ -151,6 +151,14 @@ def main(minutes, start=1):
             print('seed rejected by rater:', fen)
         else:
             add(entry(pos, r, 'hand'))
+    hand = os.path.join(HERE, 'hand_seeds.json')  # from gen_hand.py
+    if os.path.exists(hand):
+        with open(hand) as f:
+            for fen in json.load(f):
+                pos = Pos(fen)
+                r = rate(pos, max_mate=3)
+                if r:
+                    add(entry(pos, r, 'hand'))
     print('after seeds:', counts, flush=True)
 
     wanted = [b for b in list(PROPOSERS - {'doubleCheck'}) + ['checkmate', 'backRankMate', 'smotheredMate', 'mate2', 'mate3']]
