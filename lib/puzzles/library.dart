@@ -1160,17 +1160,6 @@ const List<Puzzle> puzzleLibrary = [
   ),
   Puzzle(
     id: 'skewer-5',
-    fen: 'r4bn1/p1qpp2r/n7/3k1NP1/7p/N1P1K2P/1PQ1P1P1/R1B2B1R w - - 0 1',
-    solutions: ['c2e4'],
-    san: 'Qe4+',
-    idea: Idea.skewer,
-    mateIn: 0,
-    tier: 2,
-    text: 'The queen on e4 skewers the king on d5: the king must move, and then White takes the rook on a8.',
-    source: 'game3230',
-  ),
-  Puzzle(
-    id: 'skewer-6',
     fen: 'rnb1k3/1p1p2br/p1n2pp1/q1p1p2p/B1Q1PP1P/N5P1/PPPP4/1RB1K1NR w Kq - 0 1',
     solutions: ['c4g8'],
     san: 'Qg8+',
@@ -1181,7 +1170,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game5074',
   ),
   Puzzle(
-    id: 'skewer-7',
+    id: 'skewer-6',
     fen: 'rnb1qbnr/pp1p1k2/5p1p/2p1p1p1/2P1QPB1/4P3/PP1P1KPP/RNB3NR w - - 0 1',
     solutions: ['g4h5'],
     san: 'Bh5+',
@@ -1192,7 +1181,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game1078',
   ),
   Puzzle(
-    id: 'skewer-8',
+    id: 'skewer-7',
     fen: 'rnb2bnr/pp1p1p2/3kp2p/6p1/3P4/1N4P1/PQP1PP1P/R3KBNR w KQ - 0 1',
     solutions: ['b2a3'],
     san: 'Qa3+',
@@ -1203,7 +1192,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game30025',
   ),
   Puzzle(
-    id: 'skewer-9',
+    id: 'skewer-8',
     fen: 'rnbq1b2/ppp1k1pr/4p2n/1P1p1p1p/3P4/2N1B2P/P1PKPPP1/R2Q1BNR w - - 0 1',
     solutions: ['e3g5'],
     san: 'Bg5+',
@@ -1314,17 +1303,6 @@ const List<Puzzle> puzzleLibrary = [
   ),
   Puzzle(
     id: 'discoveredAttack-10',
-    fen: 'rn2k1nr/pb2ppbp/2pp2P1/1P6/Q7/P5R1/1P1PPqP1/RNBK1BN1 w kq - 0 1',
-    solutions: ['g6f7'],
-    san: 'gxf7+',
-    idea: Idea.discoveredAttack,
-    mateIn: 0,
-    tier: 3,
-    text: 'Moving the pawn gives check and uncovers the rook on g3, which attacks the bishop on g7. Black must answer the check, so there is no time to save it.',
-    source: 'game3169',
-  ),
-  Puzzle(
-    id: 'discoveredAttack-11',
     fen: 'rn2k3/p1Qpqp1p/b1p2n2/1p4r1/7p/P2PP2N/1P2PK2/RNB2B1R w q - 0 1',
     solutions: ['h3g5'],
     san: 'Nxg5',
@@ -1335,7 +1313,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game5027',
   ),
   Puzzle(
-    id: 'discoveredAttack-12',
+    id: 'discoveredAttack-11',
     fen: 'rnb1k1nr/3p3p/p2b1Pp1/1P6/4P2R/P2P1N2/1B1N1PP1/R2QKB2 w Q - 0 1',
     solutions: ['f6f7'],
     san: 'f7+',
@@ -1346,7 +1324,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game107',
   ),
   Puzzle(
-    id: 'discoveredAttack-13',
+    id: 'discoveredAttack-12',
     fen: 'rnq2k1r/p1p2ppp/1p5n/4p1b1/2P5/4PPPP/P2PN1BR/1QB1K1N1 w - - 0 1',
     solutions: ['f3f4'],
     san: 'f4',
