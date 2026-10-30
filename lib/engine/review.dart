@@ -81,3 +81,16 @@ String reviewSummary(List<ReviewEntry> entries) {
   return 'You played $moves: $good sound, $bad '
       '${bad == 1 ? 'mistake' : 'mistakes'}.';
 }
+
+/// A rough 0-100 score for how closely the moves followed the best ones: each
+/// move loses a share of its centipawn loss (capped at 300), so one blunder
+/// hurts more than a few inaccuracies. Null when there are no moves.
+int? reviewAccuracy(List<ReviewEntry> entries) {
+  if (entries.isEmpty) return null;
+  var lost = 0.0;
+  for (final e in entries) {
+    final loss = e.mistake?.loss ?? 0;
+    lost += (loss.clamp(0, 300)) / 300;
+  }
+  return (100 * (1 - lost / entries.length)).round();
+}
