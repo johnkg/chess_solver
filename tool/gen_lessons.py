@@ -66,6 +66,11 @@ class Lesson {
   /// 'white' or 'black': the side you study and are tested on.
   final String? side;
 
+  /// Opening lines: other full lines (SAN, space separated) that branch off the
+  /// main [line], with a name each in [branchNames].
+  final List<String> branches;
+  final List<String> branchNames;
+
   /// For famous games: the move (ply index) where the combination starts, so
   /// the trainer can begin from that position.
   final int? start;
@@ -93,6 +98,8 @@ class Lesson {
     this.notes = const [],
     this.side,
     this.start,
+    this.branches = const [],
+    this.branchNames = const [],
     this.concept,
   });
 }
@@ -135,6 +142,9 @@ def main():
             out.append(f"    notes: {dlist(l['notes'])},\n")
             if 'start' in l:
                 out.append(f"    start: {l['start']},\n")
+            if l.get('branches'):
+                out.append(f"    branches: {dlist(l['branches'])},\n")
+                out.append(f"    branchNames: {dlist(l['branch_names'])},\n")
             out.append(f"    side: {ds(l['side'])},\n")
         out.append('  ),\n')
     out.append('];\n')

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../engine/rating.dart';
+import '../engine/srs.dart';
 
 /// Remembers which puzzles are solved. Storage failures are ignored: the
 /// app still works, it just forgets between runs.
@@ -13,11 +14,85 @@ class ProgressStore extends ChangeNotifier {
   static const String _missKey = 'missed_ideas';
   static const String _gamesKey = 'rated_games';
   static const String _dailyKey = 'daily_days';
+  static const String _srsKey = 'srs_cards';
+  static const String _rushKey = 'rush_best';
+  static const String _savedKey = 'saved_games';
+
+  /// How many finished games are kept for later review.
+  static const int savedGameLimit = 20;
 
   final Set<String> _solved = {};
   final Map<String, int> _missed = {};
   final List<GameRecord> _games = [];
   final Set<int> _daily = {};
+  final Map<String, SrsCard> _srs = {};
+  final List<String> _saved = [];
+  int _rushBest = 0;
+
+  /// Puzzles being re-reviewed (missed before), by id.
+  Map<String, SrsCard> get srsCards => Map.unmodifiable(_srs);
+
+  /// Puzzles that graduated from review are not tracked here; this counts them.
+  int get puzzlesLearned => _learned;
+  int _learned = 0;
+
+  /// Puzzle ids due for review on [today].
+  List<String> dueForReview(int today) => dueIds(_srs, today);
+
+  /// A puzzle was attempted: [correct] means solved with no miss and no hint.
+  Future<void> recordReview(String id, {required bool correct, required int today}) async {
+    final before = _srs[id];
+    final after = afterReview(before, correct: correct, today: today);
+    if (after == null) {
+      if (_srs.remove(id) == null) return;
+      _learned++;
+    } else {
+      _srs[id] = after;
+    }
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(_srsKey, [for (final e in _srs.entries) e.value.encode(e.key)]);
+      await prefs.setInt('$_srsKey.learned', _learned);
+    } catch (_) {
+      // No storage available.
+    }
+  }
+
+  /// Best Puzzle Rush score.
+  int get rushBest => _rushBest;
+
+  /// Keeps [score] if it beats the best; returns whether it did.
+  Future<bool> recordRush(int score) async {
+    if (score <= _rushBest) return false;
+    _rushBest = score;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_rushKey, score);
+    } catch (_) {
+      // No storage available.
+    }
+    return true;
+  }
+
+  /// PGN texts of the last finished games, newest first.
+  List<String> get savedGames => List.unmodifiable(_saved);
+
+  /// Keeps a finished game's PGN for review later.
+  Future<void> saveGame(String pgn) async {
+    _saved
+      ..remove(pgn)
+      ..insert(0, pgn);
+    if (_saved.length > savedGameLimit) _saved.removeRange(savedGameLimit, _saved.length);
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(_savedKey, _saved);
+    } catch (_) {
+      // No storage available.
+    }
+  }
 
   /// Day numbers (see `dayNumber`) on which the daily puzzle was solved.
   Set<int> get dailyDays => Set.unmodifiable(_daily);
@@ -75,6 +150,17 @@ class ProgressStore extends ChangeNotifier {
           for (final d in prefs.getStringList(_dailyKey) ?? const <String>[])
             ?int.tryParse(d),
         ]);
+      _srs
+        ..clear()
+        ..addEntries([
+          for (final line in prefs.getStringList(_srsKey) ?? const <String>[])
+            if (SrsCard.decode(line) case (final id, final card)) MapEntry(id, card),
+        ]);
+      _learned = prefs.getInt('$_srsKey.learned') ?? 0;
+      _rushBest = prefs.getInt(_rushKey) ?? 0;
+      _saved
+        ..clear()
+        ..addAll(prefs.getStringList(_savedKey) ?? const <String>[]);
       notifyListeners();
     } catch (_) {
       // No storage available.
@@ -144,6 +230,10 @@ class ProgressStore extends ChangeNotifier {
     _missed.clear();
     _games.clear();
     _daily.clear();
+    _srs.clear();
+    _saved.clear();
+    _learned = 0;
+    _rushBest = 0;
     notifyListeners();
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -151,6 +241,10 @@ class ProgressStore extends ChangeNotifier {
       await prefs.remove(_missKey);
       await prefs.remove(_gamesKey);
       await prefs.remove(_dailyKey);
+      await prefs.remove(_srsKey);
+      await prefs.remove('$_srsKey.learned');
+      await prefs.remove(_rushKey);
+      await prefs.remove(_savedKey);
     } catch (_) {
       // No storage available.
     }

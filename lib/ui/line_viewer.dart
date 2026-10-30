@@ -6,6 +6,7 @@ import '../lessons/lessons.dart';
 import 'board_view.dart';
 import 'line_trainer.dart';
 import 'progress_store.dart';
+import 'repertoire_trainer.dart';
 import 'widgets.dart';
 
 /// Steps through an opening line with a note for every move, and offers to
@@ -97,6 +98,22 @@ class _LineViewerState extends State<LineViewer> {
           ],
         ),
         const SizedBox(height: 12),
+        if (lesson.branches.isNotEmpty) ...[
+          Text('Variations', style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 4),
+          Text(lesson.branchNames.join(' · ')),
+          const SizedBox(height: 8),
+          FilledButton.icon(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => RepertoireTrainer(lesson: lesson, progress: widget.progress),
+              ),
+            ),
+            icon: const Icon(Icons.account_tree_outlined),
+            label: Text('Train all ${lesson.branches.length + 1} variations'),
+          ),
+          const SizedBox(height: 8),
+        ],
         if (lesson.start != null) ...[
           FilledButton.icon(
             onPressed: () => Navigator.of(context).push(

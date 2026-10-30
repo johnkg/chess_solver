@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../engine/daily.dart' show dayNumber;
 import '../engine/mate_line.dart';
 import '../engine/mistakes.dart';
 import '../engine/search.dart' show mateIn;
@@ -28,6 +29,9 @@ class PuzzleScreen extends StatefulWidget {
     this.weakMode = false,
     this.seen = const {},
     this.dailyDay,
+    this.nextPuzzle,
+    this.nextLabel = 'Next puzzle',
+    this.today,
   });
 
   final Puzzle puzzle;
@@ -41,6 +45,14 @@ class PuzzleScreen extends StatefulWidget {
 
   /// Set when this is the daily puzzle of that day (see `dayNumber`).
   final int? dailyDay;
+
+  /// Offers a "next" button once solved: gives the puzzle to go to, given the
+  /// ids already shown in this run, or null when the run is over.
+  final Puzzle? Function(Set<String> seen)? nextPuzzle;
+  final String nextLabel;
+
+  /// Day number for spaced review; defaults to today.
+  final int? today;
 
   @override
   State<PuzzleScreen> createState() => _PuzzleScreenState();
@@ -86,6 +98,8 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
 
   void _onChanged() => setState(() {});
 
+  int get _today => widget.today ?? dayNumber(DateTime.now());
+
   bool get _firstStep => _line.isEmpty;
 
   bool _isCorrect(Move move) {
@@ -111,6 +125,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
         if (day != null) widget.progress.markDaily(day);
         if (!_missed && !_usedHint) {
           widget.progress.relieve(weakKey(_puzzle.idea));
+          widget.progress.recordReview(_puzzle.id, correct: true, today: _today);
         }
         setState(() {
           _solved = true;
@@ -148,6 +163,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
     if (!_missed) {
       _missed = true;
       widget.progress.recordMiss(weakKey(_puzzle.idea));
+      widget.progress.recordReview(_puzzle.id, correct: false, today: _today);
     }
     final mistake = explainMistake(before, move);
     setState(() {
@@ -193,14 +209,24 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
     });
   }
 
-  void _next() {
-    final next = nextWeakPuzzle(
+  Puzzle? _upcoming(Set<String> seen) {
+    final custom = widget.nextPuzzle;
+    if (custom != null) return custom(seen);
+    if (!widget.weakMode) return null;
+    return nextWeakPuzzle(
       puzzleLibrary,
       widget.progress.missed,
       widget.progress.solved,
       skipId: _puzzle.id,
-      seen: {...widget.seen, _puzzle.id},
+      seen: seen,
     );
+  }
+
+  bool get _hasNext => widget.weakMode || widget.nextPuzzle != null;
+
+  void _next() {
+    final seen = {...widget.seen, _puzzle.id};
+    final next = _upcoming(seen);
     final nav = Navigator.of(context);
     if (next == null) {
       nav.pop();
@@ -211,8 +237,11 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
         builder: (_) => PuzzleScreen(
           puzzle: next,
           progress: widget.progress,
-          weakMode: true,
-          seen: {...widget.seen, _puzzle.id},
+          weakMode: widget.weakMode,
+          seen: seen,
+          nextPuzzle: widget.nextPuzzle,
+          nextLabel: widget.nextLabel,
+          today: widget.today,
         ),
       ),
     );
@@ -269,21 +298,22 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Row(
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 OutlinedButton.icon(
                   onPressed: _solved ? null : _hint,
                   icon: const Icon(Icons.lightbulb_outline),
                   label: Text(_hints == 0 ? 'Hint' : 'Hint ($_hints/3)'),
                 ),
-                const SizedBox(width: 8),
-                if (_solved && widget.weakMode)
+                if (_solved && _hasNext)
                   FilledButton.icon(
                     onPressed: _next,
                     icon: const Icon(Icons.arrow_forward),
-                    label: const Text('Next weak spot'),
+                    label: Text(widget.weakMode ? 'Next weak spot' : widget.nextLabel),
                   ),
-                if (_solved && widget.weakMode) const SizedBox(width: 8),
                 if (_solved)
                   OutlinedButton.icon(
                     onPressed: _retry,
