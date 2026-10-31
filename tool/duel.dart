@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 // Same level and thinking time, transposition table on against off.
-//   dart run tool/duel.dart [games] [level-index] [millis]
+//   dart run tool/duel.dart [games] [level-index] [millis] [max-depth] [first-game]
+// A max-depth above the level's own (e.g. 99) lets time alone end the search.
 // Prints the score of the table side. Colours alternate; the opening is
 // randomised by playing a few random legal moves first.
 import 'dart:math';
@@ -10,7 +11,7 @@ import 'package:chess_solver/engine/opponent.dart';
 import 'package:chess_solver/engine/piece.dart';
 import 'package:chess_solver/engine/position.dart';
 
-double play(bool tableIsWhite, Level level, int millis, Random rng) {
+double play(bool tableIsWhite, int depth, int millis, Random rng) {
   var pos = Position.start();
   final seen = <String>[];
   for (var i = 0; i < 6; i++) {
@@ -22,7 +23,7 @@ double play(bool tableIsWhite, Level level, int millis, Random rng) {
     final useTable = (pos.turn == white) == tableIsWhite;
     final result = Searcher(useTable: useTable).search(
       pos,
-      maxDepth: level.depth,
+      maxDepth: depth,
       millis: millis,
       margin: 0,
       history: seen,
@@ -43,14 +44,14 @@ void main(List<String> args) {
   final games = args.isNotEmpty ? int.parse(args[0]) : 10;
   final level = Level.values[args.length > 1 ? int.parse(args[1]) : 6];
   final millis = args.length > 2 ? int.parse(args[2]) : level.millis;
-  final rng = Random(11);
+  final depth = args.length > 3 ? int.parse(args[3]) : level.depth;
+  final first = args.length > 4 ? int.parse(args[4]) : 0;
   var score = 0.0;
-  for (var g = 0; g < games; g++) {
+  for (var g = first; g < first + games; g++) {
     // Same random opening for both colours: reuse the seed per pair.
-    final r = play(g.isEven, level, millis, Random(100 + g ~/ 2));
+    final r = play(g.isEven, depth, millis, Random(100 + g ~/ 2));
     score += r;
-    print('game ${g + 1}: table scores $r (running $score / ${g + 1})');
+    print('game ${g + 1}: table scores $r (running $score / ${g + 1 - first})');
   }
-  print('${level.label} @ ${millis}ms: table side $score / $games');
-  rng.nextInt(1);
+  print('${level.label} @ ${millis}ms depth<=$depth: table side $score / $games');
 }
