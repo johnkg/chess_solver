@@ -8,13 +8,14 @@ Flutter/Dart app that teaches chess from scratch and explains why a move is good
 Modeled on https://github.com/johnkg/sudoku-solver (same stack, same layout). Read `PLAN.md` first (design, idea ladder, build order, perft targets).
 
 ## Status
-- Platform folders created; `flutter analyze` is clean and `flutter test` passes (182 tests). The web app runs in Chrome; `tool/solve.dart` runs.
-- UI is only smoke-tested in the browser plus `test/widget_test.dart`; android/ios/macos builds have not been tried.
-- The directory is not a git repo yet.
+- Platform folders created; `flutter analyze` is clean and `flutter test` passes (741 tests). The web app runs in Chrome; `tool/solve.dart` runs.
+- UI has widget tests per screen (`test/*_test.dart`, incl. `board_dialogs_test.dart`: New game sheet, PGN dialogs, Board tab) plus a browser smoke test; android/ios/macos builds have not been tried.
+- Git repo on GitHub (`johnkg/chess_solver`), work lands on `main` via PRs.
 - Chess pieces are shaded vector shapes drawn by `lib/ui/piece_painter.dart` (no fonts needed).
 
 ## Commands
-Flutter SDK is at `~/flutter/bin` (not on PATH): use `~/flutter/bin/flutter` and `~/flutter/bin/dart`.
+Flutter SDK is at `~/flutter/bin` (not on PATH): use `~/flutter/bin/flutter` and `~/flutter/bin/dart`. In a fresh cloud container it is missing: download the stable tarball from `storage.googleapis.com/flutter_infra_release/releases/` and run `git config --global --add safe.directory ~/flutter`.
+- In widget tests wrap screens in `MaterialApp(theme: buildTheme(Brightness.light))`; `BoardView` needs the `ChessTheme` extension.
 - First time only: `flutter create . --project-name chess_solver --platforms=web,android,ios,macos`
 - `flutter pub get` · `flutter analyze` · `flutter test` · `flutter run -d chrome`
 - One test file: `flutter test test/engine/perft_test.dart`; one test by name: `flutter test --plain-name "<name>" <file>`

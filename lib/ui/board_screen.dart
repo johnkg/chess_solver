@@ -61,14 +61,16 @@ class _BoardScreenState extends State<BoardScreen> {
   }
 
   Future<void> _pasteFen() async {
-    final controller = TextEditingController();
+    // No controller: disposing one right after pop would leave the closing
+    // dialog's TextField listening to a dead controller.
+    var text = '';
     final fen = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Paste a FEN'),
         content: TextField(
-          controller: controller,
           autofocus: true,
+          onChanged: (v) => text = v,
           decoration: const InputDecoration(hintText: 'rnbqkbnr/pppppppp/...'),
         ),
         actions: [
@@ -77,13 +79,12 @@ class _BoardScreenState extends State<BoardScreen> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text),
+            onPressed: () => Navigator.pop(context, text),
             child: const Text('Load'),
           ),
         ],
       ),
     );
-    controller.dispose();
     if (fen == null || fen.trim().isEmpty) return;
     try {
       _board.setPosition(Position.fromFen(fen.trim()));
