@@ -1,3 +1,5 @@
+import 'dart:math' show log, max;
+
 import 'move.dart';
 import 'piece.dart';
 import 'play_eval.dart';
@@ -32,9 +34,14 @@ const List<int> _victimValue = [0, 100, 320, 330, 500, 900, 0];
 class Searcher {
   /// [useTable] turns the transposition table off (tests and the duel tool
   /// compare both).
-  Searcher({this.useTable = true});
+  ///
+  /// [pruning] turns on late-move reductions that grow with depth and move
+  /// number, futility pruning, reverse futility and skipping bad captures in
+  /// quiescence.
+  Searcher({this.useTable = true, this.pruning = true});
 
   final bool useTable;
+  final bool pruning;
   TranspositionTable? _tt;
 
   final Stopwatch _clock = Stopwatch();
@@ -160,6 +167,13 @@ class Searcher {
     _result = done ?? SearchResult([(legal.first, 0)], 0, nodes);
   }
 
+  /// Plies to cut from a quiet late move: more for deeper searches and for
+  /// moves further down the list.
+  static int _reduction(int depth, int moveNumber) {
+    final r = (log(depth) * log(moveNumber) / 2.0).floor();
+    return r < 1 ? 1 : (r > depth - 2 ? max(1, depth - 2) : r);
+  }
+
   bool isMate(int score) => score.abs() > mateScore - 1000;
 
   List<Move> _orderRoot(Position pos, List<Move> moves) {
@@ -237,6 +251,16 @@ class Searcher {
       if (score >= beta) return beta;
     }
 
+    // Static pruning: only where the score is not a mate and we are not in
+    // check. `futile` is the eval plus a margin; quiet moves that cannot lift
+    // it above alpha are skipped.
+    int? futile;
+    if (pruning && !inCheck && depth <= 3 && beta - alpha == 1 && alpha.abs() < mateScore - 1000) {
+      final stand = playEval(pos);
+      if (stand - 130 * depth >= beta) return stand; // reverse futility
+      if (depth <= 2) futile = stand + (depth == 1 ? 150 : 320);
+    }
+
     final moves = pos.pseudoLegalMoves();
     final keys = [for (final m in moves) _orderKey(pos, m, ply, ttMove)];
     final idx = List<int>.generate(moves.length, (i) => i)
@@ -253,11 +277,16 @@ class Searcher {
       if (k >= 0 && next.isAttacked(k, 1 - pos.turn)) continue;
       legal++;
       final quiet = pos.squares[m.to] == empty && m.promotion == 0 && m.flag != Move.enPassant;
+      if (futile != null && legal > 1 && quiet && !next.inCheck && best > -mateScore + 1000) {
+        if (futile <= alpha) continue; // cannot reach alpha, quiet and not a check
+      }
       int score;
       if (legal == 1) {
         score = -_negamax(next, depth - 1, -beta, -alpha, ply + 1, true);
       } else {
-        final reduce = (quiet && !inCheck && depth >= 3 && legal > 4) ? 1 : 0;
+        final reduce = (quiet && !inCheck && depth >= 3 && legal > (pruning ? 3 : 4))
+            ? (pruning ? _reduction(depth, legal) : 1)
+            : 0;
         score = -_negamax(next, depth - 1 - reduce, -alpha - 1, -alpha, ply + 1, true);
         if (score > alpha && (reduce > 0 || score < beta)) {
           score = -_negamax(next, depth - 1, -beta, -alpha, ply + 1, true);
@@ -314,6 +343,15 @@ class Searcher {
       final next = pos.makeMove(m);
       final k = next.kingSquare(pos.turn);
       if (k >= 0 && next.isAttacked(k, 1 - pos.turn)) continue;
+      // Taking a defended piece with a more valuable one loses material.
+      if (pruning &&
+          m.promotion == 0 &&
+          victim != empty &&
+          _victimValue[pieceType(pos.squares[m.from])] > gain &&
+          pieceType(pos.squares[m.from]) != king &&
+          next.isAttacked(m.to, next.turn)) {
+        continue;
+      }
       final score = -_quiesce(next, -beta, -alpha, ply + 1);
       if (score >= beta) return score;
       if (score > alpha) alpha = score;

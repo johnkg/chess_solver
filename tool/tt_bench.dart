@@ -1,5 +1,5 @@
 // ignore_for_file: avoid_print
-// Nodes and time to a fixed depth, with and without the transposition table.
+// Nodes and time to a fixed depth, pruning off (table on) against pruning on.
 //   dart run tool/tt_bench.dart [depth]
 import 'package:chess_solver/engine/engine.dart';
 import 'package:chess_solver/engine/position.dart';
@@ -19,7 +19,7 @@ void main(List<String> args) {
     final pos = Position.fromFen(fen);
     final sw = Stopwatch();
     sw.start();
-    final off = Searcher(useTable: false).search(pos, maxDepth: depth, millis: 600000)!;
+    final off = Searcher(pruning: false).search(pos, maxDepth: depth, millis: 600000)!;
     final a = sw.elapsedMilliseconds;
     sw
       ..reset()
@@ -30,8 +30,8 @@ void main(List<String> args) {
     nOn += on.nodes;
     tOff += a;
     tOn += b;
-    print('off ${off.best.$1} ${off.best.$2} n=${off.nodes} ${a}ms | '
-        'on ${on.best.$1} ${on.best.$2} n=${on.nodes} ${b}ms');
+    print('old ${off.best.$1} ${off.best.$2} n=${off.nodes} ${a}ms | '
+        'new ${on.best.$1} ${on.best.$2} n=${on.nodes} ${b}ms');
   }
   print('total nodes off=$nOff on=$nOn  time off=${tOff}ms on=${tOn}ms');
 }

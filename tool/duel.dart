@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_print
-// Same level and thinking time, transposition table on against off.
+// Same level and thinking time, pruning on against off (both with the table).
 //   dart run tool/duel.dart [games] [level-index] [millis] [max-depth] [first-game]
 // A max-depth above the level's own (e.g. 99) lets time alone end the search.
-// Prints the score of the table side. Colours alternate; the opening is
+// Prints the score of the pruning side. Colours alternate; the opening is
 // randomised by playing a few random legal moves first.
 import 'dart:math';
 
@@ -21,7 +21,7 @@ double play(bool tableIsWhite, int depth, int millis, Random rng) {
   }
   for (var ply = 0; ply < 300; ply++) {
     final useTable = (pos.turn == white) == tableIsWhite;
-    final result = Searcher(useTable: useTable).search(
+    final result = Searcher(pruning: useTable).search(
       pos,
       maxDepth: depth,
       millis: millis,
@@ -51,7 +51,7 @@ void main(List<String> args) {
     // Same random opening for both colours: reuse the seed per pair.
     final r = play(g.isEven, depth, millis, Random(100 + g ~/ 2));
     score += r;
-    print('game ${g + 1}: table scores $r (running $score / ${g + 1 - first})');
+    print('game ${g + 1}: pruning scores $r (running $score / ${g + 1 - first})');
   }
-  print('${level.label} @ ${millis}ms depth<=$depth: table side $score / $games');
+  print('${level.label} @ ${millis}ms depth<=$depth: pruning side $score / $games');
 }
