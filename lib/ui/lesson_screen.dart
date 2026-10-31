@@ -146,21 +146,7 @@ class _LessonScreenState extends State<LessonScreen> {
             if (_lesson.kind == LessonKind.line) ...[
               LineViewer(lesson: _lesson, progress: widget.progress),
               gapLarge,
-              Text(_lesson.why, style: theme.textTheme.bodyLarge),
-              gapLarge,
-              const SectionLabel('What to look for'),
-              gapTiny,
-              for (final s in _lesson.spot)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('•  '),
-                      Expanded(child: Text(s)),
-                    ],
-                  ),
-                ),
+              _WhyAndSpot(lesson: _lesson),
             ] else ...[
               BoardFrame(
                 child: BoardView(
@@ -213,25 +199,42 @@ class _LessonScreenState extends State<LessonScreen> {
                 ),
               ],
               gapSmall,
-              Text(_lesson.why, style: theme.textTheme.bodyLarge),
-              gapLarge,
-              const SectionLabel('What to look for'),
-              gapTiny,
-              for (final s in _lesson.spot)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('•  '),
-                      Expanded(child: Text(s)),
-                    ],
-                  ),
-                ),
+              _WhyAndSpot(lesson: _lesson),
             ],
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Why the idea works, then what to look for to spot it in a game.
+class _WhyAndSpot extends StatelessWidget {
+  const _WhyAndSpot({required this.lesson});
+
+  final Lesson lesson;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(lesson.why, style: Theme.of(context).textTheme.bodyLarge),
+        gapLarge,
+        const SectionLabel('What to look for'),
+        gapTiny,
+        for (final point in lesson.spot)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('•  '),
+                Expanded(child: Text(point)),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }
