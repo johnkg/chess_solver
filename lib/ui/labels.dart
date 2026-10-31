@@ -77,3 +77,6 @@ String levelBlurb(Level level) {
       : 'Finds longer mates on its own.';
   return 'Looks $moves ahead and thinks up to $seconds a move. $mate';
 }
+
+/// "1 mistake", "3 mistakes": [noun] with a plain "s" unless [count] is 1.
+String countOf(int count, String noun) => '$count ${count == 1 ? noun : '${noun}s'}';

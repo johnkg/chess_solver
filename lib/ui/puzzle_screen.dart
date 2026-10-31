@@ -3,18 +3,19 @@ import 'package:flutter/material.dart';
 import '../engine/daily.dart' show dayNumber;
 import '../engine/mate_line.dart';
 import '../engine/mistakes.dart';
-import '../engine/search.dart' show mateIn;
 import '../engine/move.dart';
 import '../engine/piece.dart';
 import '../engine/position.dart';
+import '../engine/puzzle.dart';
 import '../engine/review.dart';
 import '../engine/san.dart';
+import '../engine/search.dart' show mateIn;
 import '../engine/weakspots.dart';
 import '../puzzles/library.dart';
-import '../engine/puzzle.dart';
 import 'board_controller.dart';
 import 'board_view.dart';
 import 'labels.dart';
+import 'layout.dart';
 import 'progress_store.dart';
 import 'settings_store.dart';
 import 'widgets.dart';
@@ -275,29 +276,26 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          padding: screenPadding,
           children: [
             Text(
               '${colorName(_start.turn)} to move. Find the best move.',
               style: theme.textTheme.titleMedium,
             ),
-            const SizedBox(height: 12),
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
-                child: BoardView(
-                  position: pos,
-                  flipped: flipped,
-                  selected: _board.selected,
-                  targets: _board.targets,
-                  highlights: _hintSquares,
-                  lastMove: _solved ? _board.lastMoveSquares : const {},
-                  arrows: _arrows,
-                  onTap: _onTap,
-                ),
+            gapMedium,
+            BoardFrame(
+              child: BoardView(
+                position: pos,
+                flipped: flipped,
+                selected: _board.selected,
+                targets: _board.targets,
+                highlights: _hintSquares,
+                lastMove: _solved ? _board.lastMoveSquares : const {},
+                arrows: _arrows,
+                onTap: _onTap,
               ),
             ),
-            const SizedBox(height: 12),
+            gapMedium,
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -323,7 +321,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
               ],
             ),
             if (_feedback != null) ...[
-              const SizedBox(height: 12),
+              gapMedium,
               CoachCard(
                 text: _feedback!,
                 tone: _solved

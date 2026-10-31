@@ -10,6 +10,7 @@ import '../engine/rush.dart';
 import '../puzzles/library.dart';
 import 'board_controller.dart';
 import 'board_view.dart';
+import 'layout.dart';
 import 'progress_store.dart';
 import 'theme.dart';
 import 'widgets.dart';
@@ -165,17 +166,17 @@ class _RushScreenState extends State<RushScreen> {
       appBar: AppBar(title: const Text('Puzzle Rush')),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          padding: screenPadding,
           children: [
             if (puzzle == null) ...[
-              const SizedBox(height: 8),
+              gapSmall,
               CoachCard(
                 title: 'Three minutes, three strikes',
                 text: 'Find the winning move as fast as you can. Every puzzle has one move: '
                     'win material or give checkmate. They get harder every three you solve, '
                     'and three wrong moves end the run.\n\nYour best: ${widget.progress.rushBest}.',
               ),
-              const SizedBox(height: 12),
+              gapMedium,
               FilledButton.icon(
                 onPressed: _pool.isEmpty ? null : _start,
                 icon: const Icon(Icons.bolt),
@@ -198,20 +199,17 @@ class _RushScreenState extends State<RushScreen> {
               ),
               const SizedBox(height: 4),
               if (_running) Text('${colorName(turn)} to move', style: theme.textTheme.bodyMedium),
-              const SizedBox(height: 8),
-              Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 520),
-                  child: BoardView(
-                    position: _board.position,
-                    flipped: turn == black,
-                    selected: _board.selected,
-                    targets: _board.targets,
-                    onTap: _onTap,
-                  ),
+              gapSmall,
+              BoardFrame(
+                child: BoardView(
+                  position: _board.position,
+                  flipped: turn == black,
+                  selected: _board.selected,
+                  targets: _board.targets,
+                  onTap: _onTap,
                 ),
               ),
-              const SizedBox(height: 12),
+              gapMedium,
               if (_running)
                 OutlinedButton.icon(
                   onPressed: _skip,
@@ -225,7 +223,7 @@ class _RushScreenState extends State<RushScreen> {
                   text: 'You solved $_solved.'
                       '${_newBest ? ' A new best!' : ' Your best is ${widget.progress.rushBest}.'}',
                 ),
-                const SizedBox(height: 12),
+                gapMedium,
                 FilledButton.icon(
                   onPressed: _start,
                   icon: const Icon(Icons.replay),
@@ -233,7 +231,7 @@ class _RushScreenState extends State<RushScreen> {
                 ),
               ],
               if (_feedback != null && _running) ...[
-                const SizedBox(height: 12),
+                gapMedium,
                 CoachCard(text: _feedback!, tone: _tone),
               ],
             ],

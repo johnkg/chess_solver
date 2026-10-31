@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../engine/clock.dart';
 import '../engine/opponent.dart';
 import 'labels.dart';
+import 'layout.dart';
 import 'settings_store.dart';
 import 'theme.dart';
 
@@ -64,7 +65,7 @@ class _NewGameSheetState extends State<_NewGameSheet> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text('New game', style: theme.textTheme.titleLarge),
-            const SizedBox(height: 12),
+            gapMedium,
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),
@@ -94,7 +95,7 @@ class _NewGameSheetState extends State<_NewGameSheet> {
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            gapSmall,
             Text('OPPONENT STRENGTH', style: theme.textTheme.labelMedium),
             Slider(
               value: _level.index.toDouble(),
@@ -149,7 +150,7 @@ class _NewGameSheetState extends State<_NewGameSheet> {
                 child: const Text('Start game'),
               ),
             ),
-            const SizedBox(height: 8),
+            gapSmall,
             Text(
               'Ratings are targets for how each level is tuned, not measured Elo.',
               style: theme.textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),

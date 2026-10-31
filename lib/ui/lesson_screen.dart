@@ -9,6 +9,7 @@ import '../lessons/drills.dart';
 import '../lessons/lessons.dart';
 import 'board_view.dart';
 import 'drill_screen.dart';
+import 'layout.dart';
 import 'line_viewer.dart';
 import 'progress_store.dart';
 import 'widgets.dart';
@@ -138,10 +139,10 @@ class _LessonScreenState extends State<LessonScreen> {
       appBar: AppBar(title: Text(_lesson.title)),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          padding: screenPadding,
           children: [
             Text(_lesson.tagline, style: theme.textTheme.titleMedium),
-            const SizedBox(height: 12),
+            gapMedium,
             if (_lesson.kind == LessonKind.line) ...[
               LineViewer(lesson: _lesson, progress: widget.progress),
               const SizedBox(height: 16),
@@ -161,26 +162,23 @@ class _LessonScreenState extends State<LessonScreen> {
                   ),
                 ),
             ] else ...[
-              Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 520),
-                  child: BoardView(
-                    position: _pos,
-                    highlights: _highlights,
-                    lastMove: _lastMove,
-                    arrows: _arrows,
-                  ),
+              BoardFrame(
+                child: BoardView(
+                  position: _pos,
+                  highlights: _highlights,
+                  lastMove: _lastMove,
+                  arrows: _arrows,
                 ),
               ),
               if (status.isNotEmpty) ...[
-                const SizedBox(height: 8),
+                gapSmall,
                 Text(
                   status,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.titleSmall,
                 ),
               ],
-              const SizedBox(height: 12),
+              gapMedium,
               if (canShow)
                 Row(
                   children: [
@@ -202,7 +200,7 @@ class _LessonScreenState extends State<LessonScreen> {
                 ),
               if (_demo != null) CoachCard(text: _demo!, tone: CoachTone.good),
               if (drill != null) ...[
-                const SizedBox(height: 12),
+                gapMedium,
                 OutlinedButton.icon(
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
@@ -214,7 +212,7 @@ class _LessonScreenState extends State<LessonScreen> {
                   label: Text('Practise: ${drill.title}'),
                 ),
               ],
-              const SizedBox(height: 8),
+              gapSmall,
               Text(_lesson.why, style: theme.textTheme.bodyLarge),
               const SizedBox(height: 16),
               const SectionLabel('What to look for'),

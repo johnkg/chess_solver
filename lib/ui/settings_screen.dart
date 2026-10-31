@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../engine/opponent.dart';
 import '../engine/piece.dart' as chess;
+import 'layout.dart';
 import 'piece_painter.dart';
 import 'progress_store.dart';
 import 'settings_store.dart';
@@ -69,7 +70,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 8),
+          gapSmall,
           SizedBox(
             width: double.infinity,
             child: SegmentedButton<T>(
@@ -109,7 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             const SectionLabel('Appearance'),
             const _Preview(),
-            const SizedBox(height: 12),
+            gapMedium,
             _group([
               _segmented<ThemeMode>(
                 title: 'Theme',
@@ -150,7 +151,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       'Used when you start a new game.',
                       style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                     ),
-                    const SizedBox(height: 8),
+                    gapSmall,
                     LayoutBuilder(
                       builder: (context, box) => DropdownMenu<Level>(
                         width: box.maxWidth,
@@ -217,7 +218,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: Text(_confirmReset ? 'Tap again to confirm' : 'Reset progress'),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      gapSmall,
                       Text(
                         _done
                             ? 'Progress cleared.'

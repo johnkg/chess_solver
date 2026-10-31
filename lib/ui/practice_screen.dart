@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 
 import '../engine/daily.dart';
+import '../engine/drill.dart';
 import '../engine/piece.dart';
+import '../engine/position.dart';
 import '../engine/puzzle.dart';
 import '../engine/review.dart' show weakKey;
 import '../engine/rush.dart';
-import '../engine/position.dart';
 import '../engine/weakspots.dart';
-import '../engine/drill.dart';
 import '../lessons/drills.dart';
 import '../lessons/lessons.dart';
 import '../puzzles/library.dart';
 import 'drill_screen.dart';
 import 'labels.dart';
+import 'layout.dart';
 import 'line_trainer.dart';
 import 'progress_screen.dart';
 import 'progress_store.dart';
-import 'repertoire_trainer.dart';
-import 'settings_screen.dart';
 import 'puzzle_screen.dart';
+import 'repertoire_trainer.dart';
 import 'rush_screen.dart';
+import 'settings_screen.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
@@ -82,7 +83,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
       padding: const EdgeInsets.only(bottom: 12),
       child: HeroCard(
         eyebrow: 'Spaced review',
-        title: '$n ${n == 1 ? 'puzzle' : 'puzzles'} to review',
+        title: '${countOf(n, 'puzzle')} to review',
         body: 'Puzzles you missed come back after a day, then 3, 7, 14 and 30 days '
             'until you solve them cleanly every time.',
         action: FilledButton.icon(
@@ -125,7 +126,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        gapMedium,
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -192,7 +193,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 Padding(
                   padding: const EdgeInsets.only(right: 4),
                   child: Tooltip(
-                    message: i == 0 ? 'Today' : '$i day${i == 1 ? '' : 's'} ago',
+                    message: i == 0 ? 'Today' : '${countOf(i, 'day')} ago',
                     child: Container(
                       width: 10,
                       height: 10,
@@ -254,7 +255,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
             label: const Text('Practice weak spots'),
           ),
         ),
-        const SizedBox(height: 12),
+        gapMedium,
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -314,10 +315,10 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 ),
                 const SizedBox(height: 16),
                 _daily(context),
-                const SizedBox(height: 12),
+                gapMedium,
                 _review(context),
                 _weakSpots(context),
-                const SizedBox(height: 12),
+                gapMedium,
                 _tools(context),
                 for (final (title, level) in [('Opening lines', 8), ('Famous games', 7)]) ...[
                   SectionLabel(title),

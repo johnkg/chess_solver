@@ -5,6 +5,7 @@ import 'analysis.dart';
 import 'board_controller.dart';
 import 'board_view.dart';
 import 'labels.dart';
+import 'layout.dart';
 import 'progress_store.dart';
 import 'settings_screen.dart';
 import 'widgets.dart';
@@ -120,31 +121,28 @@ class _BoardScreenState extends State<BoardScreen> {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          padding: screenPadding,
           children: [
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
-                child: BoardView(
-                  position: pos,
-                  flipped: _flipped,
-                  selected: _board.selected,
-                  targets: _board.targets,
-                  lastMove: _board.lastMoveSquares,
-                  arrows: analysis?.arrows ?? const [],
-                  onTap: (sq) {
-                    _board.tap(sq);
-                  },
-                ),
+            BoardFrame(
+              child: BoardView(
+                position: pos,
+                flipped: _flipped,
+                selected: _board.selected,
+                targets: _board.targets,
+                lastMove: _board.lastMoveSquares,
+                arrows: analysis?.arrows ?? const [],
+                onTap: (sq) {
+                  _board.tap(sq);
+                },
               ),
             ),
-            const SizedBox(height: 12),
+            gapMedium,
             Text(
               statusText(pos),
               style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            gapSmall,
             Wrap(
               alignment: WrapAlignment.center,
               spacing: 8,
@@ -176,7 +174,7 @@ class _BoardScreenState extends State<BoardScreen> {
               ],
             ),
             if (analysis != null) ...[
-              const SizedBox(height: 12),
+              gapMedium,
               CoachCard(text: analysis.text),
             ],
           ],

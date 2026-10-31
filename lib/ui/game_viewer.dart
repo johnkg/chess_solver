@@ -8,8 +8,11 @@ import '../engine/review.dart';
 import '../engine/san.dart';
 import 'analysis.dart';
 import 'board_view.dart';
-import 'progress_store.dart';
+import 'controls.dart';
+import 'labels.dart';
+import 'layout.dart';
 import 'pgn_dialogs.dart';
+import 'progress_store.dart';
 import 'review_snapshot.dart';
 import 'widgets.dart';
 
@@ -125,13 +128,13 @@ class _GameViewerState extends State<GameViewer> {
             if (accuracy != null) Text('Accuracy $accuracy%', style: theme.textTheme.titleSmall),
             Text(reviewSummary(entries).replaceFirst('You played', '${colorName(side)} played')),
             if (widget.progress != null && trackable > 0) ...[
-              const SizedBox(height: 8),
+              gapSmall,
               OutlinedButton.icon(
                 onPressed: _tracked.contains(side) ? null : () => _track(side),
                 icon: Icon(_tracked.contains(side) ? Icons.check : Icons.fitness_center),
                 label: Text(_tracked.contains(side)
                     ? 'Added to your weak spots'
-                    : 'Practise these ($trackable ${trackable == 1 ? 'idea' : 'ideas'})'),
+                    : 'Practise these (${countOf(trackable, 'idea')})'),
               ),
             ],
             for (final e in mistakes) ...[
@@ -178,55 +181,25 @@ class _GameViewerState extends State<GameViewer> {
       body: SafeArea(
         child: ListView(
           controller: _scroll,
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          padding: screenPadding,
           children: [
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
-                child: BoardView(
-                  position: _pos,
-                  flipped: _flipped,
-                  lastMove: last == null ? const {} : {last.from, last.to},
-                  arrows: hint?.arrows ?? const [],
-                ),
+            BoardFrame(
+              child: BoardView(
+                position: _pos,
+                flipped: _flipped,
+                lastMove: last == null ? const {} : {last.from, last.to},
+                arrows: hint?.arrows ?? const [],
               ),
             ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton.outlined(
-                  tooltip: 'Start',
-                  onPressed: _ply == 0 ? null : () => _go(0),
-                  icon: const Icon(Icons.first_page),
-                ),
-                const SizedBox(width: 8),
-                IconButton.outlined(
-                  tooltip: 'Back',
-                  onPressed: _ply == 0 ? null : () => _go(_ply - 1),
-                  icon: const Icon(Icons.chevron_left),
-                ),
-                const SizedBox(width: 8),
-                IconButton.outlined(
-                  tooltip: 'Next',
-                  onPressed: over ? null : () => _go(_ply + 1),
-                  icon: const Icon(Icons.chevron_right),
-                ),
-                const SizedBox(width: 8),
-                IconButton.outlined(
-                  tooltip: 'End',
-                  onPressed: over ? null : () => _go(game.moves.length),
-                  icon: const Icon(Icons.last_page),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
+            gapMedium,
+            StepControls(ply: _ply, lastPly: game.moves.length, onGoTo: _go),
+            gapSmall,
             Text(
               over ? 'End of game · ${game.result}' : 'Move ${_ply + 1} of ${game.moves.length}',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium,
             ),
-            const SizedBox(height: 12),
+            gapMedium,
             Wrap(
               spacing: 6,
               runSpacing: 6,
@@ -241,7 +214,7 @@ class _GameViewerState extends State<GameViewer> {
                   ),
               ],
             ),
-            const SizedBox(height: 12),
+            gapMedium,
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -266,16 +239,16 @@ class _GameViewerState extends State<GameViewer> {
               ],
             ),
             if (hint != null) ...[
-              const SizedBox(height: 12),
+              gapMedium,
               CoachCard(text: hint.text),
             ],
             if (_busy) ...[
-              const SizedBox(height: 12),
+              gapMedium,
               const LinearProgressIndicator(),
             ],
             for (final side in [white, black])
               if (_reviews.containsKey(side)) ...[
-                const SizedBox(height: 12),
+                gapMedium,
                 _reviewCard(context, side),
               ],
           ],

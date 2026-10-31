@@ -4,6 +4,8 @@ import '../engine/opening_line.dart';
 import '../engine/piece.dart';
 import '../lessons/lessons.dart';
 import 'board_view.dart';
+import 'controls.dart';
+import 'layout.dart';
 import 'line_trainer.dart';
 import 'progress_store.dart';
 import 'repertoire_trainer.dart';
@@ -36,53 +38,23 @@ class _LineViewerState extends State<LineViewer> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 520),
-            child: BoardView(
-              position: _line.positions[_ply],
-              flipped: flipped,
-              lastMove: last == null ? const {} : {last.from, last.to},
-            ),
+        BoardFrame(
+          child: BoardView(
+            position: _line.positions[_ply],
+            flipped: flipped,
+            lastMove: last == null ? const {} : {last.from, last.to},
           ),
         ),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton.outlined(
-              tooltip: 'Start',
-              onPressed: _ply == 0 ? null : () => _go(0),
-              icon: const Icon(Icons.first_page),
-            ),
-            const SizedBox(width: 8),
-            IconButton.outlined(
-              tooltip: 'Back',
-              onPressed: _ply == 0 ? null : () => _go(_ply - 1),
-              icon: const Icon(Icons.chevron_left),
-            ),
-            const SizedBox(width: 8),
-            IconButton.filled(
-              tooltip: 'Next move',
-              onPressed: _ply == _line.length ? null : () => _go(_ply + 1),
-              icon: const Icon(Icons.chevron_right),
-            ),
-            const SizedBox(width: 8),
-            IconButton.outlined(
-              tooltip: 'End',
-              onPressed: _ply == _line.length ? null : () => _go(_line.length),
-              icon: const Icon(Icons.last_page),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
+        gapMedium,
+        StepControls(ply: _ply, lastPly: _line.length, onGoTo: _go),
+        gapMedium,
         CoachCard(
           title: _ply == 0 ? 'The starting position' : '${_line.numberAt(_ply - 1)} ${_line.sans[_ply - 1]}',
           text: _ply == 0
               ? 'Press Next move to step through the line. You study the ${lesson.side} side.'
               : (note == null || note.isEmpty ? 'No comment on this move.' : note),
         ),
-        const SizedBox(height: 12),
+        gapMedium,
         Wrap(
           spacing: 6,
           runSpacing: 6,
@@ -97,12 +69,12 @@ class _LineViewerState extends State<LineViewer> {
               ),
           ],
         ),
-        const SizedBox(height: 12),
+        gapMedium,
         if (lesson.branches.isNotEmpty) ...[
           Text('Variations', style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 4),
           Text(lesson.branchNames.join(' · ')),
-          const SizedBox(height: 8),
+          gapSmall,
           FilledButton.icon(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
@@ -112,7 +84,7 @@ class _LineViewerState extends State<LineViewer> {
             icon: const Icon(Icons.account_tree_outlined),
             label: Text('Train all ${lesson.branches.length + 1} variations'),
           ),
-          const SizedBox(height: 8),
+          gapSmall,
         ],
         if (lesson.start != null) ...[
           FilledButton.icon(
@@ -124,7 +96,7 @@ class _LineViewerState extends State<LineViewer> {
             icon: const Icon(Icons.bolt),
             label: const Text('Start at the combination'),
           ),
-          const SizedBox(height: 8),
+          gapSmall,
         ],
         FilledButton.icon(
           onPressed: () => Navigator.of(context).push(

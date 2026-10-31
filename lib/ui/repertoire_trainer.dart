@@ -7,6 +7,9 @@ import '../engine/repertoire.dart';
 import '../lessons/lessons.dart';
 import 'board_controller.dart';
 import 'board_view.dart';
+import 'controls.dart';
+import 'labels.dart';
+import 'layout.dart';
 import 'line_trainer.dart' show lineProgressId;
 import 'progress_store.dart';
 import 'theme.dart';
@@ -122,7 +125,7 @@ class _RepertoireTrainerState extends State<RepertoireTrainer> {
       _tone = CoachTone.good;
       final left = _rep.lineCount - _done.length;
       _feedback = '${_lineName(line)} complete'
-          '${_mistakes == 0 ? ' with no mistakes' : ' with $_mistakes ${_mistakes == 1 ? 'mistake' : 'mistakes'}'}. '
+          '${_mistakes == 0 ? ' with no mistakes' : ' with ${countOf(_mistakes, 'mistake')}'}. '
           '${left == 0 ? 'You have played every variation: the whole repertoire is learned!' : '$left more to go.'}';
     });
   }
@@ -195,48 +198,34 @@ class _RepertoireTrainerState extends State<RepertoireTrainer> {
       appBar: AppBar(title: Text('Repertoire: ${widget.lesson.title}')),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          padding: screenPadding,
           children: [
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
-                child: BoardView(
-                  position: _board.position,
-                  flipped: _me == black,
-                  selected: _board.selected,
-                  targets: _board.targets,
-                  lastMove: _board.lastMoveSquares,
-                  arrows: _arrows,
-                  onTap: _onTap,
-                ),
+            BoardFrame(
+              child: BoardView(
+                position: _board.position,
+                flipped: _me == black,
+                selected: _board.selected,
+                targets: _board.targets,
+                lastMove: _board.lastMoveSquares,
+                arrows: _arrows,
+                onTap: _onTap,
               ),
             ),
-            const SizedBox(height: 12),
+            gapMedium,
             Text(
-              '$status · ${_done.length} of ${_rep.lineCount} variations learned · $_mistakes ${_mistakes == 1 ? 'mistake' : 'mistakes'}',
+              '$status · ${_done.length} of ${_rep.lineCount} variations learned · ${countOf(_mistakes, 'mistake')}',
               textAlign: TextAlign.center,
               style: theme.textTheme.titleSmall,
             ),
-            const SizedBox(height: 8),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                FilledButton.icon(
-                  onPressed: _myTurn ? _hint : null,
-                  icon: const Icon(Icons.lightbulb_outline),
-                  label: Text(_hints == 0 ? 'Hint' : 'Show move'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: () => setState(_restart),
-                  icon: const Icon(Icons.replay),
-                  label: Text(_finished ? 'Another variation' : 'Restart'),
-                ),
-              ],
+            gapSmall,
+            HintRestartRow(
+              onHint: _myTurn ? _hint : null,
+              hintGiven: _hints > 0,
+              onRestart: () => setState(_restart),
+              restartLabel: _finished ? 'Another variation' : 'Restart',
             ),
             if (_feedback != null) ...[
-              const SizedBox(height: 12),
+              gapMedium,
               CoachCard(text: _feedback!, tone: _tone),
             ],
             const SizedBox(height: 16),

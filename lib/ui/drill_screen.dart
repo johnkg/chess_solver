@@ -12,6 +12,7 @@ import '../engine/structure.dart';
 import 'analysis.dart';
 import 'board_controller.dart';
 import 'board_view.dart';
+import 'layout.dart';
 import 'progress_store.dart';
 import 'theme.dart';
 import 'widgets.dart';
@@ -226,7 +227,7 @@ class _DrillScreenState extends State<DrillScreen> {
       appBar: AppBar(title: Text(_drill.title)),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          padding: screenPadding,
           children: [
             CoachCard(
               title: _drill.task,
@@ -234,24 +235,21 @@ class _DrillScreenState extends State<DrillScreen> {
                   ? 'Look at the ${colorName(_drill.subject)} pieces.'
                   : 'You play ${colorName(_drill.side)} against ${_drill.engineLevel.title}.',
             ),
-            const SizedBox(height: 12),
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
-                child: BoardView(
-                  position: _pos,
-                  flipped: _drill.side == black,
-                  selected: _board.selected,
-                  targets: _board.targets,
-                  highlights: _drill.goal == DrillGoal.find
-                      ? _markedSquares
-                      : const {},
-                  lastMove: _board.lastMoveSquares,
-                  onTap: _onTap,
-                ),
+            gapMedium,
+            BoardFrame(
+              child: BoardView(
+                position: _pos,
+                flipped: _drill.side == black,
+                selected: _board.selected,
+                targets: _board.targets,
+                highlights: _drill.goal == DrillGoal.find
+                    ? _markedSquares
+                    : const {},
+                lastMove: _board.lastMoveSquares,
+                onTap: _onTap,
               ),
             ),
-            const SizedBox(height: 12),
+            gapMedium,
             Text(
               turnLine,
               textAlign: TextAlign.center,
@@ -261,7 +259,7 @@ class _DrillScreenState extends State<DrillScreen> {
                     : null,
               ),
             ),
-            const SizedBox(height: 8),
+            gapSmall,
             Wrap(
               alignment: WrapAlignment.center,
               spacing: 8,
@@ -286,11 +284,11 @@ class _DrillScreenState extends State<DrillScreen> {
               ],
             ),
             if (_note != null) ...[
-              const SizedBox(height: 12),
+              gapMedium,
               CoachCard(text: _note!),
             ],
             if (over) ...[
-              const SizedBox(height: 12),
+              gapMedium,
               CoachCard(
                 tone: good ? CoachTone.good : CoachTone.bad,
                 text: good

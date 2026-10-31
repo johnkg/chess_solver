@@ -4,6 +4,7 @@ import '../engine/position.dart';
 import '../engine/review.dart';
 import '../engine/san.dart';
 import 'board_view.dart';
+import 'layout.dart';
 import 'theme.dart';
 
 /// A board snapshot for one mistake in the game review. "At the time" shows
@@ -51,7 +52,7 @@ class _ReviewSnapshotState extends State<ReviewSnapshot> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('${entry.number} ${entry.san}', style: theme.textTheme.titleSmall),
-        const SizedBox(height: 8),
+        gapSmall,
         if (canShowAfter)
           SegmentedButton<bool>(
             showSelectedIcon: false,
@@ -62,7 +63,7 @@ class _ReviewSnapshotState extends State<ReviewSnapshot> {
             selected: {_after},
             onSelectionChanged: (s) => setState(() => _after = s.first),
           ),
-        const SizedBox(height: 8),
+        gapSmall,
         Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 320),
