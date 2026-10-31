@@ -1,8 +1,11 @@
+import 'dart:math' show log, max;
+
 import 'move.dart';
 import 'piece.dart';
 import 'play_eval.dart';
 import 'position.dart';
 import 'search.dart' show mateScore;
+import 'tt.dart';
 
 /// Result of [Searcher.search]: the moves scoring within the margin of the
 /// best one, best first. Scores are centipawns for the side to move.
@@ -29,6 +32,18 @@ const List<int> _victimValue = [0, 100, 320, 330, 500, 900, 0];
 /// computer opponent: it stops when its time budget runs out and keeps the
 /// last finished depth.
 class Searcher {
+  /// [useTable] turns the transposition table off (tests and the duel tool
+  /// compare both).
+  ///
+  /// [pruning] turns on late-move reductions that grow with depth and move
+  /// number, futility pruning, reverse futility and skipping bad captures in
+  /// quiescence.
+  Searcher({this.useTable = true, this.pruning = true});
+
+  final bool useTable;
+  final bool pruning;
+  TranspositionTable? _tt;
+
   final Stopwatch _clock = Stopwatch();
   int _budgetMs = 1000;
   bool _timed = false;
@@ -43,6 +58,10 @@ class Searcher {
   bool cancelled = false;
 
   SearchResult? _result;
+
+  /// Keys of the positions on the current line, game history first. A
+  /// position that is already here scores as a draw.
+  final List<String> _path = [];
   final Stopwatch _slice = Stopwatch();
 
   /// Best moves in [pos], or null when there is no legal move. Searches up to
@@ -54,8 +73,9 @@ class Searcher {
     required int maxDepth,
     required int millis,
     int margin = 50,
+    List<String> history = const [],
   }) {
-    for (final _ in _run(pos, maxDepth, millis, margin)) {}
+    for (final _ in _run(pos, maxDepth, millis, margin, history)) {}
     return _result;
   }
 
@@ -67,8 +87,9 @@ class Searcher {
     required int maxDepth,
     required int millis,
     int margin = 50,
+    List<String> history = const [],
   }) async {
-    for (final _ in _run(pos, maxDepth, millis, margin)) {
+    for (final _ in _run(pos, maxDepth, millis, margin, history)) {
       await Future<void>.delayed(Duration.zero);
       if (cancelled) return null;
     }
@@ -77,8 +98,20 @@ class Searcher {
 
   /// The search itself. It yields (with nothing) between root moves once a
   /// slice of work has taken long enough, and leaves the answer in [_result].
-  Iterable<void> _run(Position pos, int maxDepth, int millis, int margin) sync* {
+  /// [history] holds the [Position.repetitionKey] of every earlier position
+  /// in the game (not [pos] itself).
+  Iterable<void> _run(
+    Position pos,
+    int maxDepth,
+    int millis,
+    int margin,
+    List<String> history,
+  ) sync* {
     _result = null;
+    _path
+      ..clear()
+      ..addAll(history)
+      ..add(pos.repetitionKey);
     final legal = pos.legalMoves();
     if (legal.isEmpty) return;
     if (legal.length == 1) {
@@ -94,6 +127,7 @@ class Searcher {
       ..start();
     _budgetMs = millis;
     nodes = 0;
+    _tt = useTable ? TranspositionTable(maxDepth <= 3 ? 16 : 18) : null;
     var ordered = _orderRoot(pos, legal);
     SearchResult? done;
 
@@ -133,6 +167,13 @@ class Searcher {
     _result = done ?? SearchResult([(legal.first, 0)], 0, nodes);
   }
 
+  /// Plies to cut from a quiet late move: more for deeper searches and for
+  /// moves further down the list.
+  static int _reduction(int depth, int moveNumber) {
+    final r = (log(depth) * log(moveNumber) / 2.0).floor();
+    return r < 1 ? 1 : (r > depth - 2 ? max(1, depth - 2) : r);
+  }
+
   bool isMate(int score) => score.abs() > mateScore - 1000;
 
   List<Move> _orderRoot(Position pos, List<Move> moves) {
@@ -149,7 +190,8 @@ class Searcher {
     }
   }
 
-  int _orderKey(Position pos, Move m, int ply) {
+  int _orderKey(Position pos, Move m, int ply, [int ttMove = 0]) {
+    if (ttMove != 0 && TranspositionTable.sameMove(ttMove, m)) return 1000000;
     final victim = pos.squares[m.to];
     if (victim != empty || m.flag == Move.enPassant) {
       final v = victim == empty ? 100 : _victimValue[pieceType(victim)];
@@ -168,22 +210,66 @@ class Searcher {
   int _negamax(Position pos, int depth, int alpha, int beta, int ply, bool allowNull) {
     _tick();
     if (pos.halfmove >= 100) return 0;
+    // A position seen before on this line (or earlier in the game) is a
+    // repetition. Only reversible-move stretches can repeat.
+    String? key;
+    if (pos.halfmove >= 4) {
+      key = pos.repetitionKey;
+      if (_path.contains(key)) return 0;
+    }
     final inCheck = pos.inCheck;
     if (inCheck && ply < 40) depth++;
     if (depth <= 0 || ply >= 60) return _quiesce(pos, alpha, beta, ply);
+
+    final tt = _tt;
+    var h1 = 0;
+    var h2 = 0;
+    var ttMove = 0;
+    final alphaStart = alpha;
+    final betaStart = beta;
+    if (tt != null) {
+      (h1, h2) = TranspositionTable.hashOf(pos);
+      final slot = tt.find(h1, h2);
+      if (slot >= 0) {
+        ttMove = tt.moveAt(slot);
+        if (tt.depthAt(slot) >= depth) {
+          final stored = tt.scoreAt(slot, ply);
+          final flag = tt.flagAt(slot);
+          if (flag == ttExact) return stored;
+          if (flag == ttLower) {
+            if (stored > alpha) alpha = stored;
+          } else if (stored < beta) {
+            beta = stored;
+          }
+          if (alpha >= beta) return stored;
+        }
+      }
+    }
 
     if (allowNull && !inCheck && depth >= 3 && _hasPieces(pos, pos.turn)) {
       final score = -_negamax(pos.passTurn(), depth - 3, -beta, -beta + 1, ply + 1, false);
       if (score >= beta) return beta;
     }
 
+    // Static pruning: only where the score is not a mate and we are not in
+    // check. `futile` is the eval plus a margin; quiet moves that cannot lift
+    // it above alpha are skipped.
+    int? futile;
+    if (pruning && !inCheck && depth <= 3 && beta - alpha == 1 && alpha.abs() < mateScore - 1000) {
+      final stand = playEval(pos);
+      if (stand - 130 * depth >= beta) return stand; // reverse futility
+      if (depth <= 2) futile = stand + (depth == 1 ? 150 : 320);
+    }
+
     final moves = pos.pseudoLegalMoves();
-    final keys = [for (final m in moves) _orderKey(pos, m, ply)];
+    final keys = [for (final m in moves) _orderKey(pos, m, ply, ttMove)];
     final idx = List<int>.generate(moves.length, (i) => i)
       ..sort((a, b) => keys[b].compareTo(keys[a]));
 
     var legal = 0;
     var best = -mateScore - 1;
+    Move? bestMove;
+    if (key != null) _path.add(key);
     for (final i in idx) {
       final m = moves[i];
       final next = pos.makeMove(m);
@@ -191,17 +277,25 @@ class Searcher {
       if (k >= 0 && next.isAttacked(k, 1 - pos.turn)) continue;
       legal++;
       final quiet = pos.squares[m.to] == empty && m.promotion == 0 && m.flag != Move.enPassant;
+      if (futile != null && legal > 1 && quiet && !next.inCheck && best > -mateScore + 1000) {
+        if (futile <= alpha) continue; // cannot reach alpha, quiet and not a check
+      }
       int score;
       if (legal == 1) {
         score = -_negamax(next, depth - 1, -beta, -alpha, ply + 1, true);
       } else {
-        final reduce = (quiet && !inCheck && depth >= 3 && legal > 4) ? 1 : 0;
+        final reduce = (quiet && !inCheck && depth >= 3 && legal > (pruning ? 3 : 4))
+            ? (pruning ? _reduction(depth, legal) : 1)
+            : 0;
         score = -_negamax(next, depth - 1 - reduce, -alpha - 1, -alpha, ply + 1, true);
         if (score > alpha && (reduce > 0 || score < beta)) {
           score = -_negamax(next, depth - 1, -beta, -alpha, ply + 1, true);
         }
       }
-      if (score > best) best = score;
+      if (score > best) {
+        best = score;
+        bestMove = m;
+      }
       if (score > alpha) alpha = score;
       if (alpha >= beta) {
         if (quiet && ply < 64) {
@@ -215,7 +309,12 @@ class Searcher {
         break;
       }
     }
+    if (key != null) _path.removeLast();
     if (legal == 0) return inCheck ? -mateScore + ply : 0;
+    if (tt != null) {
+      final flag = best <= alphaStart ? ttUpper : (best >= betaStart ? ttLower : ttExact);
+      tt.store(h1, h2, depth, best, flag, bestMove, ply);
+    }
     return best;
   }
 
@@ -244,6 +343,15 @@ class Searcher {
       final next = pos.makeMove(m);
       final k = next.kingSquare(pos.turn);
       if (k >= 0 && next.isAttacked(k, 1 - pos.turn)) continue;
+      // Taking a defended piece with a more valuable one loses material.
+      if (pruning &&
+          m.promotion == 0 &&
+          victim != empty &&
+          _victimValue[pieceType(pos.squares[m.from])] > gain &&
+          pieceType(pos.squares[m.from]) != king &&
+          next.isAttacked(m.to, next.turn)) {
+        continue;
+      }
       final score = -_quiesce(next, -beta, -alpha, ply + 1);
       if (score >= beta) return score;
       if (score > alpha) alpha = score;

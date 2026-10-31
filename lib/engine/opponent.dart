@@ -71,7 +71,13 @@ enum Level {
 /// they are, so games differ but every move still has a reason. A forced
 /// mate is always played when found. [maxMillis] overrides the level's
 /// thinking time (tests use it).
-Move? chooseMove(Position pos, Level level, [Random? random, int? maxMillis]) {
+Move? chooseMove(
+  Position pos,
+  Level level, [
+  Random? random,
+  int? maxMillis,
+  List<String> history = const [],
+]) {
   final rng = random ?? Random();
   final quick = _quickMove(pos, level, rng);
   if (quick != null) return quick.$1;
@@ -80,6 +86,7 @@ Move? chooseMove(Position pos, Level level, [Random? random, int? maxMillis]) {
     maxDepth: level.depth,
     millis: maxMillis ?? level.millis,
     margin: level.margin,
+    history: history,
   );
   return result == null ? null : _pick(result, level, rng);
 }
@@ -92,6 +99,7 @@ Future<Move?> chooseMoveAsync(
   Random? random,
   int? maxMillis,
   Searcher? searcher,
+  List<String> history = const [],
 }) async {
   final rng = random ?? Random();
   final quick = _quickMove(pos, level, rng);
@@ -101,6 +109,7 @@ Future<Move?> chooseMoveAsync(
     maxDepth: level.depth,
     millis: maxMillis ?? level.millis,
     margin: level.margin,
+    history: history,
   );
   return result == null ? null : _pick(result, level, rng);
 }
@@ -134,9 +143,15 @@ Move _pick(SearchResult result, Level level, Random rng) {
   return result.best.$1;
 }
 
-/// Why the game is drawn (other than stalemate), or null.
-String? drawReason(Position pos) {
+/// Why the game is drawn (other than stalemate), or null. [seen] holds the
+/// [Position.repetitionKey] of every earlier position in the game; a third
+/// occurrence of [pos] is a draw.
+String? drawReason(Position pos, {List<String> seen = const []}) {
   if (pos.halfmove >= 100) return 'Draw by the fifty-move rule';
+  if (pos.halfmove >= 4) {
+    final key = pos.repetitionKey;
+    if (seen.where((k) => k == key).length >= 2) return 'Draw by threefold repetition';
+  }
   var minors = 0;
   for (final p in pos.squares) {
     if (p == empty) continue;
