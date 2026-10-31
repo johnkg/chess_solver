@@ -124,7 +124,7 @@ class _GameViewerState extends State<GameViewer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Review of $who', style: theme.textTheme.titleMedium),
-            const SizedBox(height: 4),
+            gapTiny,
             if (accuracy != null) Text('Accuracy $accuracy%', style: theme.textTheme.titleSmall),
             Text(reviewSummary(entries).replaceFirst('You played', '${colorName(side)} played')),
             if (widget.progress != null && trackable > 0) ...[
@@ -138,7 +138,7 @@ class _GameViewerState extends State<GameViewer> {
               ),
             ],
             for (final e in mistakes) ...[
-              const SizedBox(height: 16),
+              gapLarge,
               ReviewSnapshot(entry: e, flipped: side == black),
               TextButton.icon(
                 onPressed: () => _show(e.ply),
@@ -216,8 +216,8 @@ class _GameViewerState extends State<GameViewer> {
             ),
             gapMedium,
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: wrapSpacing,
+              runSpacing: wrapSpacing,
               children: [
                 FilledButton.icon(
                   onPressed: over ? null : _showBest,

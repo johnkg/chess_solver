@@ -257,8 +257,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
         ),
         gapMedium,
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: wrapSpacing,
+          runSpacing: wrapSpacing,
           children: [
             for (final e in spots)
               Chip(
@@ -303,7 +303,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                gapTiny,
                 ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: LinearProgressIndicator(
@@ -313,7 +313,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     backgroundColor: theme.colorScheme.outline,
                   ),
                 ),
-                const SizedBox(height: 16),
+                gapLarge,
                 _daily(context),
                 gapMedium,
                 _review(context),

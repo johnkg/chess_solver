@@ -297,8 +297,8 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
             ),
             gapMedium,
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: wrapSpacing,
+              runSpacing: wrapSpacing,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 OutlinedButton.icon(

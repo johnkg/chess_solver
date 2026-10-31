@@ -197,7 +197,7 @@ class _RushScreenState extends State<RushScreen> {
                     ),
                 ],
               ),
-              const SizedBox(height: 4),
+              gapTiny,
               if (_running) Text('${colorName(turn)} to move', style: theme.textTheme.bodyMedium),
               gapSmall,
               BoardFrame(

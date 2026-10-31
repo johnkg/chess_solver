@@ -72,8 +72,8 @@ class HintRestartRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Wrap(
       alignment: WrapAlignment.center,
-      spacing: 8,
-      runSpacing: 8,
+      spacing: wrapSpacing,
+      runSpacing: wrapSpacing,
       children: [
         FilledButton.icon(
           onPressed: onHint,

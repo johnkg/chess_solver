@@ -72,7 +72,7 @@ class _LineViewerState extends State<LineViewer> {
         gapMedium,
         if (lesson.branches.isNotEmpty) ...[
           Text('Variations', style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 4),
+          gapTiny,
           Text(lesson.branchNames.join(' · ')),
           gapSmall,
           FilledButton.icon(

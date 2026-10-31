@@ -262,8 +262,8 @@ class _DrillScreenState extends State<DrillScreen> {
             gapSmall,
             Wrap(
               alignment: WrapAlignment.center,
-              spacing: 8,
-              runSpacing: 8,
+              spacing: wrapSpacing,
+              runSpacing: wrapSpacing,
               children: [
                 FilledButton.icon(
                   onPressed: over ? null : _hint,

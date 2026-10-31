@@ -6,9 +6,17 @@ const double boardMaxWidth = 520;
 /// Padding of every scrolling screen body.
 const EdgeInsets screenPadding = EdgeInsets.fromLTRB(16, 4, 16, 24);
 
+/// Corner radius of cards and panels.
+const double cardRadius = 16;
+
+/// Space between buttons or chips that wrap onto several lines.
+const double wrapSpacing = 8;
+
 /// Vertical space between stacked blocks, from tight to roomy.
+const Widget gapTiny = SizedBox(height: 4);
 const Widget gapSmall = SizedBox(height: 8);
 const Widget gapMedium = SizedBox(height: 12);
+const Widget gapLarge = SizedBox(height: 16);
 
 /// Horizontal space between side-by-side buttons.
 const Widget gapSmallHorizontal = SizedBox(width: 8);

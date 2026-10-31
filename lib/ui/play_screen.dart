@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../engine/clock.dart';
 import '../engine/engine.dart';
 import '../engine/explainer.dart';
+import '../engine/game_result.dart';
 import '../engine/mistakes.dart';
 import '../engine/opponent.dart';
 import '../engine/pgn.dart';
@@ -321,14 +322,13 @@ class _PlayScreenState extends State<PlayScreen> {
   }
 
   /// 1, 0.5 or 0 for the player once the game is over, else null.
-  double? get _score {
-    if (!_over) return null;
-    if (_resigned) return 0;
-    final f = _flagged;
-    if (f != null) return f == _player ? 0 : 1;
-    if (_pos.isCheckmate) return _pos.turn == _player ? 0 : 1;
-    return 0.5;
-  }
+  double? get _score => playerScore(
+        pos: _pos,
+        player: _player,
+        drawn: _draw != null,
+        resigned: _resigned,
+        flagged: _flagged,
+      );
 
   /// Records the finished game once, in the rating unless hints or
   /// take-backs were used.
@@ -346,30 +346,20 @@ class _PlayScreenState extends State<PlayScreen> {
     final game = _game;
     widget.progress.recordGame(_level.elo, score).then((after) {
       if (!mounted || game != _game) return;
-      final d = after - before;
-      setState(() => _ratingNote = 'Rating $after (${d >= 0 ? '+' : ''}$d).');
+      setState(() => _ratingNote = ratingChangeNote(before, after));
     });
   }
 
-  String get _pgnResult {
-    final s = _score;
-    if (s == null) return '*';
-    if (s == 0.5) return '1/2-1/2';
-    return (s == 1) == (_player == white) ? '1-0' : '0-1';
-  }
-
   String _pgnText() {
-    final now = DateTime.now();
-    final date = '${now.year}.${now.month.toString().padLeft(2, '0')}.${now.day.toString().padLeft(2, '0')}';
-    final me = 'You';
-    final opp = _level.title;
+    const humanName = 'You';
+    final opponentName = _level.title;
     return toPgn(
       _board.moves,
-      result: _pgnResult,
+      result: pgnResultForScore(_score, _player),
       headers: {
-        'Date': date,
-        'White': _player == white ? me : opp,
-        'Black': _player == white ? opp : me,
+        'Date': pgnDate(DateTime.now()),
+        'White': _player == white ? humanName : opponentName,
+        'Black': _player == white ? opponentName : humanName,
         'WhiteElo': '${_player == white ? widget.progress.rating : _level.elo}',
         'BlackElo': '${_player == white ? _level.elo : widget.progress.rating}',
       },
@@ -474,7 +464,7 @@ class _PlayScreenState extends State<PlayScreen> {
               textAlign: TextAlign.center,
             ),
             if (_ratingNote != null) ...[
-              const SizedBox(height: 4),
+              gapTiny,
               Text(
                 _ratingNote!,
                 textAlign: TextAlign.center,
@@ -484,8 +474,8 @@ class _PlayScreenState extends State<PlayScreen> {
             gapSmall,
             Wrap(
               alignment: WrapAlignment.center,
-              spacing: 8,
-              runSpacing: 8,
+              spacing: wrapSpacing,
+              runSpacing: wrapSpacing,
               children: [
                 FilledButton.icon(
                   onPressed: _myTurn ? _hint : null,
@@ -620,10 +610,10 @@ class _PlayScreenState extends State<PlayScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Game review', style: theme.textTheme.titleMedium),
-            const SizedBox(height: 4),
+            gapTiny,
             Text(reviewSummary(_entries)),
             for (final e in mistakes) ...[
-              const SizedBox(height: 16),
+              gapLarge,
               ReviewSnapshot(entry: e, flipped: _player == black),
             ],
             if (mistakes.any((e) => e.missedKey != null)) ...[

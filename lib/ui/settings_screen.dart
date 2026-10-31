@@ -44,7 +44,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final scheme = Theme.of(context).colorScheme;
     return Material(
       color: scheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(cardRadius),
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
@@ -146,7 +146,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Default opponent', style: theme.textTheme.titleSmall),
-                    const SizedBox(height: 4),
+                    gapTiny,
                     Text(
                       'Used when you start a new game.',
                       style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),

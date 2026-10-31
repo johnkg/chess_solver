@@ -131,8 +131,8 @@ class _NewGameSheetState extends State<_NewGameSheet> {
             Text('CLOCK', style: theme.textTheme.labelMedium),
             const SizedBox(height: 6),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: wrapSpacing,
+              runSpacing: wrapSpacing,
               children: [
                 for (final c in TimeControl.values)
                   ChoiceChip(
@@ -142,7 +142,7 @@ class _NewGameSheetState extends State<_NewGameSheet> {
                   ),
               ],
             ),
-            const SizedBox(height: 16),
+            gapLarge,
             SizedBox(
               width: double.infinity,
               child: FilledButton(

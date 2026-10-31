@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'layout.dart';
 import 'theme.dart';
 
 enum CoachTone { neutral, good, bad }
@@ -24,13 +25,13 @@ class CoachCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(cardRadius)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title != null) ...[
             Text(title!, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 4),
+            gapTiny,
           ],
           Text(text, style: Theme.of(context).textTheme.bodyMedium),
         ],
@@ -79,7 +80,7 @@ class HeroCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(title, style: theme.titleLarge?.copyWith(color: fg)),
-          const SizedBox(height: 4),
+          gapTiny,
           Text(body, style: theme.bodyMedium?.copyWith(color: fg.withValues(alpha: 0.85))),
           const SizedBox(height: 14),
           action,
@@ -137,9 +138,9 @@ class RowCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(cardRadius),
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(cardRadius),
           onTap: onTap,
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 56),

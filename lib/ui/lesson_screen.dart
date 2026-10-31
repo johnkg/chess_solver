@@ -145,11 +145,11 @@ class _LessonScreenState extends State<LessonScreen> {
             gapMedium,
             if (_lesson.kind == LessonKind.line) ...[
               LineViewer(lesson: _lesson, progress: widget.progress),
-              const SizedBox(height: 16),
+              gapLarge,
               Text(_lesson.why, style: theme.textTheme.bodyLarge),
-              const SizedBox(height: 16),
+              gapLarge,
               const SectionLabel('What to look for'),
-              const SizedBox(height: 4),
+              gapTiny,
               for (final s in _lesson.spot)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
@@ -214,9 +214,9 @@ class _LessonScreenState extends State<LessonScreen> {
               ],
               gapSmall,
               Text(_lesson.why, style: theme.textTheme.bodyLarge),
-              const SizedBox(height: 16),
+              gapLarge,
               const SectionLabel('What to look for'),
-              const SizedBox(height: 4),
+              gapTiny,
               for (final s in _lesson.spot)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),

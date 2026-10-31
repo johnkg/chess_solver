@@ -82,7 +82,7 @@ class _ReviewSnapshotState extends State<ReviewSnapshot> {
         ),
         const SizedBox(height: 6),
         Text(caption, style: theme.textTheme.bodyMedium),
-        const SizedBox(height: 4),
+        gapTiny,
         Text(mistake.text),
       ],
     );

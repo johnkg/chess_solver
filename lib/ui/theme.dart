@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'layout.dart';
 import 'settings_store.dart';
 
 /// Colours of the board and its overlays; one set per brightness.
@@ -198,7 +199,7 @@ ThemeData buildTheme(Brightness brightness) {
       elevation: 0,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(cardRadius),
         side: BorderSide(color: scheme.outline),
       ),
     ),

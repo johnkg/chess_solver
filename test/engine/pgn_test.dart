@@ -1,5 +1,6 @@
 import 'package:chess_solver/engine/move.dart';
 import 'package:chess_solver/engine/pgn.dart';
+import 'package:chess_solver/engine/piece.dart';
 import 'package:chess_solver/engine/position.dart';
 import 'package:chess_solver/engine/san.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -91,5 +92,18 @@ void main() {
     expect(body.length, greaterThan(1));
     expect(body.every((l) => l.length <= 80), isTrue);
     expect(parsePgn(text).moves, moves);
+  });
+
+  test('pgnResultForScore maps a score and colour to the tag', () {
+    expect(pgnResultForScore(null, white), '*');
+    expect(pgnResultForScore(0.5, black), '1/2-1/2');
+    expect(pgnResultForScore(1, white), '1-0');
+    expect(pgnResultForScore(1, black), '0-1');
+    expect(pgnResultForScore(0, white), '0-1');
+    expect(pgnResultForScore(0, black), '1-0');
+  });
+
+  test('pgnDate pads month and day', () {
+    expect(pgnDate(DateTime(2026, 3, 7)), '2026.03.07');
   });
 }

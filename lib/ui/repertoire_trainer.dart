@@ -228,7 +228,7 @@ class _RepertoireTrainerState extends State<RepertoireTrainer> {
               gapMedium,
               CoachCard(text: _feedback!, tone: _tone),
             ],
-            const SizedBox(height: 16),
+            gapLarge,
             Text('Variations', style: theme.textTheme.titleSmall),
             const SizedBox(height: 6),
             for (var i = 0; i < _rep.lineCount; i++)

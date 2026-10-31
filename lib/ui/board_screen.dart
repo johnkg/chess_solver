@@ -145,8 +145,8 @@ class _BoardScreenState extends State<BoardScreen> {
             gapSmall,
             Wrap(
               alignment: WrapAlignment.center,
-              spacing: 8,
-              runSpacing: 8,
+              spacing: wrapSpacing,
+              runSpacing: wrapSpacing,
               children: [
                 FilledButton.icon(
                   onPressed: _gameOver ? null : _suggest,
