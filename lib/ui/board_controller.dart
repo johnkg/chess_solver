@@ -32,6 +32,10 @@ class BoardController extends ChangeNotifier {
   /// Every move played since the last [setPosition], oldest first.
   List<Move> get moves => [for (final h in _history) h.$2];
 
+  /// [Position.repetitionKey] of every position before the current one, for
+  /// repetition draws and for the engine's search.
+  List<String> get seenKeys => [for (final h in _history) h.$1.repetitionKey];
+
   Move? get lastMove => _history.isEmpty ? null : _history.last.$2;
 
   /// Position before [lastMove], or null.

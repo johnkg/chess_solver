@@ -10,14 +10,16 @@ import 'package:chess_solver/engine/position.dart';
 
 double play(Level whiteLevel, Level blackLevel, Random rng, int cap) {
   var pos = Position.start();
+  final seen = <String>[];
   for (var ply = 0; ply < 240; ply++) {
     final level = pos.turn == white ? whiteLevel : blackLevel;
-    final move = chooseMove(pos, level, rng, min(level.millis, cap));
+    final move = chooseMove(pos, level, rng, min(level.millis, cap), seen);
     if (move == null) {
       return pos.inCheck ? (pos.turn == white ? 0 : 1) : 0.5;
     }
+    seen.add(pos.repetitionKey);
     pos = pos.makeMove(move);
-    if (drawReason(pos) != null) return 0.5;
+    if (drawReason(pos, seen: seen) != null) return 0.5;
   }
   return 0.5;
 }

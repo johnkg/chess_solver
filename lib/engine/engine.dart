@@ -43,6 +43,10 @@ class Searcher {
   bool cancelled = false;
 
   SearchResult? _result;
+
+  /// Keys of the positions on the current line, game history first. A
+  /// position that is already here scores as a draw.
+  final List<String> _path = [];
   final Stopwatch _slice = Stopwatch();
 
   /// Best moves in [pos], or null when there is no legal move. Searches up to
@@ -54,8 +58,9 @@ class Searcher {
     required int maxDepth,
     required int millis,
     int margin = 50,
+    List<String> history = const [],
   }) {
-    for (final _ in _run(pos, maxDepth, millis, margin)) {}
+    for (final _ in _run(pos, maxDepth, millis, margin, history)) {}
     return _result;
   }
 
@@ -67,8 +72,9 @@ class Searcher {
     required int maxDepth,
     required int millis,
     int margin = 50,
+    List<String> history = const [],
   }) async {
-    for (final _ in _run(pos, maxDepth, millis, margin)) {
+    for (final _ in _run(pos, maxDepth, millis, margin, history)) {
       await Future<void>.delayed(Duration.zero);
       if (cancelled) return null;
     }
@@ -77,8 +83,20 @@ class Searcher {
 
   /// The search itself. It yields (with nothing) between root moves once a
   /// slice of work has taken long enough, and leaves the answer in [_result].
-  Iterable<void> _run(Position pos, int maxDepth, int millis, int margin) sync* {
+  /// [history] holds the [Position.repetitionKey] of every earlier position
+  /// in the game (not [pos] itself).
+  Iterable<void> _run(
+    Position pos,
+    int maxDepth,
+    int millis,
+    int margin,
+    List<String> history,
+  ) sync* {
     _result = null;
+    _path
+      ..clear()
+      ..addAll(history)
+      ..add(pos.repetitionKey);
     final legal = pos.legalMoves();
     if (legal.isEmpty) return;
     if (legal.length == 1) {
@@ -168,6 +186,13 @@ class Searcher {
   int _negamax(Position pos, int depth, int alpha, int beta, int ply, bool allowNull) {
     _tick();
     if (pos.halfmove >= 100) return 0;
+    // A position seen before on this line (or earlier in the game) is a
+    // repetition. Only reversible-move stretches can repeat.
+    String? key;
+    if (pos.halfmove >= 4) {
+      key = pos.repetitionKey;
+      if (_path.contains(key)) return 0;
+    }
     final inCheck = pos.inCheck;
     if (inCheck && ply < 40) depth++;
     if (depth <= 0 || ply >= 60) return _quiesce(pos, alpha, beta, ply);
@@ -184,6 +209,7 @@ class Searcher {
 
     var legal = 0;
     var best = -mateScore - 1;
+    if (key != null) _path.add(key);
     for (final i in idx) {
       final m = moves[i];
       final next = pos.makeMove(m);
@@ -215,6 +241,7 @@ class Searcher {
         break;
       }
     }
+    if (key != null) _path.removeLast();
     if (legal == 0) return inCheck ? -mateScore + ply : 0;
     return best;
   }

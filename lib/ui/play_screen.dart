@@ -114,7 +114,7 @@ class _PlayScreenState extends State<PlayScreen> {
   }
 
   Position get _pos => _board.position;
-  String? get _draw => drawReason(_pos);
+  String? get _draw => drawReason(_pos, seen: _board.seenKeys);
   bool get _over =>
       _pos.legalMoves().isEmpty || _draw != null || _flagged != null || _resigned;
   bool get _myTurn => !_thinking && !_over && _pos.turn == _player;
@@ -194,6 +194,7 @@ class _PlayScreenState extends State<PlayScreen> {
       random: widget.random,
       maxMillis: _engineMillis(),
       searcher: searcher,
+      history: _board.seenKeys,
     );
     if (!mounted || game != _game) return;
     if (move == null || _flagged != null) {

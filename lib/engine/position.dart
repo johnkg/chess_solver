@@ -124,6 +124,10 @@ class Position {
     return Position._(squares, turn, castling, ep, halfmove, fullmove);
   }
 
+  /// Identity of the position for repetition: placement, side to move,
+  /// castling rights and en passant square (no move counters).
+  String get repetitionKey => toFen().split(' ').take(4).join(' ');
+
   String toFen() {
     final rows = <String>[];
     for (var rank = 7; rank >= 0; rank--) {
