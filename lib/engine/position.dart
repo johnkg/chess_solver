@@ -124,6 +124,18 @@ class Position {
     return Position._(squares, turn, castling, ep, halfmove, fullmove);
   }
 
+  /// Half-moves without a capture or pawn move after which the game is drawn.
+  static const int fiftyMoveRuleHalfmoves = 100;
+
+  /// A position can only repeat after this many reversible half-moves.
+  static const int earliestRepetitionHalfmoves = 4;
+
+  bool get isFiftyMoveDraw => halfmove >= fiftyMoveRuleHalfmoves;
+
+  /// False while too few reversible moves were played for any earlier
+  /// position to repeat; callers skip the repetition check then.
+  bool get canHaveRepeated => halfmove >= earliestRepetitionHalfmoves;
+
   /// Identity of the position for repetition: placement, side to move,
   /// castling rights and en passant square (no move counters).
   String get repetitionKey => toFen().split(' ').take(4).join(' ');

@@ -86,119 +86,186 @@ const List<List<int>> _tables = [
 ];
 
 /// Bonus for a passed pawn by how far it has advanced (relative rank 0..7).
-const List<int> _passed = [0, 10, 15, 25, 45, 80, 140, 0];
+const List<int> _passedPawnBonus = [0, 10, 15, 25, 45, 80, 140, 0];
+
+const int _doubledPawnPenalty = 15; // per extra pawn on a file
+const int _isolatedPawnPenalty = 12; // per file with pawns and no neighbours
+const int _bishopPairBonus = 30;
+const int _rookOpenFileBonus = 20; // no pawns of either colour on its file
+const int _rookSemiOpenFileBonus = 10; // only the enemy has pawns there
+const int _pawnShieldBonus = 12; // per pawn right in front of a castled king
+const int _tempoBonus = 10; // having the move
+
+/// Non-pawn material (both sides) at which the endgame blend begins; below
+/// it the king table fades from middlegame to endgame.
+const int _fullMiddlegameMaterial = 6200;
+
+/// The pawn shield counts only while the game is still this far from the
+/// endgame (0 = full middlegame, 1 = bare endgame).
+const double _shieldMaxEndgameBlend = 0.5;
+
+/// +1 for White, -1 for Black: scores are kept as White minus Black.
+int _sign(int color) => color == white ? 1 : -1;
+
+/// Rank counted from [color]'s own back rank (0) to the far side (7).
+int _relativeRank(int color, int rank) => color == white ? rank : boardSize - 1 - rank;
+
+/// Index into a table drawn from White's side with rank 8 first.
+int _tableIndex(int color, int square) =>
+    (boardSize - 1 - _relativeRank(color, rankOf(square))) * boardSize + fileOf(square);
+
+/// What one pass over the board finds, for the terms that need it.
+class _Census {
+  int placement = 0; // material and piece-square values, White minus Black
+  int nonPawnMaterial = 0;
+  final List<List<int>> pawnsOnFile = [
+    List<int>.filled(boardSize, 0),
+    List<int>.filled(boardSize, 0),
+  ];
+  final List<int> bishops = [0, 0];
+  final List<int> kings = [-1, -1];
+  final List<int> rooks = [];
+}
+
+_Census _countPieces(List<int> squares) {
+  final census = _Census();
+  for (var square = 0; square < boardSquares; square++) {
+    final piece = squares[square];
+    if (piece == empty) continue;
+    final color = pieceColor(piece);
+    final type = pieceType(piece);
+    var value = centipawnValue[type];
+    if (type == king) {
+      census.kings[color] = square;
+    } else {
+      value += _tables[type][_tableIndex(color, square)];
+      if (type == pawn) {
+        census.pawnsOnFile[color][fileOf(square)]++;
+      } else {
+        census.nonPawnMaterial += centipawnValue[type];
+        if (type == bishop) census.bishops[color]++;
+        if (type == rook) census.rooks.add(square);
+      }
+    }
+    census.placement += _sign(color) * value;
+  }
+  return census;
+}
+
+/// How far the game is into the endgame: 0 with all pieces, 1 with none.
+double _endgameBlend(_Census census) =>
+    (1 - census.nonPawnMaterial / _fullMiddlegameMaterial).clamp(0.0, 1.0);
+
+/// Kings: the middlegame table fades into the endgame table as pieces come off.
+int _kingPlacement(_Census census, double endgame) {
+  var score = 0;
+  for (final color in [white, black]) {
+    final king = census.kings[color];
+    if (king < 0) continue;
+    final i = _tableIndex(color, king);
+    final value = (_kingMiddle[i] * (1 - endgame) + _kingEnd[i] * endgame).round();
+    score += _sign(color) * value;
+  }
+  return score;
+}
+
+/// Doubled and isolated pawns.
+int _pawnStructure(_Census census) {
+  var score = 0;
+  for (final color in [white, black]) {
+    final pawns = census.pawnsOnFile[color];
+    for (var file = 0; file < boardSize; file++) {
+      if (pawns[file] == 0) continue;
+      if (pawns[file] > 1) score -= _sign(color) * _doubledPawnPenalty * (pawns[file] - 1);
+      final left = file > 0 ? pawns[file - 1] : 0;
+      final right = file < boardSize - 1 ? pawns[file + 1] : 0;
+      if (left == 0 && right == 0) score -= _sign(color) * _isolatedPawnPenalty;
+    }
+  }
+  return score;
+}
+
+int _passedPawns(List<int> squares) {
+  var score = 0;
+  for (var square = 0; square < boardSquares; square++) {
+    final piece = squares[square];
+    if (piece == empty || pieceType(piece) != pawn) continue;
+    final color = pieceColor(piece);
+    if (_isPassed(squares, square, color)) {
+      score += _sign(color) * _passedPawnBonus[_relativeRank(color, rankOf(square))];
+    }
+  }
+  return score;
+}
+
+int _bishopPair(_Census census) {
+  var score = 0;
+  for (final color in [white, black]) {
+    if (census.bishops[color] >= 2) score += _sign(color) * _bishopPairBonus;
+  }
+  return score;
+}
+
+int _rooksOnOpenFiles(List<int> squares, _Census census) {
+  var score = 0;
+  for (final square in census.rooks) {
+    final color = pieceColor(squares[square]);
+    final file = fileOf(square);
+    final ownPawns = census.pawnsOnFile[color][file];
+    final enemyPawns = census.pawnsOnFile[1 - color][file];
+    if (ownPawns != 0) continue;
+    score += _sign(color) * (enemyPawns == 0 ? _rookOpenFileBonus : _rookSemiOpenFileBonus);
+  }
+  return score;
+}
+
+/// Pawns in front of a king that is still on its back rank.
+int _pawnShield(List<int> squares, _Census census) {
+  var score = 0;
+  for (final color in [white, black]) {
+    final king = census.kings[color];
+    if (king < 0) continue;
+    final backRank = color == white ? 0 : boardSize - 1;
+    if (rankOf(king) != backRank) continue;
+    final forward = _sign(color);
+    var shield = 0;
+    for (var file = fileOf(king) - 1; file <= fileOf(king) + 1; file++) {
+      if (file < 0 || file >= boardSize) continue;
+      if (squares[squareOf(backRank + forward, file)] == makePiece(pawn, color)) shield++;
+    }
+    score += _sign(color) * _pawnShieldBonus * shield;
+  }
+  return score;
+}
 
 /// Score in centipawns from the side to move's point of view.
 int playEval(Position pos) {
-  final sq = pos.squares;
-  var score = 0; // White minus Black
-  var nonPawn = 0;
-  final pawnFiles = [List<int>.filled(8, 0), List<int>.filled(8, 0)];
-  final bishops = [0, 0];
-  final kings = [-1, -1];
-  final rooks = <int>[];
+  final squares = pos.squares;
+  final census = _countPieces(squares);
+  final endgame = _endgameBlend(census);
 
-  for (var x = 0; x < 64; x++) {
-    final p = sq[x];
-    if (p == empty) continue;
-    final c = pieceColor(p);
-    final t = pieceType(p);
-    final r = rankOf(x);
-    final f = fileOf(x);
-    final rel = c == white ? r : 7 - r;
-    final row = 7 - rel;
-    final sign = c == white ? 1 : -1;
-    var s = centipawnValue[t];
-    if (t == king) {
-      kings[c] = x;
-    } else {
-      s += _tables[t][row * 8 + f];
-      if (t == pawn) {
-        pawnFiles[c][f]++;
-      } else {
-        nonPawn += centipawnValue[t];
-        if (t == bishop) bishops[c]++;
-        if (t == rook) rooks.add(x);
-      }
-    }
-    score += sign * s;
-  }
-
-  // King: middlegame table fades into the endgame table as pieces come off.
-  final endgame = (1 - nonPawn / 6200).clamp(0.0, 1.0);
-  for (var c = 0; c < 2; c++) {
-    final k = kings[c];
-    if (k < 0) continue;
-    final rel = c == white ? rankOf(k) : 7 - rankOf(k);
-    final i = (7 - rel) * 8 + fileOf(k);
-    final v = (_kingMiddle[i] * (1 - endgame) + _kingEnd[i] * endgame).round();
-    score += (c == white ? 1 : -1) * v;
-  }
-
-  // Pawn structure.
-  for (var c = 0; c < 2; c++) {
-    final sign = c == white ? 1 : -1;
-    final mine = pawnFiles[c];
-    for (var f = 0; f < 8; f++) {
-      if (mine[f] == 0) continue;
-      if (mine[f] > 1) score -= sign * 15 * (mine[f] - 1);
-      final left = f > 0 ? mine[f - 1] : 0;
-      final right = f < 7 ? mine[f + 1] : 0;
-      if (left == 0 && right == 0) score -= sign * 12;
-    }
-  }
-  for (var x = 0; x < 64; x++) {
-    final p = sq[x];
-    if (p == empty || pieceType(p) != pawn) continue;
-    final c = pieceColor(p);
-    if (_isPassed(sq, x, c)) {
-      final rel = c == white ? rankOf(x) : 7 - rankOf(x);
-      score += (c == white ? 1 : -1) * _passed[rel];
-    }
-  }
-
-  // Bishop pair, rooks on open files.
-  if (bishops[white] >= 2) score += 30;
-  if (bishops[black] >= 2) score -= 30;
-  for (final x in rooks) {
-    final c = pieceColor(sq[x]);
-    final f = fileOf(x);
-    final own = pawnFiles[c][f];
-    final opp = pawnFiles[1 - c][f];
-    final bonus = own == 0 ? (opp == 0 ? 20 : 10) : 0;
-    score += (c == white ? 1 : -1) * bonus;
-  }
-
-  // Pawn shield in front of a castled king (only while queens are on).
-  if (endgame < 0.5) {
-    for (var c = 0; c < 2; c++) {
-      final k = kings[c];
-      if (k < 0) continue;
-      final backRank = c == white ? 0 : 7;
-      if (rankOf(k) != backRank) continue;
-      final dir = c == white ? 1 : -1;
-      var shield = 0;
-      for (var f = fileOf(k) - 1; f <= fileOf(k) + 1; f++) {
-        if (f < 0 || f > 7) continue;
-        if (sq[squareOf(backRank + dir, f)] == makePiece(pawn, c)) shield++;
-      }
-      score += (c == white ? 1 : -1) * 12 * shield;
-    }
-  }
+  var score = census.placement +
+      _kingPlacement(census, endgame) +
+      _pawnStructure(census) +
+      _passedPawns(squares) +
+      _bishopPair(census) +
+      _rooksOnOpenFiles(squares, census);
+  if (endgame < _shieldMaxEndgameBlend) score += _pawnShield(squares, census);
 
   final fromMover = pos.turn == white ? score : -score;
-  return fromMover + 10; // small bonus for having the move
+  return fromMover + _tempoBonus;
 }
 
-bool _isPassed(List<int> sq, int x, int c) {
-  final f = fileOf(x);
-  final r = rankOf(x);
-  final dir = c == white ? 1 : -1;
-  final enemyPawn = makePiece(pawn, 1 - c);
-  for (var rr = r + dir; rr >= 0 && rr < 8; rr += dir) {
-    for (var ff = f - 1; ff <= f + 1; ff++) {
-      if (ff < 0 || ff > 7) continue;
-      if (sq[squareOf(rr, ff)] == enemyPawn) return false;
+/// True if no enemy pawn on this or a neighbouring file is ahead of the pawn
+/// on [square].
+bool _isPassed(List<int> squares, int square, int color) {
+  final file = fileOf(square);
+  final forward = _sign(color);
+  final enemyPawn = makePiece(pawn, 1 - color);
+  for (var rank = rankOf(square) + forward; rank >= 0 && rank < boardSize; rank += forward) {
+    for (var f = file - 1; f <= file + 1; f++) {
+      if (f < 0 || f >= boardSize) continue;
+      if (squares[squareOf(rank, f)] == enemyPawn) return false;
     }
   }
   return true;

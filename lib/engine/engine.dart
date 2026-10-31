@@ -22,12 +22,6 @@ const int _maxCheckExtensionPly = 40;
 const int _killerPlyLimit = 64;
 const int _noKillerPly = _killerPlyLimit;
 
-/// Draw by the fifty-move rule, in half-moves since a capture or pawn move.
-const int _fiftyMoveHalfmoves = 100;
-
-/// A position can only repeat after this many reversible half-moves.
-const int _earliestRepetitionHalfmoves = 4;
-
 /// Moves tried when the caller does not say how wide the root window is.
 const int _defaultMoveMargin = 50;
 
@@ -314,12 +308,12 @@ class Searcher {
 
   int _negamax(Position pos, int depth, int alpha, int beta, int ply, bool allowNull) {
     _tick();
-    if (pos.halfmove >= _fiftyMoveHalfmoves) return 0;
+    if (pos.isFiftyMoveDraw) return 0;
 
     // A position seen before on this line (or earlier in the game) is a
     // repetition. Only reversible-move stretches can repeat.
     String? repetitionKey;
-    if (pos.halfmove >= _earliestRepetitionHalfmoves) {
+    if (pos.canHaveRepeated) {
       repetitionKey = pos.repetitionKey;
       if (_path.contains(repetitionKey)) return 0;
     }
