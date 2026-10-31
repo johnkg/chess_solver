@@ -3,6 +3,7 @@ import 'piece.dart';
 import 'play_eval.dart';
 import 'position.dart';
 import 'search.dart' show mateScore;
+import 'tt.dart';
 
 /// Result of [Searcher.search]: the moves scoring within the margin of the
 /// best one, best first. Scores are centipawns for the side to move.
@@ -29,6 +30,13 @@ const List<int> _victimValue = [0, 100, 320, 330, 500, 900, 0];
 /// computer opponent: it stops when its time budget runs out and keeps the
 /// last finished depth.
 class Searcher {
+  /// [useTable] turns the transposition table off (tests and the duel tool
+  /// compare both).
+  Searcher({this.useTable = true});
+
+  final bool useTable;
+  TranspositionTable? _tt;
+
   final Stopwatch _clock = Stopwatch();
   int _budgetMs = 1000;
   bool _timed = false;
@@ -112,6 +120,7 @@ class Searcher {
       ..start();
     _budgetMs = millis;
     nodes = 0;
+    _tt = useTable ? TranspositionTable(maxDepth <= 3 ? 16 : 18) : null;
     var ordered = _orderRoot(pos, legal);
     SearchResult? done;
 
@@ -167,7 +176,8 @@ class Searcher {
     }
   }
 
-  int _orderKey(Position pos, Move m, int ply) {
+  int _orderKey(Position pos, Move m, int ply, [int ttMove = 0]) {
+    if (ttMove != 0 && TranspositionTable.sameMove(ttMove, m)) return 1000000;
     final victim = pos.squares[m.to];
     if (victim != empty || m.flag == Move.enPassant) {
       final v = victim == empty ? 100 : _victimValue[pieceType(victim)];
@@ -197,18 +207,44 @@ class Searcher {
     if (inCheck && ply < 40) depth++;
     if (depth <= 0 || ply >= 60) return _quiesce(pos, alpha, beta, ply);
 
+    final tt = _tt;
+    var h1 = 0;
+    var h2 = 0;
+    var ttMove = 0;
+    final alphaStart = alpha;
+    final betaStart = beta;
+    if (tt != null) {
+      (h1, h2) = TranspositionTable.hashOf(pos);
+      final slot = tt.find(h1, h2);
+      if (slot >= 0) {
+        ttMove = tt.moveAt(slot);
+        if (tt.depthAt(slot) >= depth) {
+          final stored = tt.scoreAt(slot, ply);
+          final flag = tt.flagAt(slot);
+          if (flag == ttExact) return stored;
+          if (flag == ttLower) {
+            if (stored > alpha) alpha = stored;
+          } else if (stored < beta) {
+            beta = stored;
+          }
+          if (alpha >= beta) return stored;
+        }
+      }
+    }
+
     if (allowNull && !inCheck && depth >= 3 && _hasPieces(pos, pos.turn)) {
       final score = -_negamax(pos.passTurn(), depth - 3, -beta, -beta + 1, ply + 1, false);
       if (score >= beta) return beta;
     }
 
     final moves = pos.pseudoLegalMoves();
-    final keys = [for (final m in moves) _orderKey(pos, m, ply)];
+    final keys = [for (final m in moves) _orderKey(pos, m, ply, ttMove)];
     final idx = List<int>.generate(moves.length, (i) => i)
       ..sort((a, b) => keys[b].compareTo(keys[a]));
 
     var legal = 0;
     var best = -mateScore - 1;
+    Move? bestMove;
     if (key != null) _path.add(key);
     for (final i in idx) {
       final m = moves[i];
@@ -227,7 +263,10 @@ class Searcher {
           score = -_negamax(next, depth - 1, -beta, -alpha, ply + 1, true);
         }
       }
-      if (score > best) best = score;
+      if (score > best) {
+        best = score;
+        bestMove = m;
+      }
       if (score > alpha) alpha = score;
       if (alpha >= beta) {
         if (quiet && ply < 64) {
@@ -243,6 +282,10 @@ class Searcher {
     }
     if (key != null) _path.removeLast();
     if (legal == 0) return inCheck ? -mateScore + ply : 0;
+    if (tt != null) {
+      final flag = best <= alphaStart ? ttUpper : (best >= betaStart ? ttLower : ttExact);
+      tt.store(h1, h2, depth, best, flag, bestMove, ply);
+    }
     return best;
   }
 
