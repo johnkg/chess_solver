@@ -244,6 +244,13 @@ class Position {
     return k >= 0 && isAttacked(k, 1 - turn);
   }
 
+  /// True if [next], the position after a pseudo-legal move by the side to
+  /// move here, does not leave that side's own king attacked.
+  bool keepsKingSafe(Position next) {
+    final king = next.kingSquare(turn);
+    return king < 0 || !next.isAttacked(king, 1 - turn);
+  }
+
   /// Moves that follow piece movement rules but may leave the own king
   /// in check. Use [legalMoves] unless you need the raw list.
   List<Move> pseudoLegalMoves() {
@@ -436,9 +443,7 @@ class Position {
   List<Move> legalMoves() {
     final legal = <Move>[];
     for (final m in pseudoLegalMoves()) {
-      final next = makeMove(m);
-      final k = next.kingSquare(turn);
-      if (k < 0 || !next.isAttacked(k, 1 - turn)) legal.add(m);
+      if (keepsKingSafe(makeMove(m))) legal.add(m);
     }
     return legal;
   }

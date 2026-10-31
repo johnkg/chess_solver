@@ -6,8 +6,12 @@ import 'position.dart';
 /// Score of a checkmate. A mate `ply` plies away scores `mateScore - ply`.
 const int mateScore = 100000;
 
+/// Scores within this many points of [mateScore] are mates (the gap is the
+/// longest mate in plies the search can report).
+const int mateScoreWindow = 1000;
+
 /// True if a score means "forced mate found".
-bool isMateScore(int score) => score.abs() > mateScore - 1000;
+bool isMateScore(int score) => score.abs() > mateScore - mateScoreWindow;
 
 bool _isCapture(Position pos, Move m) =>
     pos.squares[m.to] != empty || m.flag == Move.enPassant;
@@ -96,8 +100,7 @@ int _quiesce(
   ];
   for (final m in orderMoves(pos, tactical)) {
     final next = pos.makeMove(m);
-    final k = next.kingSquare(pos.turn);
-    if (k >= 0 && next.isAttacked(k, 1 - pos.turn)) continue; // illegal
+    if (!pos.keepsKingSafe(next)) continue;
     final score = -_quiesce(next, -beta, -alpha, ply + 1, ev);
     if (score >= beta) return score;
     if (score > alpha) alpha = score;

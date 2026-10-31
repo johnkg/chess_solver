@@ -6,7 +6,8 @@ import 'position.dart';
 /// material, piece-square tables, pawn structure, bishop pair, rooks on open
 /// files and king safety.
 
-const List<int> _value = [0, 100, 320, 330, 500, 900, 0];
+/// Material value in centipawns, indexed by piece type (the king has none).
+const List<int> centipawnValue = [0, 100, 320, 330, 500, 900, 0];
 
 // Piece-square tables, written as the board is drawn: first row is rank 8,
 // from White's side. Values in centipawns.
@@ -107,7 +108,7 @@ int playEval(Position pos) {
     final rel = c == white ? r : 7 - r;
     final row = 7 - rel;
     final sign = c == white ? 1 : -1;
-    var s = _value[t];
+    var s = centipawnValue[t];
     if (t == king) {
       kings[c] = x;
     } else {
@@ -115,7 +116,7 @@ int playEval(Position pos) {
       if (t == pawn) {
         pawnFiles[c][f]++;
       } else {
-        nonPawn += _value[t];
+        nonPawn += centipawnValue[t];
         if (t == bishop) bishops[c]++;
         if (t == rook) rooks.add(x);
       }

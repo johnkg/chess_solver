@@ -4,8 +4,91 @@ import 'move.dart';
 import 'piece.dart';
 import 'play_eval.dart';
 import 'position.dart';
-import 'search.dart' show mateScore;
+import 'search.dart' show isMateScore, mateScore;
 import 'tt.dart';
+
+// --- Search limits ---
+
+/// Larger than any real score: the open end of an alpha-beta window.
+const int _infinity = mateScore + 1;
+
+/// Deepest line searched, quiescence included.
+const int _maxPly = 60;
+
+/// Check extensions stop beyond this ply so a long checking line ends.
+const int _maxCheckExtensionPly = 40;
+
+/// Killer-move slots; deeper plies (and quiescence) use none.
+const int _killerPlyLimit = 64;
+const int _noKillerPly = _killerPlyLimit;
+
+/// Draw by the fifty-move rule, in half-moves since a capture or pawn move.
+const int _fiftyMoveHalfmoves = 100;
+
+/// A position can only repeat after this many reversible half-moves.
+const int _earliestRepetitionHalfmoves = 4;
+
+/// Moves tried when the caller does not say how wide the root window is.
+const int _defaultMoveMargin = 50;
+
+// --- Time control ---
+
+/// The clock is read once per this many nodes (a power of two).
+const int _nodesPerClockCheck = 1024;
+
+/// How long the async search works before yielding to the event loop.
+const int _yieldAfterMillis = 20;
+
+/// Stop deepening once this share of the time is used: the next depth takes
+/// several times longer than the last, so it would not finish.
+const double _nextDepthTimeShare = 0.6;
+
+// --- Transposition table size ---
+
+const int _smallTableBits = 16;
+const int _largeTableBits = 18;
+const int _smallTableMaxDepth = 3;
+
+// --- Null move, late-move reductions and static pruning ---
+
+const int _nullMoveMinDepth = 3;
+
+/// Depth taken off a null-move search: the move itself plus two more plies.
+const int _nullMoveDepthDrop = 3;
+
+const int _lateMoveReductionMinDepth = 3;
+
+/// Quiet moves after this many legal ones are searched shallower first.
+const int _lateMovesStartAfter = 3;
+const double _reductionDivisor = 2.0;
+
+/// Futility and reverse futility only apply this close to the leaves.
+const int _staticPruningMaxDepth = 3;
+const int _futilityMaxDepth = 2;
+
+/// Centipawn margins by depth (index = depth - 1): a quiet move this far
+/// below alpha cannot catch up.
+const List<int> _futilityMargins = [150, 320];
+
+/// A node whose eval beats beta by this much per remaining ply is cut.
+const int _reverseFutilityMarginPerPly = 130;
+
+/// Quiescence skips a capture that cannot lift the eval to alpha even with
+/// this much slack on top of the captured piece.
+const int _deltaPruningMargin = 200;
+
+// --- Move ordering scores (higher is tried first) ---
+
+const int _ttMoveOrder = 1000000;
+const int _captureOrder = 100000;
+const int _promotionOrder = 90000;
+const int _firstKillerOrder = 80000;
+const int _secondKillerOrder = 79000;
+
+/// Captures sort by victim value times this, minus attacker value over
+/// [_attackerOrderDivisor] (most valuable victim, least valuable attacker).
+const int _victimOrderWeight = 10;
+const int _attackerOrderDivisor = 10;
 
 /// Result of [Searcher.search]: the moves scoring within the margin of the
 /// best one, best first. Scores are centipawns for the side to move.
@@ -25,19 +108,16 @@ class _Stop implements Exception {
   const _Stop();
 }
 
-const List<int> _victimValue = [0, 100, 320, 330, 500, 900, 0];
-
 /// Iterative-deepening alpha-beta with quiescence, null-move pruning, late
-/// move reductions, killer moves and the history heuristic. Meant for the
+/// move reductions that grow with depth and move number, killer moves and the history heuristic. Meant for the
 /// computer opponent: it stops when its time budget runs out and keeps the
 /// last finished depth.
 class Searcher {
   /// [useTable] turns the transposition table off (tests and the duel tool
   /// compare both).
   ///
-  /// [pruning] turns on late-move reductions that grow with depth and move
-  /// number, futility pruning, reverse futility and skipping bad captures in
-  /// quiescence.
+  /// [pruning] turns on futility pruning, reverse futility and skipping bad
+  /// captures in quiescence.
   Searcher({this.useTable = true, this.pruning = true});
 
   final bool useTable;
@@ -45,14 +125,15 @@ class Searcher {
   TranspositionTable? _tt;
 
   final Stopwatch _clock = Stopwatch();
-  int _budgetMs = 1000;
+  int _budgetMs = 0;
   bool _timed = false;
   int nodes = 0;
 
   final List<List<Move?>> _killers = [
-    for (var i = 0; i < 64; i++) [null, null],
+    for (var i = 0; i < _killerPlyLimit; i++) [null, null],
   ];
-  final List<int> _history = List<int>.filled(64 * 64, 0);
+  /// Quiet moves that caused cutoffs, by [_historyIndex].
+  final List<int> _history = List<int>.filled(boardSquares * boardSquares, 0);
 
   /// Set to true to abandon a running search; [searchAsync] then returns null.
   bool cancelled = false;
@@ -72,7 +153,7 @@ class Searcher {
     Position pos, {
     required int maxDepth,
     required int millis,
-    int margin = 50,
+    int margin = _defaultMoveMargin,
     List<String> history = const [],
   }) {
     for (final _ in _run(pos, maxDepth, millis, margin, history)) {}
@@ -86,7 +167,7 @@ class Searcher {
     Position pos, {
     required int maxDepth,
     required int millis,
-    int margin = 50,
+    int margin = _defaultMoveMargin,
     List<String> history = const [],
   }) async {
     for (final _ in _run(pos, maxDepth, millis, margin, history)) {
@@ -127,7 +208,7 @@ class Searcher {
       ..start();
     _budgetMs = millis;
     nodes = 0;
-    _tt = useTable ? TranspositionTable(maxDepth <= 3 ? 16 : 18) : null;
+    _tt = useTable ? TranspositionTable(maxDepth <= _smallTableMaxDepth ? _smallTableBits : _largeTableBits) : null;
     var ordered = _orderRoot(pos, legal);
     SearchResult? done;
 
@@ -135,16 +216,16 @@ class Searcher {
       _timed = depth > 1;
       try {
         final out = <(Move, int)>[];
-        var best = -mateScore - 1;
+        var best = -_infinity;
         for (final m in ordered) {
           final next = pos.makeMove(m);
-          final floor = out.isEmpty ? -mateScore - 1 : best - margin;
-          final score = -_negamax(next, depth - 1, -mateScore - 1, -floor, 1, true);
+          final floor = out.isEmpty ? -_infinity : best - margin;
+          final score = -_negamax(next, depth - 1, -_infinity, -floor, 1, true);
           if (out.isEmpty || score > floor) {
             out.add((m, score));
             if (score > best) best = score;
           }
-          if (_slice.elapsedMilliseconds >= 20) {
+          if (_slice.elapsedMilliseconds >= _yieldAfterMillis) {
             yield null;
             _slice
               ..reset()
@@ -157,11 +238,11 @@ class Searcher {
         ordered = [for (final e in out) e.$1];
         final rest = legal.where((m) => !ordered.contains(m));
         ordered = [...ordered, ...rest];
-        if (isMate(out.first.$2)) break;
+        if (isMateScore(out.first.$2)) break;
       } on _Stop {
         break;
       }
-      if (_clock.elapsedMilliseconds > millis * 0.6) break; // next depth will not finish
+      if (_clock.elapsedMilliseconds > millis * _nextDepthTimeShare) break;
     }
     _clock.stop();
     _result = done ?? SearchResult([(legal.first, 0)], 0, nodes);
@@ -170,11 +251,9 @@ class Searcher {
   /// Plies to cut from a quiet late move: more for deeper searches and for
   /// moves further down the list.
   static int _reduction(int depth, int moveNumber) {
-    final r = (log(depth) * log(moveNumber) / 2.0).floor();
+    final r = (log(depth) * log(moveNumber) / _reductionDivisor).floor();
     return r < 1 ? 1 : (r > depth - 2 ? max(1, depth - 2) : r);
   }
-
-  bool isMate(int score) => score.abs() > mateScore - 1000;
 
   List<Move> _orderRoot(Position pos, List<Move> moves) {
     final list = [...moves];
@@ -182,61 +261,89 @@ class Searcher {
     return list;
   }
 
+  /// Counts a node and stops the search when cancelled or out of time.
   void _tick() {
     nodes++;
     if (cancelled) throw const _Stop();
-    if (_timed && (nodes & 1023) == 0 && _clock.elapsedMilliseconds > _budgetMs) {
+    final timeToCheckClock = (nodes & (_nodesPerClockCheck - 1)) == 0;
+    if (_timed && timeToCheckClock && _clock.elapsedMilliseconds > _budgetMs) {
       throw const _Stop();
     }
   }
 
+  static int _historyIndex(Move m) => m.from * boardSquares + m.to;
+
+  static bool _isCapture(Position pos, Move m) =>
+      pos.squares[m.to] != empty || m.flag == Move.enPassant;
+
+  static bool _isQuiet(Position pos, Move m) => !_isCapture(pos, m) && m.promotion == 0;
+
+  /// Indexes of [keys] from the highest key to the lowest.
+  static List<int> _indexesByDescendingKey(List<int> keys) =>
+      List<int>.generate(keys.length, (i) => i)..sort((a, b) => keys[b].compareTo(keys[a]));
+
+  /// How early to try [m]: the table's move, then captures (most valuable
+  /// victim first), promotions, killers, then quiet moves by history.
   int _orderKey(Position pos, Move m, int ply, [int ttMove = 0]) {
-    if (ttMove != 0 && TranspositionTable.sameMove(ttMove, m)) return 1000000;
-    final victim = pos.squares[m.to];
-    if (victim != empty || m.flag == Move.enPassant) {
-      final v = victim == empty ? 100 : _victimValue[pieceType(victim)];
-      final a = _victimValue[pieceType(pos.squares[m.from])];
-      return 100000 + v * 10 - a ~/ 10;
+    if (ttMove != 0 && TranspositionTable.sameMove(ttMove, m)) return _ttMoveOrder;
+    if (_isCapture(pos, m)) {
+      final victim = pos.squares[m.to];
+      final victimValue = victim == empty ? centipawnValue[pawn] : centipawnValue[pieceType(victim)];
+      final attackerValue = centipawnValue[pieceType(pos.squares[m.from])];
+      return _captureOrder + victimValue * _victimOrderWeight - attackerValue ~/ _attackerOrderDivisor;
     }
-    if (m.promotion != 0) return 90000 + _victimValue[m.promotion];
-    if (ply < 64) {
-      final k = _killers[ply];
-      if (k[0] == m) return 80000;
-      if (k[1] == m) return 79000;
+    if (m.promotion != 0) return _promotionOrder + centipawnValue[m.promotion];
+    if (ply < _killerPlyLimit) {
+      final killers = _killers[ply];
+      if (killers[0] == m) return _firstKillerOrder;
+      if (killers[1] == m) return _secondKillerOrder;
     }
-    return _history[m.from * 64 + m.to];
+    return _history[_historyIndex(m)];
+  }
+
+  /// Remembers a quiet move that caused a cutoff at [ply].
+  void _recordCutoff(Move m, int ply, int depth) {
+    if (ply >= _killerPlyLimit) return;
+    final killers = _killers[ply];
+    if (killers[0] != m) {
+      killers[1] = killers[0];
+      killers[0] = m;
+    }
+    _history[_historyIndex(m)] += depth * depth;
   }
 
   int _negamax(Position pos, int depth, int alpha, int beta, int ply, bool allowNull) {
     _tick();
-    if (pos.halfmove >= 100) return 0;
+    if (pos.halfmove >= _fiftyMoveHalfmoves) return 0;
+
     // A position seen before on this line (or earlier in the game) is a
     // repetition. Only reversible-move stretches can repeat.
-    String? key;
-    if (pos.halfmove >= 4) {
-      key = pos.repetitionKey;
-      if (_path.contains(key)) return 0;
+    String? repetitionKey;
+    if (pos.halfmove >= _earliestRepetitionHalfmoves) {
+      repetitionKey = pos.repetitionKey;
+      if (_path.contains(repetitionKey)) return 0;
     }
-    final inCheck = pos.inCheck;
-    if (inCheck && ply < 40) depth++;
-    if (depth <= 0 || ply >= 60) return _quiesce(pos, alpha, beta, ply);
 
-    final tt = _tt;
-    var h1 = 0;
-    var h2 = 0;
-    var ttMove = 0;
-    final alphaStart = alpha;
-    final betaStart = beta;
-    if (tt != null) {
-      (h1, h2) = TranspositionTable.hashOf(pos);
-      final slot = tt.find(h1, h2);
+    final inCheck = pos.inCheck;
+    if (inCheck && ply < _maxCheckExtensionPly) depth++;
+    if (depth <= 0 || ply >= _maxPly) return _quiesce(pos, alpha, beta, ply);
+
+    final table = _tt;
+    var slotHash = 0;
+    var checkHash = 0;
+    var tableMove = 0;
+    final originalAlpha = alpha;
+    final originalBeta = beta;
+    if (table != null) {
+      (slotHash, checkHash) = TranspositionTable.hashOf(pos);
+      final slot = table.find(slotHash, checkHash);
       if (slot >= 0) {
-        ttMove = tt.moveAt(slot);
-        if (tt.depthAt(slot) >= depth) {
-          final stored = tt.scoreAt(slot, ply);
-          final flag = tt.flagAt(slot);
-          if (flag == ttExact) return stored;
-          if (flag == ttLower) {
+        tableMove = table.moveAt(slot);
+        if (table.depthAt(slot) >= depth) {
+          final stored = table.scoreAt(slot, ply);
+          final bound = table.boundAt(slot);
+          if (bound == ScoreBound.exact) return stored;
+          if (bound == ScoreBound.lower) {
             if (stored > alpha) alpha = stored;
           } else if (stored < beta) {
             beta = stored;
@@ -246,117 +353,124 @@ class Searcher {
       }
     }
 
-    if (allowNull && !inCheck && depth >= 3 && _hasPieces(pos, pos.turn)) {
-      final score = -_negamax(pos.passTurn(), depth - 3, -beta, -beta + 1, ply + 1, false);
+    if (allowNull && !inCheck && depth >= _nullMoveMinDepth && _hasPieces(pos, pos.turn)) {
+      final passed = pos.passTurn();
+      final score = -_negamax(passed, depth - _nullMoveDepthDrop, -beta, -beta + 1, ply + 1, false);
       if (score >= beta) return beta;
     }
 
-    // Static pruning: only where the score is not a mate and we are not in
-    // check. `futile` is the eval plus a margin; quiet moves that cannot lift
-    // it above alpha are skipped.
-    int? futile;
-    if (pruning && !inCheck && depth <= 3 && beta - alpha == 1 && alpha.abs() < mateScore - 1000) {
-      final stand = playEval(pos);
-      if (stand - 130 * depth >= beta) return stand; // reverse futility
-      if (depth <= 2) futile = stand + (depth == 1 ? 150 : 320);
+    // Static pruning, only in zero-window nodes away from mates and checks.
+    // Quiet moves that cannot lift the eval (plus a margin) to alpha are
+    // skipped below.
+    int? futilityBound;
+    final isZeroWindow = beta - alpha == 1;
+    if (pruning &&
+        !inCheck &&
+        depth <= _staticPruningMaxDepth &&
+        isZeroWindow &&
+        !isMateScore(alpha)) {
+      final staticEval = playEval(pos);
+      if (staticEval - _reverseFutilityMarginPerPly * depth >= beta) return staticEval;
+      if (depth <= _futilityMaxDepth) futilityBound = staticEval + _futilityMargins[depth - 1];
     }
 
     final moves = pos.pseudoLegalMoves();
-    final keys = [for (final m in moves) _orderKey(pos, m, ply, ttMove)];
-    final idx = List<int>.generate(moves.length, (i) => i)
-      ..sort((a, b) => keys[b].compareTo(keys[a]));
+    final order = _indexesByDescendingKey([
+      for (final m in moves) _orderKey(pos, m, ply, tableMove),
+    ]);
 
-    var legal = 0;
-    var best = -mateScore - 1;
+    var legalMoveCount = 0;
+    var bestScore = -_infinity;
     Move? bestMove;
-    if (key != null) _path.add(key);
-    for (final i in idx) {
-      final m = moves[i];
-      final next = pos.makeMove(m);
-      final k = next.kingSquare(pos.turn);
-      if (k >= 0 && next.isAttacked(k, 1 - pos.turn)) continue;
-      legal++;
-      final quiet = pos.squares[m.to] == empty && m.promotion == 0 && m.flag != Move.enPassant;
-      if (futile != null && legal > 1 && quiet && !next.inCheck && best > -mateScore + 1000) {
-        if (futile <= alpha) continue; // cannot reach alpha, quiet and not a check
+    if (repetitionKey != null) _path.add(repetitionKey);
+    for (final i in order) {
+      final move = moves[i];
+      final next = pos.makeMove(move);
+      if (!pos.keepsKingSafe(next)) continue;
+      legalMoveCount++;
+      final isQuiet = _isQuiet(pos, move);
+      final isFirstMove = legalMoveCount == 1;
+
+      final cannotReachAlpha = futilityBound != null && futilityBound <= alpha;
+      if (cannotReachAlpha && !isFirstMove && isQuiet && !next.inCheck && !isMateScore(bestScore)) {
+        continue;
       }
+
       int score;
-      if (legal == 1) {
+      if (isFirstMove) {
         score = -_negamax(next, depth - 1, -beta, -alpha, ply + 1, true);
       } else {
-        final reduce = (quiet && !inCheck && depth >= 3 && legal > (pruning ? 3 : 4))
-            ? (pruning ? _reduction(depth, legal) : 1)
-            : 0;
-        score = -_negamax(next, depth - 1 - reduce, -alpha - 1, -alpha, ply + 1, true);
-        if (score > alpha && (reduce > 0 || score < beta)) {
+        final isLateQuietMove = isQuiet &&
+            !inCheck &&
+            depth >= _lateMoveReductionMinDepth &&
+            legalMoveCount > _lateMovesStartAfter;
+        final reduction = isLateQuietMove ? _reduction(depth, legalMoveCount) : 0;
+        score = -_negamax(next, depth - 1 - reduction, -alpha - 1, -alpha, ply + 1, true);
+        if (score > alpha && (reduction > 0 || score < beta)) {
           score = -_negamax(next, depth - 1, -beta, -alpha, ply + 1, true);
         }
       }
-      if (score > best) {
-        best = score;
-        bestMove = m;
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestMove = move;
       }
       if (score > alpha) alpha = score;
       if (alpha >= beta) {
-        if (quiet && ply < 64) {
-          final kl = _killers[ply];
-          if (kl[0] != m) {
-            kl[1] = kl[0];
-            kl[0] = m;
-          }
-          _history[m.from * 64 + m.to] += depth * depth;
-        }
+        if (isQuiet) _recordCutoff(move, ply, depth);
         break;
       }
     }
-    if (key != null) _path.removeLast();
-    if (legal == 0) return inCheck ? -mateScore + ply : 0;
-    if (tt != null) {
-      final flag = best <= alphaStart ? ttUpper : (best >= betaStart ? ttLower : ttExact);
-      tt.store(h1, h2, depth, best, flag, bestMove, ply);
+    if (repetitionKey != null) _path.removeLast();
+
+    if (legalMoveCount == 0) return inCheck ? -mateScore + ply : 0;
+    if (table != null) {
+      final bound = bestScore <= originalAlpha
+          ? ScoreBound.upper
+          : bestScore >= originalBeta
+              ? ScoreBound.lower
+              : ScoreBound.exact;
+      table.store(slotHash, checkHash, depth, bestScore, bound, bestMove, ply);
     }
-    return best;
+    return bestScore;
   }
 
   int _quiesce(Position pos, int alpha, int beta, int ply) {
     _tick();
-    final stand = playEval(pos);
-    if (stand >= beta) return stand;
-    if (stand > alpha) alpha = stand;
-    if (ply >= 60) return alpha;
+    final standPat = playEval(pos);
+    if (standPat >= beta) return standPat;
+    if (standPat > alpha) alpha = standPat;
+    if (ply >= _maxPly) return alpha;
 
-    final moves = <Move>[];
-    final keys = <int>[];
-    for (final m in pos.pseudoLegalMoves()) {
-      final capture = pos.squares[m.to] != empty || m.flag == Move.enPassant;
-      if (!capture && m.promotion == 0) continue;
-      moves.add(m);
-      keys.add(_orderKey(pos, m, 99));
-    }
-    final idx = List<int>.generate(moves.length, (i) => i)
-      ..sort((a, b) => keys[b].compareTo(keys[a]));
-    for (final i in idx) {
-      final m = moves[i];
-      final victim = pos.squares[m.to];
-      final gain = victim == empty ? 100 : _victimValue[pieceType(victim)];
-      if (stand + gain + 200 < alpha && m.promotion == 0) continue; // cannot catch up
-      final next = pos.makeMove(m);
-      final k = next.kingSquare(pos.turn);
-      if (k >= 0 && next.isAttacked(k, 1 - pos.turn)) continue;
-      // Taking a defended piece with a more valuable one loses material.
-      if (pruning &&
-          m.promotion == 0 &&
-          victim != empty &&
-          _victimValue[pieceType(pos.squares[m.from])] > gain &&
-          pieceType(pos.squares[m.from]) != king &&
-          next.isAttacked(m.to, next.turn)) {
-        continue;
-      }
+    final tactical = [
+      for (final m in pos.pseudoLegalMoves())
+        if (!_isQuiet(pos, m)) m,
+    ];
+    final order = _indexesByDescendingKey([
+      for (final m in tactical) _orderKey(pos, m, _noKillerPly),
+    ]);
+    for (final i in order) {
+      final move = tactical[i];
+      final victim = pos.squares[move.to];
+      final gain = victim == empty ? centipawnValue[pawn] : centipawnValue[pieceType(victim)];
+      final cannotCatchUp = standPat + gain + _deltaPruningMargin < alpha;
+      if (cannotCatchUp && move.promotion == 0) continue;
+      final next = pos.makeMove(move);
+      if (!pos.keepsKingSafe(next)) continue;
+      if (pruning && _losesMaterialCapturing(pos, move, next, gain)) continue;
       final score = -_quiesce(next, -beta, -alpha, ply + 1);
       if (score >= beta) return score;
       if (score > alpha) alpha = score;
     }
     return alpha;
+  }
+
+  /// True for taking a defended piece with a more valuable one (not a
+  /// promotion): after the recapture that loses material.
+  static bool _losesMaterialCapturing(Position pos, Move move, Position next, int gain) {
+    if (move.promotion != 0 || pos.squares[move.to] == empty) return false;
+    final attackerValue = centipawnValue[pieceType(pos.squares[move.from])];
+    return attackerValue > gain && next.isAttacked(move.to, next.turn);
   }
 
   bool _hasPieces(Position pos, int color) {
