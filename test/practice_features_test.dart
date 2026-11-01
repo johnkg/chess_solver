@@ -161,7 +161,9 @@ void main() {
 
     testWidgets('a theme chip limits the list and the path', (tester) async {
       await show(tester, PracticeScreen(progress: ProgressStore(), now: () => now));
-      expect(find.text('Win material'), findsWidgets);
+      // The list is long and built lazily, so check the theme chips instead
+      // of which rows happen to be on screen: material and mate themes both exist.
+      expect(find.textContaining('A fork ·'), findsOneWidget);
       final chip = find.textContaining('Forced mates ·');
       await tester.ensureVisible(chip);
       await tester.tap(chip);
