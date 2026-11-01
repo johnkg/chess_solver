@@ -217,6 +217,58 @@ GAME_LESSONS = [
                 '7...Ngxe5': 'Black wins the pawn back; the knight now has d3 in sight.',
                 '8.axb4': 'White takes the bishop. This blunder loses on the spot.',
                 '8...Nd3': 'Checkmate: the king cannot reach e2, d2 or d1.'}),
+    dict(game='deepblue-kasparov1', side='white', title='Kasparov vs Deep Blue, game 1 (1997)',
+         tagline='The human champion wins the first game of the famous rematch.',
+         why="In New York in 1997 Garry Kasparov played White against the IBM computer Deep Blue in the first game of "
+             "their rematch. He chose a quiet flank opening, kept his position safe while Black pushed its pawns on the "
+             "kingside, and won in 45 moves with two pawns on f6 and g7 that Black could not stop. Deep Blue came back "
+             "to win the match 3½-2½.",
+         spot=['A flank opening: knight, g-pawn and b-pawn bring both bishops to the long diagonals.',
+               'Black pushes its g-pawn to attack the white king, and White meets it in the center.',
+               'After the queens come off, the white pawns on f6 and g7 decide the endgame.'],
+         notes={'1.Nf3': "Kasparov begins on the flank: the knight watches e5 and the center from a distance.",
+                '4.Bb2': "The bishop goes to b2; next move the other bishop will go to g2, so both aim along the long diagonals.",
+                '14.Nhf3': "Black's g-pawn has kicked the knight away from h4 and it comes back to f3.",
+                '15.e4': "White takes the center with the e-pawn.",
+                '22...g4': "Black's pawn storm reaches g4.",
+                '23...Nxg4': "White's h-pawn took on g4 and the knight takes it back.",
+                '30...Bxe2': "The bishop takes the rook on e2.",
+                '31.fxg5': "White takes the bishop on g5, so Black has won the exchange (a rook for a bishop).",
+                '34...Qxf1': "The queens come off the board.",
+                '45.g7': "The pawns on f6 and g7 cannot be stopped and the game ends here."}),
+    dict(game='deepblue-kasparov2', side='white', title='Deep Blue vs Kasparov, game 2 (1997)',
+         tagline='The game in which the computer won and Kasparov resigned.',
+         why="In the second game of the 1997 rematch Deep Blue played White in a Ruy Lopez. It closed the center with "
+             "d5, doubled its rooks on the a-file, and opened that file at the right moment. Kasparov resigned after "
+             "45.Ra6, although some analysts later thought he could have held a draw. The win made the match level at "
+             "one game each.",
+         spot=['A Ruy Lopez where White closes the center and plays on the wings.',
+               'Both rooks on the a-file, aimed at the b5 pawn.',
+               'Opening the a-file with axb5, then a rook invasion with check.'],
+         notes={'3.Bb5': "White plays the Ruy Lopez, also called the Spanish Game.",
+                '10.d4': "White strikes in the center.",
+                '16.d5': "The pawn closes the center, so the play will be on the wings.",
+                '19.a4': "The a-pawn attacks the pawn on b5.",
+                '22.b4': "White gains space on the queenside.",
+                '25.Rca1': "Both white rooks are now on the a-file.",
+                '27.fxe5': "The f-pawn takes in the center and opens the f-file.",
+                '33.Nf5': "The knight jumps to f5 and Black takes it.",
+                '35.Bxd6': "The bishop takes the knight on d6 and Black recaptures.",
+                '36.axb5': "The a-file opens.",
+                '41.Ra8': "The rook invades with check.",
+                '45.Ra6': "Kasparov resigned here."}),
+    dict(game='molinari-bordais', side='black', title='Molinari vs Bordais (1979)',
+         tagline='A five-move trap in the Sicilian that ends in checkmate.',
+         why="White's second move, c4, took the pawn away from c2, the square that guards d3. Black's knight hopped from "
+             "c6 to b4 and then to d3, and it was checkmate: nothing could take the knight, and the white king was "
+             "boxed in by its own queen, pawns, knight and bishop. Always ask what a pawn move stops guarding.",
+         spot=['A knight check from d3 against a king still on e1.',
+               "The c2 pawn left, so no white piece guards d3.",
+               "The king has no free square: d1, d2, e2, f1 and f2 are all occupied."],
+         notes={'2.c4': "The pawn leaves c2, the square that guards d3.",
+                '4...Nb4': "The knight aims at d3.",
+                '5.g3': "White does not see the threat.",
+                '5...Nd3': "Checkmate: nothing can take the knight and the king has no square to go to."}),
 ]
 
 
