@@ -1,5 +1,6 @@
 # Dig a puzzle library out of sample games plus hand-built seeds.
 #   python3 tool/curate.py [minutes] [first-game-seed]   (defaults: 10, 1)
+# `minutes` is the mining time; re-rating the existing library comes first and is not counted.
 # Re-run with a new first-game-seed to add more puzzles; earlier finds are kept.
 # Writes tool/library.json and lib/puzzles/library.dart.
 # Every entry passes mirror_rater.rate(); the Dart test re-rates each one.
@@ -98,7 +99,6 @@ def work(seed):
 
 
 def main(minutes, start=1):
-    deadline = time.time() + minutes * 60
     lib, counts, boards = [], {}, set()
 
     used_sources = set()
@@ -162,7 +162,8 @@ def main(minutes, start=1):
     print('after seeds:', counts, flush=True)
 
     wanted = [b for b in list(PROPOSERS - {'doubleCheck'}) + ['checkmate', 'backRankMate', 'smotheredMate', 'mate2', 'mate3']]
-    with Pool(2) as pool:
+    deadline = time.time() + minutes * 60  # the budget is for mining, not for re-rating the old library
+    with Pool(os.cpu_count() or 2) as pool:
         for n, found in enumerate(pool.imap_unordered(work, range(start, start + 100000))):
             for e in found:
                 if add(e):
