@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../lessons/lessons.dart';
 import 'labels.dart';
+import 'layout.dart';
 import 'lesson_screen.dart';
 import 'progress_store.dart';
 import 'settings_screen.dart';
@@ -57,7 +58,7 @@ class _LearnScreenState extends State<LearnScreen> {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          padding: screenPadding,
           children: [
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -75,7 +76,7 @@ class _LearnScreenState extends State<LearnScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            gapMedium,
             if (_filter == LearnFilter.all)
               HeroCard(
                 eyebrow: 'Start here',

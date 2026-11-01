@@ -42,6 +42,19 @@ String pgnResult(Position end) {
   return '*';
 }
 
+/// PGN result tag for a [score] earned by [player]: "1-0", "0-1", "1/2-1/2",
+/// or "*" while the game is unfinished.
+String pgnResultForScore(double? score, int player) {
+  if (score == null) return '*';
+  if (score == 0.5) return '1/2-1/2';
+  final playerWon = score == 1;
+  return playerWon == (player == white) ? '1-0' : '0-1';
+}
+
+/// PGN date tag, "2026.10.31".
+String pgnDate(DateTime when) =>
+    '${when.year}.${when.month.toString().padLeft(2, '0')}.${when.day.toString().padLeft(2, '0')}';
+
 /// PGN text for [moves] played from [start]. [headers] are written first (the
 /// seven-tag roster in order, then any others); [result] defaults to what the
 /// final position says.

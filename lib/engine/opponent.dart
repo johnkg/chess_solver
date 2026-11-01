@@ -147,8 +147,8 @@ Move _pick(SearchResult result, Level level, Random rng) {
 /// [Position.repetitionKey] of every earlier position in the game; a third
 /// occurrence of [pos] is a draw.
 String? drawReason(Position pos, {List<String> seen = const []}) {
-  if (pos.halfmove >= 100) return 'Draw by the fifty-move rule';
-  if (pos.halfmove >= 4) {
+  if (pos.isFiftyMoveDraw) return 'Draw by the fifty-move rule';
+  if (pos.canHaveRepeated) {
     final key = pos.repetitionKey;
     if (seen.where((k) => k == key).length >= 2) return 'Draw by threefold repetition';
   }

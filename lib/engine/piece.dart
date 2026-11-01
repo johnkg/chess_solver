@@ -37,8 +37,11 @@ int? pieceFromChar(String ch) {
   return null;
 }
 
+const int boardSize = 8;
+const int boardSquares = boardSize * boardSize;
+
 /// Square index: a1 = 0, b1 = 1, ... h1 = 7, a2 = 8, ... h8 = 63.
-int squareOf(int rank, int file) => rank * 8 + file;
+int squareOf(int rank, int file) => rank * boardSize + file;
 int rankOf(int square) => square >> 3;
 int fileOf(int square) => square & 7;
 

@@ -9,6 +9,7 @@ import '../lessons/drills.dart';
 import '../lessons/lessons.dart';
 import 'board_view.dart';
 import 'drill_screen.dart';
+import 'layout.dart';
 import 'line_viewer.dart';
 import 'progress_store.dart';
 import 'widgets.dart';
@@ -138,49 +139,32 @@ class _LessonScreenState extends State<LessonScreen> {
       appBar: AppBar(title: Text(_lesson.title)),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          padding: screenPadding,
           children: [
             Text(_lesson.tagline, style: theme.textTheme.titleMedium),
-            const SizedBox(height: 12),
+            gapMedium,
             if (_lesson.kind == LessonKind.line) ...[
               LineViewer(lesson: _lesson, progress: widget.progress),
-              const SizedBox(height: 16),
-              Text(_lesson.why, style: theme.textTheme.bodyLarge),
-              const SizedBox(height: 16),
-              const SectionLabel('What to look for'),
-              const SizedBox(height: 4),
-              for (final s in _lesson.spot)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('•  '),
-                      Expanded(child: Text(s)),
-                    ],
-                  ),
-                ),
+              gapLarge,
+              _WhyAndSpot(lesson: _lesson),
             ] else ...[
-              Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 520),
-                  child: BoardView(
-                    position: _pos,
-                    highlights: _highlights,
-                    lastMove: _lastMove,
-                    arrows: _arrows,
-                  ),
+              BoardFrame(
+                child: BoardView(
+                  position: _pos,
+                  highlights: _highlights,
+                  lastMove: _lastMove,
+                  arrows: _arrows,
                 ),
               ),
               if (status.isNotEmpty) ...[
-                const SizedBox(height: 8),
+                gapSmall,
                 Text(
                   status,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.titleSmall,
                 ),
               ],
-              const SizedBox(height: 12),
+              gapMedium,
               if (canShow)
                 Row(
                   children: [
@@ -202,7 +186,7 @@ class _LessonScreenState extends State<LessonScreen> {
                 ),
               if (_demo != null) CoachCard(text: _demo!, tone: CoachTone.good),
               if (drill != null) ...[
-                const SizedBox(height: 12),
+                gapMedium,
                 OutlinedButton.icon(
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
@@ -214,26 +198,43 @@ class _LessonScreenState extends State<LessonScreen> {
                   label: Text('Practise: ${drill.title}'),
                 ),
               ],
-              const SizedBox(height: 8),
-              Text(_lesson.why, style: theme.textTheme.bodyLarge),
-              const SizedBox(height: 16),
-              const SectionLabel('What to look for'),
-              const SizedBox(height: 4),
-              for (final s in _lesson.spot)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('•  '),
-                      Expanded(child: Text(s)),
-                    ],
-                  ),
-                ),
+              gapSmall,
+              _WhyAndSpot(lesson: _lesson),
             ],
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Why the idea works, then what to look for to spot it in a game.
+class _WhyAndSpot extends StatelessWidget {
+  const _WhyAndSpot({required this.lesson});
+
+  final Lesson lesson;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(lesson.why, style: Theme.of(context).textTheme.bodyLarge),
+        gapLarge,
+        const SectionLabel('What to look for'),
+        gapTiny,
+        for (final point in lesson.spot)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('•  '),
+                Expanded(child: Text(point)),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }

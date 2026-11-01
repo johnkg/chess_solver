@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../engine/rating.dart';
+import 'layout.dart';
 import 'progress_store.dart';
 import 'theme.dart';
 
@@ -28,7 +29,7 @@ class RatingCard extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: scheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(cardRadius),
           ),
           child: Row(
             children: [

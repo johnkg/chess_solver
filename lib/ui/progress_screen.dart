@@ -12,6 +12,7 @@ import '../lessons/lessons.dart';
 import '../puzzles/library.dart';
 import 'game_viewer.dart';
 import 'labels.dart';
+import 'layout.dart';
 import 'line_trainer.dart' show lineProgressId;
 import 'progress_store.dart';
 import 'theme.dart';
@@ -115,8 +116,8 @@ class _Summary extends StatelessWidget {
       ('Mastered', '${stats.puzzlesLearned}'),
     ];
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: wrapSpacing,
+      runSpacing: wrapSpacing,
       children: [for (final (label, value) in tiles) _Tile(label: label, value: value)],
     );
   }
@@ -175,7 +176,7 @@ class _RatingHistory extends StatelessWidget {
         height: 140,
         width: double.infinity,
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: scheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(color: scheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(cardRadius)),
         child: CustomPaint(
           painter: _ChartPainter(values, scheme.primary, scheme.onSurfaceVariant),
         ),
@@ -265,7 +266,7 @@ class _Themes extends StatelessWidget {
                     Text('${done[k] ?? 0}/${total[k]}', style: const TextStyle(fontFamily: monoFamily)),
                   ],
                 ),
-                const SizedBox(height: 4),
+                gapTiny,
                 ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: LinearProgressIndicator(

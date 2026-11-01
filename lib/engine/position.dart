@@ -124,6 +124,18 @@ class Position {
     return Position._(squares, turn, castling, ep, halfmove, fullmove);
   }
 
+  /// Half-moves without a capture or pawn move after which the game is drawn.
+  static const int fiftyMoveRuleHalfmoves = 100;
+
+  /// A position can only repeat after this many reversible half-moves.
+  static const int earliestRepetitionHalfmoves = 4;
+
+  bool get isFiftyMoveDraw => halfmove >= fiftyMoveRuleHalfmoves;
+
+  /// False while too few reversible moves were played for any earlier
+  /// position to repeat; callers skip the repetition check then.
+  bool get canHaveRepeated => halfmove >= earliestRepetitionHalfmoves;
+
   /// Identity of the position for repetition: placement, side to move,
   /// castling rights and en passant square (no move counters).
   String get repetitionKey => toFen().split(' ').take(4).join(' ');
@@ -242,6 +254,13 @@ class Position {
   bool get inCheck {
     final k = kingSquare(turn);
     return k >= 0 && isAttacked(k, 1 - turn);
+  }
+
+  /// True if [next], the position after a pseudo-legal move by the side to
+  /// move here, does not leave that side's own king attacked.
+  bool keepsKingSafe(Position next) {
+    final king = next.kingSquare(turn);
+    return king < 0 || !next.isAttacked(king, 1 - turn);
   }
 
   /// Moves that follow piece movement rules but may leave the own king
@@ -436,9 +455,7 @@ class Position {
   List<Move> legalMoves() {
     final legal = <Move>[];
     for (final m in pseudoLegalMoves()) {
-      final next = makeMove(m);
-      final k = next.kingSquare(turn);
-      if (k < 0 || !next.isAttacked(k, 1 - turn)) legal.add(m);
+      if (keepsKingSafe(makeMove(m))) legal.add(m);
     }
     return legal;
   }

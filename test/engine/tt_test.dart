@@ -36,19 +36,19 @@ void main() {
   test('table: store and find; deeper entry is kept; mate scores shift by ply', () {
     final t = TranspositionTable(10);
     const move = Move(12, 28, flag: Move.doublePush);
-    t.store(5, 77, 6, 120, ttExact, move, 2);
+    t.store(5, 77, 6, 120, ScoreBound.exact, move, 2);
     final i = t.find(5, 77);
     expect(i, isNonNegative);
     expect(t.depthAt(i), 6);
-    expect(t.flagAt(i), ttExact);
+    expect(t.boundAt(i), ScoreBound.exact);
     expect(t.scoreAt(i, 2), 120);
     expect(TranspositionTable.sameMove(t.moveAt(i), move), isTrue);
     expect(t.find(5, 78), -1, reason: 'other position, same slot');
-    t.store(5, 77, 3, 999, ttExact, null, 2); // shallower: ignored
+    t.store(5, 77, 3, 999, ScoreBound.exact, null, 2); // shallower: ignored
     expect(t.scoreAt(t.find(5, 77), 2), 120);
     // A mate seen 3 plies below ply 4 is "mate in 7 from the root" at ply 4
     // and must read back as mate in 3 plies at ply 0.
-    t.store(9, 1, 4, mateScore - 7, ttExact, null, 4);
+    t.store(9, 1, 4, mateScore - 7, ScoreBound.exact, null, 4);
     expect(t.scoreAt(t.find(9, 1), 0), mateScore - 3);
   });
 
