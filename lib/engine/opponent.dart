@@ -7,25 +7,10 @@ import 'piece.dart';
 import 'position.dart';
 import 'search.dart';
 
-/// How strong the computer opponent plays. The ratings are targets for how
-/// each level is tuned (search depth, thinking time, how often it plays a
-/// near-best move instead of the best one); they are not measured Elo.
-enum Level {
-  beginner('Beginner', 600, depth: 1, millis: 150, temperature: 150, margin: 350, bookPlies: 2, mateDepth: 1),
-  novice('Novice', 800, depth: 1, millis: 200, temperature: 100, margin: 280, bookPlies: 4, mateDepth: 1),
-  casual('Casual', 1000, depth: 2, millis: 250, temperature: 70, margin: 200, bookPlies: 6, mateDepth: 1),
-  intermediate('Intermediate', 1200, depth: 2, millis: 350, temperature: 50, margin: 160, bookPlies: 8, mateDepth: 2),
-  club('Club', 1400, depth: 3, millis: 500, temperature: 35, margin: 120, bookPlies: 10, mateDepth: 2),
-  advanced('Advanced', 1600, depth: 4, millis: 700, temperature: 25, margin: 90, bookPlies: 12, mateDepth: 2),
-  expert('Expert', 1800, depth: 5, millis: 1000, temperature: 18, margin: 70, bookPlies: 14),
-  candidateMaster('Candidate Master', 2000, depth: 6, millis: 1500, temperature: 12, margin: 55, bookPlies: 16),
-  master('Master', 2200, depth: 7, millis: 2500, temperature: 8, margin: 40, bookPlies: 20),
-  internationalMaster('International Master', 2400, depth: 8, millis: 3500, temperature: 5, margin: 32, bookPlies: 22),
-  grandmaster('Grandmaster', 2500, depth: 10, millis: 5000, temperature: 3, margin: 25, bookPlies: 24);
-
-  const Level(
-    this.label,
-    this.elo, {
+/// The knobs that make the computer opponent weaker or stronger. A [Level]
+/// is a named set of these; tools can try other sets without a new level.
+class LevelSettings {
+  const LevelSettings({
     required this.depth,
     required this.millis,
     required this.temperature,
@@ -33,11 +18,6 @@ enum Level {
     required this.bookPlies,
     this.mateDepth = 0,
   });
-
-  final String label;
-
-  /// Target playing strength (see the note above).
-  final int elo;
 
   /// Deepest search in plies.
   final int depth;
@@ -59,6 +39,48 @@ enum Level {
   /// Plain forced-mate search before thinking (the weakest levels only see
   /// mate in 1). Zero means the normal search finds mates by itself.
   final int mateDepth;
+}
+
+/// How strong the computer opponent plays. The ratings are targets for how
+/// each level is tuned (search depth, thinking time, how often it plays a
+/// near-best move instead of the best one); they are not measured Elo.
+enum Level {
+  beginner('Beginner', 600,
+      LevelSettings(depth: 1, millis: 150, temperature: 150, margin: 350, bookPlies: 2, mateDepth: 1)),
+  novice('Novice', 800,
+      LevelSettings(depth: 1, millis: 200, temperature: 71, margin: 213, bookPlies: 4, mateDepth: 1)),
+  casual('Casual', 1000,
+      LevelSettings(depth: 1, millis: 250, temperature: 14, margin: 42, bookPlies: 6, mateDepth: 1)),
+  intermediate('Intermediate', 1200,
+      LevelSettings(depth: 2, millis: 350, temperature: 26, margin: 78, bookPlies: 8, mateDepth: 2)),
+  club('Club', 1400,
+      LevelSettings(depth: 3, millis: 500, temperature: 35, margin: 105, bookPlies: 10, mateDepth: 2)),
+  advanced('Advanced', 1600,
+      LevelSettings(depth: 3, millis: 700, temperature: 15, margin: 45, bookPlies: 12, mateDepth: 2)),
+  expert('Expert', 1800,
+      LevelSettings(depth: 4, millis: 1000, temperature: 14, margin: 42, bookPlies: 14)),
+  candidateMaster('Candidate Master', 2000,
+      LevelSettings(depth: 5, millis: 1500, temperature: 7, margin: 25, bookPlies: 16)),
+  master('Master', 2200,
+      LevelSettings(depth: 6, millis: 2500, temperature: 5, margin: 25, bookPlies: 20)),
+  internationalMaster('International Master', 2400,
+      LevelSettings(depth: 8, millis: 3500, temperature: 5, margin: 32, bookPlies: 22)),
+  grandmaster('Grandmaster', 2500,
+      LevelSettings(depth: 10, millis: 5000, temperature: 3, margin: 25, bookPlies: 24));
+
+  const Level(this.label, this.elo, this.settings);
+
+  final String label;
+
+  /// Target playing strength (see the note above).
+  final int elo;
+
+  final LevelSettings settings;
+
+  int get depth => settings.depth;
+  int get millis => settings.millis;
+  int get temperature => settings.temperature;
+  int get mateDepth => settings.mateDepth;
 
   String get title => '$label · about $elo';
 }
@@ -77,18 +99,28 @@ Move? chooseMove(
   Random? random,
   int? maxMillis,
   List<String> history = const [],
+]) =>
+    chooseMoveWith(pos, level.settings, random, maxMillis, history);
+
+/// [chooseMove] for any [LevelSettings], not only a named [Level].
+Move? chooseMoveWith(
+  Position pos,
+  LevelSettings settings, [
+  Random? random,
+  int? maxMillis,
+  List<String> history = const [],
 ]) {
   final rng = random ?? Random();
-  final quick = _quickMove(pos, level, rng);
+  final quick = _quickMove(pos, settings, rng);
   if (quick != null) return quick.$1;
   final result = Searcher().search(
     pos,
-    maxDepth: level.depth,
-    millis: maxMillis ?? level.millis,
-    margin: level.margin,
+    maxDepth: settings.depth,
+    millis: maxMillis ?? settings.millis,
+    margin: settings.margin,
     history: history,
   );
-  return result == null ? null : _pick(result, level, rng);
+  return result == null ? null : _pick(result, settings, rng);
 }
 
 /// [chooseMove] that keeps the UI alive while it thinks. Set
@@ -102,38 +134,39 @@ Future<Move?> chooseMoveAsync(
   List<String> history = const [],
 }) async {
   final rng = random ?? Random();
-  final quick = _quickMove(pos, level, rng);
+  final settings = level.settings;
+  final quick = _quickMove(pos, settings, rng);
   if (quick != null) return quick.$1;
   final result = await (searcher ?? Searcher()).searchAsync(
     pos,
-    maxDepth: level.depth,
-    millis: maxMillis ?? level.millis,
-    margin: level.margin,
+    maxDepth: settings.depth,
+    millis: maxMillis ?? settings.millis,
+    margin: settings.margin,
     history: history,
   );
-  return result == null ? null : _pick(result, level, rng);
+  return result == null ? null : _pick(result, settings, rng);
 }
 
 /// A move that needs no search: the only legal move, a short mate for the
 /// weak levels, or the book. The record wraps the move so that "none" and
 /// "no answer yet" differ; null means search.
-(Move?,)? _quickMove(Position pos, Level level, Random rng) {
+(Move?,)? _quickMove(Position pos, LevelSettings settings, Random rng) {
   final legal = pos.legalMoves();
   if (legal.isEmpty) return (null,);
   if (legal.length == 1) return (legal.first,);
-  if (level.mateDepth > 0) {
-    final mate = findMate(pos, level.mateDepth);
+  if (settings.mateDepth > 0) {
+    final mate = findMate(pos, settings.mateDepth);
     if (mate != null) return (mate.move,);
   }
-  final booked = bookMove(pos, level.bookPlies, rng);
+  final booked = bookMove(pos, settings.bookPlies, rng);
   return booked == null ? null : (booked,);
 }
 
-Move _pick(SearchResult result, Level level, Random rng) {
+Move _pick(SearchResult result, LevelSettings settings, Random rng) {
   final best = result.best.$2;
   if (isMateScore(best)) return result.best.$1;
   final weights = [
-    for (final e in result.moves) exp(-(best - e.$2) / level.temperature),
+    for (final e in result.moves) exp(-(best - e.$2) / settings.temperature),
   ];
   var pick = rng.nextDouble() * weights.reduce((a, b) => a + b);
   for (var i = 0; i < weights.length; i++) {

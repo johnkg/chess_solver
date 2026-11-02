@@ -66,7 +66,11 @@ void main() {
       for (var i = 1; i < l.length; i++) {
         expect(l[i].elo, greaterThan(l[i - 1].elo));
         expect(l[i].depth, greaterThanOrEqualTo(l[i - 1].depth));
-        expect(l[i].temperature, lessThan(l[i - 1].temperature));
+        // Within one depth, a stronger level plays more precisely. A deeper
+        // level may be noisier, which softens the jump a whole ply makes.
+        if (l[i].depth == l[i - 1].depth) {
+          expect(l[i].temperature, lessThan(l[i - 1].temperature), reason: l[i].label);
+        }
       }
     });
   });

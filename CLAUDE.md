@@ -35,7 +35,7 @@ Flutter SDK is at `~/flutter/bin` (not on PATH): use `~/flutter/bin/flutter` and
 - `tool/`: Python ports of the engine (`perft_mirror.py` = position, `mirror_search.py`, `mirror_ideas.py`, `mirror_rater.py`, `mirror_mistakes.py`, `mirror_san.py`, `mirror_games.py`), `check_*.py` tests against them, and generators (`gen_lessons.py`, `curate.py`, `gen_library.py`, helpers in `dartgen.py`).
 
 ## Rules
-- Search changes: measure with `tool/duel.dart` (equal time, no depth cap) and re-run `tool/arena.dart` for the level ordering; do not claim strength from node counts alone. Last results: table on 24.5/40 and pruning on 35.5/60 against off. Levels are still tuned by depth cap and temperature: Casual beats Novice about 95%, well above the intended 200-Elo gap.
+- Search changes: measure with `tool/duel.dart` (equal time, no depth cap) and re-run `tool/arena.dart` for the level ordering; do not claim strength from node counts alone. Last results: table on 24.5/40 and pruning on 35.5/60 against off. Levels are tuned with `python3 tool/tune_levels.py [out.json] [games] [time-scale] [first] [last] [gap-scale]` (bisects temperature, then depth, so each level scores the share against the one below that its label gap implies; self-play is lopsided, so label gaps are scaled by 1.4) and checked with `dart run tool/arena.dart games time-scale first-pair last-pair seed [settings.json]`. Last check: every pair 78-91% (about 83% intended per 200-label step); 12 games is only +-100 Elo.
 - Reply in /caveman style (terse), unless asked otherwise.
 - `lib/engine/` is pure Dart: no Flutter imports. UI lives in `lib/ui/`.
 - Every tactic/lesson has a hand-built test position. Soundness test: a technique must never claim a wrong result.
