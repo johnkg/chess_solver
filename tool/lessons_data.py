@@ -149,6 +149,16 @@ LESSONS = [
                'A rook or queen can reach that rank.',
                'No piece can block or capture.'],
          fen='6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1', move='a1a8'),
+    dict(id='ladder', level=2, kind='idea', idea='checkmate', title='Ladder mate',
+         tagline='Two rooks take turns checking and push the king to the edge.',
+         why='Two rooks can mate a bare king by themselves. One rook stands on a rank and cuts the king off from the rest '
+             'of the board; the other gives check on the next rank. The king is forced one rank nearer the edge, the rooks '
+             'swap jobs like the rungs of a ladder, and the last check is mate. Keep the rooks apart, on different ranks, '
+             'so the king can never attack one of them.',
+         spot=['The rooks stand on different ranks, away from the king.',
+               'One rook cuts the king off while the other gives check.',
+               'The last check comes on the edge rank, where the king has no square left.'],
+         fen='7k/R7/8/8/8/8/8/1R4K1 w - - 0 1', move='b1b8'),
 
     # ----------------------------------------------------- level 3: principles
     dict(id='hanging', level=3, kind='idea', idea='hangingPiece', title='Free pieces',
