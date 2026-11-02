@@ -1699,17 +1699,6 @@ const List<Puzzle> puzzleLibrary = [
   ),
   Puzzle(
     id: 'skewer-21',
-    fen: 'rnbq1bnr/1p3p2/p2p4/2P1k1p1/4P2p/P1P2K2/5PPP/RNBQ1BNR w - - 0 1',
-    solutions: ['d1d4'],
-    san: 'Qd4+',
-    idea: Idea.skewer,
-    mateIn: 0,
-    tier: 2,
-    text: 'The queen on d4 skewers the king on e5: the king must move, and then White takes the rook on h8.',
-    source: 'game900140',
-  ),
-  Puzzle(
-    id: 'skewer-22',
     fen: 'rnbq1bnr/1p5p/p1pppk2/5p2/P2P1B2/1PN3PR/2PQPPN1/R3KB2 w Q - 0 1',
     solutions: ['f4g5'],
     san: 'Bg5+',
@@ -1720,7 +1709,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game700420',
   ),
   Puzzle(
-    id: 'skewer-23',
+    id: 'skewer-22',
     fen: 'rnbq1br1/3pk1pp/6p1/p3pP2/Pp1pP3/1P4PN/R1P4P/1NB1K1R1 w - - 0 1',
     solutions: ['c1g5'],
     san: 'Bg5+',
@@ -1731,7 +1720,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game700321',
   ),
   Puzzle(
-    id: 'skewer-24',
+    id: 'skewer-23',
     fen: 'rnbq1n1r/p1ppk3/1p1b4/4p3/P5pp/1P1P3N/2P1PPP1/RNBQKB1R w K - 0 1',
     solutions: ['c1g5'],
     san: 'Bg5+',
