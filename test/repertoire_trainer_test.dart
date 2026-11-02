@@ -136,7 +136,7 @@ void main() {
 
   testWidgets('the real openings all build into trees and the Practice tab opens them', (tester) async {
     final withBranches = lessons.where((l) => l.kind == LessonKind.line && l.branches.isNotEmpty).toList();
-    expect(withBranches.length, 8);
+    expect(withBranches.length, greaterThanOrEqualTo(8)); // the count grows as openings are added
     for (final l in withBranches) {
       final rep = Repertoire.fromLines([l.line, for (final b in l.branches) b.split(' ')], [l.title, ...l.branchNames]);
       expect(rep.lineCount, l.branches.length + 1, reason: l.id);
