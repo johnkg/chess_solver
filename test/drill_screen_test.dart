@@ -87,11 +87,15 @@ void main() {
   });
 
   testWidgets('the Practice tab lists the training positions', (tester) async {
-    await show(tester, PracticeScreen(progress: ProgressStore()), height: 7000);
-    expect(find.text('OPENING LINES'), findsOneWidget);
-    expect(find.text('FAMOUS GAMES'), findsOneWidget);
-    expect(find.text('MIDDLEGAME TRAINING'), findsOneWidget);
-    expect(find.text('ENDGAME TRAINING'), findsOneWidget);
+    await show(tester, PracticeScreen(progress: ProgressStore()));
+    // The list is long and built lazily, so scroll to each section instead of
+    // guessing a view height that fits it all.
+    final list = find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable)).first;
+    for (final header in ['OPENING LINES', 'FAMOUS GAMES', 'MIDDLEGAME TRAINING', 'ENDGAME TRAINING']) {
+      await tester.scrollUntilVisible(find.text(header), 400, scrollable: list);
+      expect(find.text(header), findsOneWidget);
+    }
+    await tester.scrollUntilVisible(find.text(drills.first.title), 400, scrollable: list);
     expect(find.text(drills.first.title), findsOneWidget);
   });
 

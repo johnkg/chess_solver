@@ -9,6 +9,7 @@ NAMES = {
     'doubled': ('doubled pawn', 'doubled pawns'),
     'backward': ('backward pawn', 'backward pawns'),
     'openFile': ('open file', 'open files'),
+    'semiOpenFile': ('half-open file', 'half-open files'),
     'outpost': ('outpost', 'outposts'),
 }
 
@@ -55,6 +56,15 @@ LESSON_TEXT = {
         spot=['No pawn of either colour on the file.',
               'A file with only the enemy\'s pawns on it is half-open for you.',
               'Whoever controls the open file usually has the initiative.']),
+    'semiOpenFile': dict(
+        title='Half-open files',
+        tagline='A file with an enemy pawn on it but none of yours is a road for your rook.',
+        why='A file is half-open for you when none of your own pawns stands on it but an enemy pawn still does. A rook '
+            'there attacks that pawn and presses on the enemy position, with no pawn of yours in the way. Players often '
+            'open such a file on purpose by trading a pawn, then double their rooks on it.',
+        spot=['No pawn of yours on the file, but at least one enemy pawn.',
+              'Put a rook on it and aim at the pawn that stands there.',
+              'Trade off your own pawn on a file when you want to attack along it.']),
     'outpost': dict(
         title='Outposts',
         tagline='A square deep in enemy territory that your pawn defends and no enemy pawn can attack.',
@@ -72,6 +82,7 @@ DRILL_HINT = {
     'doubled': 'Look for two pawns of one colour on the same file, and mark both of them.',
     'backward': 'The pawn is behind its neighbours, and an enemy pawn attacks the square in front of it.',
     'openFile': 'An open file has no pawns of either colour. Tap any square on it.',
+    'semiOpenFile': 'A file is half-open for a side when it has no pawn of its own on it but at least one enemy pawn. Tap any square on it.',
     'outpost': 'Fifth rank or beyond, defended by one of your pawns, and no enemy pawn on a neighbouring file can ever attack it.',
 }
 
@@ -90,6 +101,9 @@ def _answer_text(concept, color, targets):
     if concept == 'openFile':
         fs = ', '.join(f + '-file' for f in _files(targets))
         return f'Open: {fs}. No pawn of either colour stands on it.'
+    if concept == 'semiOpenFile':
+        fs = ', '.join(f + '-file' for f in _files(targets))
+        return f'Half-open for {who}: {fs}. {who} has no pawn on it, but the enemy does.'
     squares = ', '.join(targets)
     word = singular if len(targets) == 1 else plural
     return f'{who}\'s {word}: {squares}.'
@@ -120,6 +134,8 @@ def drills():
             who = _color_name(ex['color'])
             if concept == 'openFile':
                 task = 'Mark every open file (tap one square on each).'
+            elif concept == 'semiOpenFile':
+                task = f'Mark every file that is half-open for {who} (tap one square on each).'
             elif concept == 'outpost':
                 task = f'Mark every outpost square for {who}\'s pieces.'
             else:

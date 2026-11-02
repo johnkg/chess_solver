@@ -53,6 +53,18 @@ STRUCTURE = {
         dict(color='white', fen='rnb1k2r/1ppq1p1p/p3pP2/2b3B1/2P3Q1/2P5/PP3PPP/R3KBNR w KQkq - 0 10',
              targets=['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8']),
     ],
+    'semiOpenFile': [
+        dict(color='white', fen='rnbq1rk1/pp3ppp/4pn2/3p4/1bPP4/2NB1N2/PP1Q1PPP/R1B2K1R w - - 1 10',
+             targets=['e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8']),
+        dict(color='white', fen='r1bqk2r/1p1nbpp1/p2ppn2/7p/4P3/1NN5/PPP1QPPP/R1B1KB1R w KQkq - 2 10',
+             targets=['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8']),
+        dict(color='black', fen='r1b1qrk1/pp1pppbp/5np1/8/Q1Pp4/2N3PP/PP1PPPB1/R1B1K2R w KQ - 0 10',
+             targets=['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8']),
+        dict(color='black', fen='r1bqkb1r/pp1ppp2/5n1p/2p1n3/2P5/2N1PBP1/PP1P1P1P/R1BQ1K1R w kq - 1 10',
+             targets=['g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8']),
+        dict(color='white', fen='r1bqkbnr/1pp2pp1/p1n4p/4p3/4P3/2NP1NPP/PP3PB1/R1BQK2R w KQkq - 0 10',
+             targets=['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8']),
+    ],
     'outpost': [
         dict(color='white', fen='r1b1kb1r/p2nppp1/2p5/qp5p/3Pn3/P1N2N2/BPP2PPP/R1BQK2R w KQkq - 2 10',
              targets=['c5']),

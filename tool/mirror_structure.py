@@ -60,6 +60,10 @@ def concept_targets(fen, concept, color):
         for f in range(8):
             if not any(pf == f for pf, _ in allp):
                 res += [name(f, r) for r in range(8)]
+    elif concept == 'semiOpenFile':
+        for f in range(8):
+            if not any(pf == f for pf, _ in mine) and any(pf == f for pf, _ in theirs):
+                res += [name(f, r) for r in range(8)]
     elif concept == 'outpost':
         occupied = {}
         for kind, f, r in other['white'] + other['black']:
