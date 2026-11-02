@@ -1874,19 +1874,6 @@
   "id": "skewer-9"
  },
  {
-  "fen": "r3k1br/p1p1n1b1/4p2p/3q1p2/Pn3P2/3P2KP/3NP3/1R1Q1BNR w kq - 0 1",
-  "solutions": [
-   "f1g2"
-  ],
-  "san": "Bg2",
-  "idea": "skewer",
-  "tier": 2,
-  "mate_in": 0,
-  "text": "The bishop on g2 skewers the queen on d5: it must move, and then White takes the rook on a8.",
-  "source": "game700120",
-  "id": "skewer-10"
- },
- {
   "fen": "rnb1k3/1p1p2br/p1n2pp1/q1p1p2p/B1Q1PP1P/N5P1/PPPP4/1RB1K1NR w Kq - 0 1",
   "solutions": [
    "c4g8"
@@ -1897,7 +1884,7 @@
   "mate_in": 0,
   "text": "The queen on g8 skewers the king on e8: the king must move, and then White takes the bishop on c8.",
   "source": "game5074",
-  "id": "skewer-11"
+  "id": "skewer-10"
  },
  {
   "fen": "rnb1k3/1ppp1p1p/1q2p3/p4r2/P2Q4/N1P2P1P/1P1KP1P1/R1B2BNR w q - 0 1",
@@ -1910,7 +1897,7 @@
   "mate_in": 0,
   "text": "The queen on h8 skewers the king on e8: the king must move, and then White takes the bishop on c8.",
   "source": "game700025",
-  "id": "skewer-12"
+  "id": "skewer-11"
  },
  {
   "fen": "rnb1k3/2pp1p1R/pp6/2r5/8/Q1P5/P2PPPP1/RN2KB2 w Qq - 0 1",
@@ -1923,7 +1910,7 @@
   "mate_in": 0,
   "text": "The rook on h8 skewers the king on e8: the king must move, and then White takes the bishop on c8.",
   "source": "game600169",
-  "id": "skewer-13"
+  "id": "skewer-12"
  },
  {
   "fen": "rnb1qbnr/pp1p1k2/5p1p/2p1p1p1/2P1QPB1/4P3/PP1P1KPP/RNB3NR w - - 0 1",
@@ -1936,7 +1923,7 @@
   "mate_in": 0,
   "text": "The bishop on h5 skewers the king on f7: the king must move, and then White takes the queen on e8.",
   "source": "game1078",
-  "id": "skewer-14"
+  "id": "skewer-13"
  },
  {
   "fen": "rnb2bnr/1pq3p1/2pkpp2/p2p3p/1P3P1P/PQPPBK2/R2NP1P1/5BNR w - - 0 1",
@@ -1949,7 +1936,7 @@
   "mate_in": 0,
   "text": "The bishop on c5 skewers the king on d6: the king must move, and then White takes the bishop on f8.",
   "source": "game700458",
-  "id": "skewer-15"
+  "id": "skewer-14"
  },
  {
   "fen": "rnb2bnr/pp1p1p2/3kp2p/6p1/3P4/1N4P1/PQP1PP1P/R3KBNR w KQ - 0 1",
@@ -1962,7 +1949,7 @@
   "mate_in": 0,
   "text": "The queen on a3 skewers the king on d6: the king must move, and then White takes the bishop on f8.",
   "source": "game30025",
-  "id": "skewer-16"
+  "id": "skewer-15"
  },
  {
   "fen": "rnbq1b2/ppp1k1pr/4p2n/1P1p1p1p/3P4/2N1B2P/P1PKPPP1/R2Q1BNR w - - 0 1",
@@ -1975,7 +1962,7 @@
   "mate_in": 0,
   "text": "The bishop on g5 skewers the king on e7: the king must move, and then White takes the queen on d8.",
   "source": "game30036",
-  "id": "skewer-17"
+  "id": "skewer-16"
  },
  {
   "fen": "rnbq1bnr/1p5p/p1pppk2/5p2/P2P1B2/1PN3PR/2PQPPN1/R3KB2 w Q - 0 1",
@@ -1988,7 +1975,7 @@
   "mate_in": 0,
   "text": "The bishop on g5 skewers the king on f6: the king must move, and then White takes the queen on d8.",
   "source": "game700420",
-  "id": "skewer-18"
+  "id": "skewer-17"
  },
  {
   "fen": "rnbq1br1/3pk1pp/6p1/p3pP2/Pp1pP3/1P4PN/R1P4P/1NB1K1R1 w - - 0 1",
@@ -2001,7 +1988,7 @@
   "mate_in": 0,
   "text": "The bishop on g5 skewers the king on e7: the king must move, and then White takes the queen on d8.",
   "source": "game700321",
-  "id": "skewer-19"
+  "id": "skewer-18"
  },
  {
   "fen": "1nb1kr2/3p3p/rqp1p1pb/pp3p2/1P1P3P/B1P3PN/PQ2PK2/RN3BR1 w - - 0 1",

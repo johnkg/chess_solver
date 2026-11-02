@@ -1578,17 +1578,6 @@ const List<Puzzle> puzzleLibrary = [
   ),
   Puzzle(
     id: 'skewer-10',
-    fen: 'r3k1br/p1p1n1b1/4p2p/3q1p2/Pn3P2/3P2KP/3NP3/1R1Q1BNR w kq - 0 1',
-    solutions: ['f1g2'],
-    san: 'Bg2',
-    idea: Idea.skewer,
-    mateIn: 0,
-    tier: 2,
-    text: 'The bishop on g2 skewers the queen on d5: it must move, and then White takes the rook on a8.',
-    source: 'game700120',
-  ),
-  Puzzle(
-    id: 'skewer-11',
     fen: 'rnb1k3/1p1p2br/p1n2pp1/q1p1p2p/B1Q1PP1P/N5P1/PPPP4/1RB1K1NR w Kq - 0 1',
     solutions: ['c4g8'],
     san: 'Qg8+',
@@ -1599,7 +1588,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game5074',
   ),
   Puzzle(
-    id: 'skewer-12',
+    id: 'skewer-11',
     fen: 'rnb1k3/1ppp1p1p/1q2p3/p4r2/P2Q4/N1P2P1P/1P1KP1P1/R1B2BNR w q - 0 1',
     solutions: ['d4h8'],
     san: 'Qh8+',
@@ -1610,7 +1599,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game700025',
   ),
   Puzzle(
-    id: 'skewer-13',
+    id: 'skewer-12',
     fen: 'rnb1k3/2pp1p1R/pp6/2r5/8/Q1P5/P2PPPP1/RN2KB2 w Qq - 0 1',
     solutions: ['h7h8'],
     san: 'Rh8+',
@@ -1621,7 +1610,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game600169',
   ),
   Puzzle(
-    id: 'skewer-14',
+    id: 'skewer-13',
     fen: 'rnb1qbnr/pp1p1k2/5p1p/2p1p1p1/2P1QPB1/4P3/PP1P1KPP/RNB3NR w - - 0 1',
     solutions: ['g4h5'],
     san: 'Bh5+',
@@ -1632,7 +1621,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game1078',
   ),
   Puzzle(
-    id: 'skewer-15',
+    id: 'skewer-14',
     fen: 'rnb2bnr/1pq3p1/2pkpp2/p2p3p/1P3P1P/PQPPBK2/R2NP1P1/5BNR w - - 0 1',
     solutions: ['e3c5'],
     san: 'Bc5+',
@@ -1643,7 +1632,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game700458',
   ),
   Puzzle(
-    id: 'skewer-16',
+    id: 'skewer-15',
     fen: 'rnb2bnr/pp1p1p2/3kp2p/6p1/3P4/1N4P1/PQP1PP1P/R3KBNR w KQ - 0 1',
     solutions: ['b2a3'],
     san: 'Qa3+',
@@ -1654,7 +1643,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game30025',
   ),
   Puzzle(
-    id: 'skewer-17',
+    id: 'skewer-16',
     fen: 'rnbq1b2/ppp1k1pr/4p2n/1P1p1p1p/3P4/2N1B2P/P1PKPPP1/R2Q1BNR w - - 0 1',
     solutions: ['e3g5'],
     san: 'Bg5+',
@@ -1665,7 +1654,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game30036',
   ),
   Puzzle(
-    id: 'skewer-18',
+    id: 'skewer-17',
     fen: 'rnbq1bnr/1p5p/p1pppk2/5p2/P2P1B2/1PN3PR/2PQPPN1/R3KB2 w Q - 0 1',
     solutions: ['f4g5'],
     san: 'Bg5+',
@@ -1676,7 +1665,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game700420',
   ),
   Puzzle(
-    id: 'skewer-19',
+    id: 'skewer-18',
     fen: 'rnbq1br1/3pk1pp/6p1/p3pP2/Pp1pP3/1P4PN/R1P4P/1NB1K1R1 w - - 0 1',
     solutions: ['c1g5'],
     san: 'Bg5+',
