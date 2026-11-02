@@ -4,23 +4,15 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../engine/clock.dart';
-import '../engine/engine.dart';
-import '../engine/explainer.dart';
-import '../engine/game_result.dart';
-import '../engine/mistakes.dart';
-import '../engine/opponent.dart';
-import '../engine/pgn.dart';
 import '../engine/piece.dart';
 import '../engine/position.dart';
 import '../engine/review.dart';
-import '../engine/san.dart';
-import 'analysis.dart';
-import 'board_controller.dart';
 import 'board_view.dart';
 import 'game_viewer.dart';
 import 'layout.dart';
 import 'new_game_sheet.dart';
 import 'pgn_dialogs.dart';
+import 'play_game.dart';
 import 'player_bar.dart';
 import 'progress_screen.dart';
 import 'progress_store.dart';
@@ -46,261 +38,49 @@ class PlayScreen extends StatefulWidget {
 }
 
 class _PlayScreenState extends State<PlayScreen> {
-  final BoardController _board = BoardController();
-  Level _level = Level.casual;
-  int _player = white;
-  SideChoice _sideChoice = SideChoice.white;
-  bool _prefsApplied = false;
-  late final Random _rng = widget.random ?? Random();
-  bool _thinking = false;
-  Analysis? _coach;
-  String? _engineNote;
-  int _game = 0;
-  final List<ReviewEntry> _entries = [];
+  PlayGame? _gameState;
   bool _showReview = false;
-  TimeControl _control = TimeControl.off;
-  ChessClock? _clock;
-  Timer? _ticker;
 
-  /// Side that ran out of time, or null.
-  int? _flagged;
-  Searcher? _searcher;
-  bool _resigned = false;
-
-  /// Hints or take-backs were used: the game is practice and not rated.
-  bool _assisted = false;
-  bool _recorded = false;
-  String? _ratingNote;
-
-  /// Position the current hint is for, how many times Hint was pressed there,
-  /// the full answer and the square the first hint points at.
-  String? _hintFen;
-  int _hintStage = 0;
-  Analysis? _hintFull;
-  int _hintFrom = -1;
-
-  @override
-  void initState() {
-    super.initState();
-    _board.addListener(_onBoardChanged);
-  }
+  PlayGame get _game => _gameState!;
+  Position get _pos => _game.position;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_prefsApplied) return;
-    _prefsApplied = true;
+    final settings = SettingsScope.of(context);
+    final existing = _gameState;
+    if (existing != null) {
+      existing.settings = settings;
+      return;
+    }
     // The first game starts from the defaults in Settings.
-    final prefs = SettingsScope.of(context);
-    _level = prefs.defaultLevel;
-    _sideChoice = prefs.defaultSide;
-    _player = _sideChoice.resolve(_rng);
-    if (_player == black) {
+    final created = PlayGame(progress: widget.progress, settings: settings, random: widget.random);
+    created.addListener(_onGameChanged);
+    _gameState = created;
+    if (created.player == black) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && _board.ply == 0 && !_thinking) _engineMove();
+        if (mounted && created.board.ply == 0 && !created.thinking) created.start();
       });
     }
   }
 
   @override
   void dispose() {
-    _ticker?.cancel();
-    _board.removeListener(_onBoardChanged);
-    _board.dispose();
+    _gameState?.removeListener(_onGameChanged);
+    _gameState?.dispose();
     super.dispose();
   }
 
-  void _onBoardChanged() {
-    setState(() {});
-    _settle();
+  void _onGameChanged() {
+    if (mounted) setState(() {});
   }
 
-  Position get _pos => _board.position;
-  String? get _draw => drawReason(_pos, seen: _board.seenKeys);
-  bool get _over =>
-      _pos.legalMoves().isEmpty || _draw != null || _flagged != null || _resigned;
-  bool get _myTurn => !_thinking && !_over && _pos.turn == _player;
-
-  void _newGame({int? player}) {
-    _game++;
-    _player = player ?? _player;
-    _thinking = false;
-    _coach = null;
-    _engineNote = null;
-    _entries.clear();
-    _showReview = false;
-    _searcher?.cancelled = true;
-    _ticker?.cancel();
-    _flagged = null;
-    _resigned = false;
-    _assisted = false;
-    _recorded = false;
-    _ratingNote = null;
-    _hintFen = null;
-    _hintStage = 0;
-    _clock = _control == TimeControl.off ? null : ChessClock(_control);
-    if (_clock != null) {
-      _ticker = Timer.periodic(const Duration(milliseconds: 100), (_) => _tick());
-    }
-    _board.setPosition(Position.start());
-    if (_player == black) _engineMove();
-  }
-
-  /// Updates the clock display and ends the game when someone runs out of time
-  /// or the game ended another way.
-  void _tick() {
-    final clock = _clock;
-    if (clock == null || !mounted) return;
-    final now = DateTime.now();
-    final side = clock.flagged(now);
-    if (side != null) {
-      clock.stop(now);
-      _ticker?.cancel();
-      _searcher?.cancelled = true;
-      setState(() {
-        _flagged = side;
-        _thinking = false;
-      });
-      _settle();
-    } else if (_pos.legalMoves().isEmpty || _draw != null) {
-      clock.stop(now);
-      _ticker?.cancel();
-      setState(() {});
-    } else {
-      setState(() {});
-    }
-  }
-
-  /// Milliseconds the engine may spend: its level's time, but never more
-  /// than a thirtieth of what is left on its clock.
-  int _engineMillis() {
-    final clock = _clock;
-    if (clock == null) return _level.millis;
-    final left = clock.remaining(1 - _player, DateTime.now());
-    return min(_level.millis, max(150, left ~/ 30));
-  }
-
-  /// Lets the frame paint "thinking", then searches in slices so the clock
-  /// keeps ticking and the buttons stay alive.
-  Future<void> _engineMove() async {
-    final game = _game;
-    final searcher = Searcher();
-    _searcher = searcher;
-    setState(() => _thinking = true);
-    await Future<void>.delayed(const Duration(milliseconds: 60));
-    if (!mounted || game != _game) return;
-    final pos = _pos;
-    final move = await chooseMoveAsync(
-      pos,
-      _level,
-      random: widget.random,
-      maxMillis: _engineMillis(),
-      searcher: searcher,
-      history: _board.seenKeys,
-    );
-    if (!mounted || game != _game) return;
-    if (move == null || _flagged != null) {
-      setState(() => _thinking = false);
-      return;
-    }
-    final name = san(pos, move);
-    final why = explainVerified(pos, move);
-    final coachOn = SettingsScope.of(context).coach;
-    _engineNote = !coachOn
-        ? null
-        : why.isEmpty
-            ? 'I played $name.'
-            : 'I played $name. ${why.first.text}';
-    _thinking = false;
-    _board.play(move);
-    _clock?.moved(1 - _player, DateTime.now());
-  }
-
-  Future<void> _onTap(int square) async {
-    if (!_myTurn) return;
-    final before = _pos;
-    final move = _board.tap(square);
-    if (move == null) return;
-    _clock?.moved(_player, DateTime.now());
-    _clock?.pause(DateTime.now()); // coach analysis is free
-    final game = _game;
-    setState(() {
-      _thinking = true;
-      _coach = null;
-      _engineNote = null;
-    });
-    await Future<void>.delayed(const Duration(milliseconds: 60));
-    if (!mounted || game != _game) return;
-    final mistake = explainMistake(before, move);
-    final entry = reviewMove(before, move, ply: _board.ply - 1, mistake: mistake);
-    _entries.add(entry);
-    final key = entry.missedKey;
-    if (key != null) widget.progress.recordMiss(key);
-    _coach = SettingsScope.of(context).coach ? critiqueWith(before, move, mistake) : null;
-    _clock?.resume(DateTime.now());
-    if (_over) {
-      setState(() => _thinking = false);
-      return;
-    }
-    await _engineMove();
-  }
-
-  /// First press points at the piece to move, second shows the move and why.
-  void _hint() {
-    final fen = _pos.toFen();
-    if (_hintFen != fen) {
-      _hintFen = fen;
-      _hintStage = 0;
-      _hintFull = analysePosition(_pos);
-    }
-    final full = _hintFull!;
-    final move = full.move;
-    _assisted = true;
-    _hintStage = SettingsScope.of(context).stepHints ? _hintStage + 1 : 2;
-    if (_hintStage == 1 && move != null) {
-      _hintFrom = move.from;
-      final piece = pieceName(pieceType(_pos.squares[move.from]));
-      setState(() {
-        _coach = Analysis(
-          fen: fen,
-          text: 'Hint: look at your $piece on ${squareName(move.from)}. '
-              'Press Hint again to see the move and why.',
-        );
-      });
-    } else {
-      setState(() => _coach = full);
-    }
-  }
-
-  bool get _canUndo =>
-      SettingsScope.of(context).allowTakeBacks &&
-      !_over &&
-      _board.ply >= (_player == white ? 1 : 2);
-
-  /// Takes back your last move and the reply to it, even while the engine is
-  /// thinking. The game then counts as practice, not rated. A running clock
-  /// keeps its time but hands the turn back to you.
-  void _undo() {
-    _assisted = true;
-    _game++;
-    _searcher?.cancelled = true;
-    _thinking = false;
-    _board.undo();
-    if (_pos.turn != _player && _board.canUndo) _board.undo();
-    _entries.removeWhere((e) => e.ply >= _board.ply);
-    _clock?.giveTurnTo(_player, DateTime.now());
-    setState(() {
-      _coach = null;
-      _engineNote = null;
-    });
-  }
-
-  Future<void> _resign() async {
-    final ok = await showDialog<bool>(
+  Future<void> _confirmResign() async {
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Resign this game?'),
-        content: Text(_assisted
+        content: Text(_game.assisted
             ? 'You used hints or take-backs, so this game is not rated.'
             : 'A resignation counts as a loss in your rating.'),
         actions: [
@@ -309,64 +89,10 @@ class _PlayScreenState extends State<PlayScreen> {
         ],
       ),
     );
-    if (ok != true || !mounted || _over) return;
-    _game++;
-    _searcher?.cancelled = true;
-    _clock?.stop(DateTime.now());
-    _ticker?.cancel();
-    setState(() {
-      _thinking = false;
-      _resigned = true;
-    });
-    _settle();
+    if (confirmed == true && mounted) _game.resign();
   }
 
-  /// 1, 0.5 or 0 for the player once the game is over, else null.
-  double? get _score => playerScore(
-        pos: _pos,
-        player: _player,
-        drawn: _draw != null,
-        resigned: _resigned,
-        flagged: _flagged,
-      );
-
-  /// Records the finished game once, in the rating unless hints or
-  /// take-backs were used.
-  void _settle() {
-    final score = _score;
-    if (score == null || _recorded) return;
-    _recorded = true;
-    if (_board.ply >= 2) widget.progress.saveGame(_pgnText());
-    if (_assisted) {
-      _ratingNote = 'Practice game (hints or take-backs used): rating unchanged.';
-      return;
-    }
-    if (_board.ply < 2) return;
-    final before = widget.progress.rating;
-    final game = _game;
-    widget.progress.recordGame(_level.elo, score).then((after) {
-      if (!mounted || game != _game) return;
-      setState(() => _ratingNote = ratingChangeNote(before, after));
-    });
-  }
-
-  String _pgnText() {
-    const humanName = 'You';
-    final opponentName = _level.title;
-    return toPgn(
-      _board.moves,
-      result: pgnResultForScore(_score, _player),
-      headers: {
-        'Date': pgnDate(DateTime.now()),
-        'White': _player == white ? humanName : opponentName,
-        'Black': _player == white ? opponentName : humanName,
-        'WhiteElo': '${_player == white ? widget.progress.rating : _level.elo}',
-        'BlackElo': '${_player == white ? _level.elo : widget.progress.rating}',
-      },
-    );
-  }
-
-  void _exportPgn() => showPgnExport(context, _pgnText());
+  void _exportPgn() => showPgnExport(context, _game.pgnText());
 
   Future<void> _importPgn() async {
     final game = await showPgnImport(context);
@@ -376,25 +102,9 @@ class _PlayScreenState extends State<PlayScreen> {
     );
   }
 
-  String get _status {
-    if (_pos.isCheckmate) {
-      return _pos.turn == _player ? 'Checkmate: you lose' : 'Checkmate: you win!';
-    }
-    if (_pos.isStalemate) return 'Stalemate: a draw';
-    if (_resigned) return 'You resigned';
-    final f = _flagged;
-    if (f != null) {
-      return f == _player ? 'Time is up: you lose on time' : 'Opponent is out of time: you win!';
-    }
-    final d = _draw;
-    if (d != null) return d;
-    if (_thinking) return 'Thinking...';
-    return 'Your move${_pos.inCheck ? ' (in check)' : ''}';
-  }
-
   @override
   Widget build(BuildContext context) {
-    final coach = _coach;
+    final coach = _game.coach;
     final showCoach = coach != null;
     final arrowsFit = coach != null && coach.fen == _pos.toFen();
     return Scaffold(
@@ -415,7 +125,7 @@ class _PlayScreenState extends State<PlayScreen> {
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: 'export',
-                enabled: _board.ply > 0,
+                enabled: _game.board.ply > 0,
                 child: const Text('Export PGN'),
               ),
               const PopupMenuItem(value: 'import', child: Text('Import PGN')),
@@ -438,15 +148,13 @@ class _PlayScreenState extends State<PlayScreen> {
                   const SizedBox(height: 6),
                   BoardView(
                     position: _pos,
-                    flipped: _player == black,
-                    selected: _board.selected,
-                    targets: _board.targets,
-                    lastMove: _board.lastMoveSquares,
-                    highlights: _hintStage == 1 && _hintFen == _pos.toFen()
-                        ? {_hintFrom}
-                        : const {},
+                    flipped: _game.player == black,
+                    selected: _game.board.selected,
+                    targets: _game.board.targets,
+                    lastMove: _game.board.lastMoveSquares,
+                    highlights: _game.isShowingFirstHint ? {_game.hintFrom} : const {},
                     arrows: arrowsFit ? coach.arrows : const [],
-                    onTap: _onTap,
+                    onTap: _game.onTap,
                   ),
                   const SizedBox(height: 6),
                   _bar(opponent: false),
@@ -455,18 +163,18 @@ class _PlayScreenState extends State<PlayScreen> {
             ),
             gapMedium,
             Text(
-              _status,
+              _game.status,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: _pos.isCheckmate
-                        ? (_pos.turn == _player ? context.coach.bad : context.coach.good)
+                        ? (_pos.turn == _game.player ? context.coach.bad : context.coach.good)
                         : null,
                   ),
               textAlign: TextAlign.center,
             ),
-            if (_ratingNote != null) ...[
+            if (_game.ratingNote != null) ...[
               gapTiny,
               Text(
-                _ratingNote!,
+                _game.ratingNote!,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
@@ -478,46 +186,44 @@ class _PlayScreenState extends State<PlayScreen> {
               runSpacing: wrapSpacing,
               children: [
                 FilledButton.icon(
-                  onPressed: _myTurn ? _hint : null,
+                  onPressed: _game.isMyTurn ? _game.hint : null,
                   icon: const Icon(Icons.lightbulb_outline),
-                  label: Text(
-                    _hintStage == 1 && _hintFen == _pos.toFen() ? 'Show move' : 'Hint',
-                  ),
+                  label: Text(_game.isShowingFirstHint ? 'Show move' : 'Hint'),
                 ),
                 OutlinedButton.icon(
-                  onPressed: _canUndo ? _undo : null,
+                  onPressed: _game.canUndo ? _game.undo : null,
                   icon: const Icon(Icons.undo),
                   label: const Text('Take back'),
                 ),
                 OutlinedButton.icon(
-                  onPressed: _entries.isEmpty
+                  onPressed: _game.entries.isEmpty
                       ? null
                       : () => setState(() => _showReview = !_showReview),
                   icon: const Icon(Icons.fact_check_outlined),
                   label: const Text('Game review'),
                 ),
                 OutlinedButton.icon(
-                  onPressed: !_over && _board.ply > 0 ? _resign : null,
+                  onPressed: !_game.isOver && _game.board.ply > 0 ? _confirmResign : null,
                   icon: const Icon(Icons.flag_outlined),
                   label: const Text('Resign'),
                 ),
                 OutlinedButton.icon(
-                  onPressed: () => setState(_newGame),
+                  onPressed: _game.newGame,
                   icon: const Icon(Icons.restart_alt),
                   label: const Text('New game'),
                 ),
               ],
             ),
-            if (_engineNote != null || showCoach) ...[
+            if (_game.engineNote != null || showCoach) ...[
               gapMedium,
               CoachCard(
                 text: [
                   if (showCoach) coach.text,
-                  ?_engineNote,
+                  ?_game.engineNote,
                 ].join('\n\n'),
               ),
             ],
-            if ((_showReview || _over) && _entries.isNotEmpty) ...[
+            if ((_showReview || _game.isOver) && _game.entries.isNotEmpty) ...[
               gapMedium,
               _reviewCard(context),
             ],
@@ -530,25 +236,20 @@ class _PlayScreenState extends State<PlayScreen> {
   Future<void> _openNewGame() async {
     final choice = await showNewGameSheet(
       context,
-      level: _level,
-      side: _sideChoice,
-      control: _control,
+      level: _game.level,
+      side: _game.sideChoice,
+      control: _game.control,
     );
     if (choice == null || !mounted) return;
-    setState(() {
-      _level = choice.level;
-      _sideChoice = choice.side;
-      _control = choice.control;
-      _newGame(player: choice.side.resolve(_rng));
-    });
+    _game.startWith(level: choice.level, side: choice.side, control: choice.control);
   }
 
   /// Who you play and how; tap to change it (this starts a new game).
   Widget _opponentRow() {
     final scheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context).textTheme;
-    final side = _player == white ? 'White' : 'Black';
-    final clock = _control == TimeControl.off ? '' : ' · ${_control.label}';
+    final side = _game.player == white ? 'White' : 'Black';
+    final clock = _game.control == TimeControl.off ? '' : ' · ${_game.control.label}';
     return Material(
       color: scheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(14),
@@ -565,9 +266,9 @@ class _PlayScreenState extends State<PlayScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(_level.label, style: theme.titleMedium),
+                      Text(_game.level.label, style: theme.titleMedium),
                       Text(
-                        'About ${_level.elo} · you are $side$clock',
+                        'About ${_game.level.elo} · you are $side$clock',
                         style: theme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
                       ),
                     ],
@@ -584,25 +285,26 @@ class _PlayScreenState extends State<PlayScreen> {
 
   /// The strip above (opponent) or below (you) the board.
   Widget _bar({required bool opponent}) {
-    final side = opponent ? 1 - _player : _player;
+    final side = opponent ? 1 - _game.player : _game.player;
     final other = 1 - side;
-    final mine = _board.capturedBy(side);
-    final theirs = _board.capturedBy(other);
+    final mine = _game.board.capturedBy(side);
+    final theirs = _game.board.capturedBy(other);
     int value(List<int> l) => l.fold(0, (sum, t) => sum + pieceValue(t));
-    final clock = _clock;
+    final clock = _game.clock;
     return PlayerBar(
-      name: opponent ? _level.title : 'You',
+      name: opponent ? _game.level.title : 'You',
       captured: mine,
       capturedColor: other,
       lead: value(mine) - value(theirs),
       clockMs: clock?.remaining(side, DateTime.now()),
-      active: clock != null && clock.running == side && !_over,
+      active: clock != null && clock.running == side && !_game.isOver,
     );
   }
 
   Widget _reviewCard(BuildContext context) {
     final theme = Theme.of(context);
-    final mistakes = _entries.where((e) => e.isMistake).toList();
+    final entries = _game.entries;
+    final mistakes = entries.where((e) => e.isMistake).toList();
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -611,10 +313,10 @@ class _PlayScreenState extends State<PlayScreen> {
           children: [
             Text('Game review', style: theme.textTheme.titleMedium),
             gapTiny,
-            Text(reviewSummary(_entries)),
+            Text(reviewSummary(entries)),
             for (final e in mistakes) ...[
               gapLarge,
-              ReviewSnapshot(entry: e, flipped: _player == black),
+              ReviewSnapshot(entry: e, flipped: _game.player == black),
             ],
             if (mistakes.any((e) => e.missedKey != null)) ...[
               gapMedium,

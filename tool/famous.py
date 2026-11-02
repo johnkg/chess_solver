@@ -129,6 +129,23 @@ GAMES = [
          key='Rxc3'),
     dict(id='budapest-miniature', intro='The Budapest Gambit trap. ', white='White', black='Black', place='anywhere', year=1900,
          moves='1.d4 Nf6 2.c4 e5 3.dxe5 Ng4 4.Bf4 Nc6 5.Nf3 Bb4+ 6.Nbd2 Qe7 7.a3 Ngxe5 8.axb4 Nd3#', key='Nd3#'),
+    dict(id='deepblue-kasparov1', white='Garry Kasparov', black='Deep Blue', place='New York', year=1997,
+         moves='1.Nf3 d5 2.g3 Bg4 3.b3 Nd7 4.Bb2 e6 5.Bg2 Ngf6 6.O-O c6 7.d3 Bd6 8.Nbd2 O-O 9.h3 Bh5 10.e3 h6 11.Qe1 Qa5 '
+               '12.a3 Bc7 13.Nh4 g5 14.Nhf3 e5 15.e4 Rfe8 16.Nh2 Qb6 17.Qc1 a5 18.Re1 Bd6 19.Ndf1 dxe4 20.dxe4 Bc5 21.Ne3 '
+               'Rad8 22.Nhf1 g4 23.hxg4 Nxg4 24.f3 Nxe3 25.Nxe3 Be7 26.Kh1 Bg5 27.Re2 a4 28.b4 f5 29.exf5 e4 30.f4 Bxe2 '
+               '31.fxg5 Ne5 32.g6 Bf3 33.Bc3 Qb5 34.Qf1 Qxf1+ 35.Rxf1 h5 36.Kg1 Kf8 37.Bh3 b5 38.Kf2 Kg7 39.g4 Kh6 40.Rg1 '
+               'hxg4 41.Bxg4 Bxg4 42.Nxg4+ Nxg4+ 43.Rxg4 Rd5 44.f6 Rd1 45.g7',
+         key='g7'),
+    dict(id='deepblue-kasparov2', white='Deep Blue', black='Garry Kasparov', place='New York', year=1997,
+         moves='1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7 6.Re1 b5 7.Bb3 d6 8.c3 O-O 9.h3 h6 10.d4 Re8 11.Nbd2 Bf8 '
+               '12.Nf1 Bd7 13.Ng3 Na5 14.Bc2 c5 15.b3 Nc6 16.d5 Ne7 17.Be3 Ng6 18.Qd2 Nh7 19.a4 Nh4 20.Nxh4 Qxh4 21.Qe2 Qd8 '
+               '22.b4 Qc7 23.Rec1 c4 24.Ra3 Rec8 25.Rca1 Qd8 26.f4 Nf6 27.fxe5 dxe5 28.Qf1 Ne8 29.Qf2 Nd6 30.Bb6 Qe8 31.R3a2 '
+               'Be7 32.Bc5 Bf8 33.Nf5 Bxf5 34.exf5 f6 35.Bxd6 Bxd6 36.axb5 axb5 37.Be4 Rxa2 38.Qxa2 Qd7 39.Qa7 Rc7 40.Qb6 '
+               'Rb7 41.Ra8+ Kf7 42.Qa6 Qc7 43.Qc6 Qb6+ 44.Kf1 Rb8 45.Ra6',
+         key='Ra6'),
+    dict(id='molinari-bordais', intro='The Molinari-Bordais trap (1979). ', white='White', black='Black', place='anywhere', year=1979,
+         moves='1.e4 c5 2.c4 Nc6 3.Ne2 Nf6 4.Nbc3 Nb4 5.g3 Nd3#',
+         key='Nd3#'),
 ]
 
 

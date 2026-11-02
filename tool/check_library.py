@@ -38,7 +38,9 @@ def verify(e):
         scored = sorted(score_moves(pos, 4), key=lambda t: -t[1])
         best = uci_of(scored[0][0])
         gap = scored[0][1] - scored[1][1]
-        out.append(('still best at depth 4', best == e['solutions'][0], f'best={best} gap={gap} {time.time() - t0:.0f}s'))
+        # A tie means a second move is just as good, so the puzzle has no single answer.
+        out.append(('stored move is the unique best at depth 4', best == e['solutions'][0] and gap > 0,
+                    f'best={best} gap={gap} {time.time() - t0:.0f}s'))
     return e['id'], out
 
 
@@ -46,20 +48,13 @@ if __name__ == '__main__':
     with open(os.path.join(HERE, 'library.json')) as f:
         lib = json.load(f)
     fails = 0
-    soft = 0
-    with Pool(2) as pool:
+    with Pool(os.cpu_count() or 2) as pool:
         for pid, checks in pool.imap(verify, lib):
             for name, ok, detail in checks:
                 print(('PASS ' if ok else 'FAIL ') + f'{pid}: {name}  {detail}', flush=True)
                 if not ok:
-                    if name == 'still best at depth 4':
-                        soft += 1   # reported, judged below
-                    else:
-                        fails += 1
+                    fails += 1
     material = sum(1 for e in lib if not e['mate_in'])
-    print(f'\n{len(lib)} puzzles, {material} material, {soft} not best at depth 4')
-    if material and soft * 4 > material:
-        print('FAILED: more than 25% of material puzzles change at depth 4')
-        fails += 1
+    print(f'\n{len(lib)} puzzles, {material} material')
     print('\nFAILED' if fails else '\nALL OK', fails or '')
     sys.exit(1 if fails else 0)
