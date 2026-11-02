@@ -8,7 +8,7 @@ Flutter/Dart app that teaches chess from scratch and explains why a move is good
 Modeled on https://github.com/johnkg/sudoku-solver (same stack, same layout). Read `PLAN.md` first (design, idea ladder, build order, perft targets).
 
 ## Status
-- Platform folders created; `flutter analyze` is clean and `flutter test` passes (772 tests). The web app runs in Chrome; `tool/solve.dart` runs.
+- Platform folders created; `flutter analyze` is clean and `flutter test` passes (877 tests). The web app runs in Chrome; `tool/solve.dart` runs.
 - UI has widget tests per screen (`test/*_test.dart`, incl. `board_dialogs_test.dart`: New game sheet, PGN dialogs, Board tab) plus a browser smoke test; android/ios/macos builds have not been tried.
 - Git repo on GitHub (`johnkg/chess_solver`), work lands on `main` via PRs.
 - Chess pieces are shaded vector shapes drawn by `lib/ui/piece_painter.dart` (no fonts needed).
