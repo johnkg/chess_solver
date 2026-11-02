@@ -1,12 +1,18 @@
 # Calibrates the computer levels so that each one beats the level below it by
 # the gap its target Elo promises, using tool/arena.dart for the games.
-#   python3 tool/tune_levels.py [out.json] [games] [time-scale] [first-level] [last-level]
+#   python3 tool/tune_levels.py [out.json] [games] [time-scale] [first-level] [last-level] [gap-scale]
 # Starts from the real table (Level in lib/engine/opponent.dart), keeps the
 # first levels as they are, and for every later level searches for the
 # temperature (and, if needed, one more ply of depth) at which it scores the
 # expected share against the level below. Prints each step and writes the
 # whole ladder to out.json, ready for `arena.dart ... out.json` to confirm and
-# for copying into the Level enum. Depth never decreases, and a deeper level
+# for copying into the Level enum.
+# gap-scale converts a label gap into the gap that engine-versus-engine games
+# should show. Self-play scores are lopsided (a one-ply deeper engine wins
+# 90%+), so the whole ladder spans about 1.4 times its label range; matching
+# the label gaps exactly would squeeze every level into the weakest depths.
+# The default of 1.4 spreads the steps evenly over the range the engine has.
+# Depth never decreases, and a deeper level
 # may be noisier than the one below; the temperature only falls within a depth.
 import json
 import math
@@ -24,6 +30,9 @@ MIN_MARGIN, MAX_MARGIN = 25, 500
 MARGIN_PER_TEMP = 3
 DEEPEST = 10
 BISECTIONS = 5
+
+
+DEFAULT_GAP_SCALE = 1.4
 
 
 def expected_score(gap):
@@ -63,8 +72,8 @@ def with_level(ladder, i, **changes):
     return new
 
 
-def tune_level(ladder, i, games, scale, path):
-    target = expected_score(ELO[i] - ELO[i - 1])
+def tune_level(ladder, i, games, scale, path, gap_scale):
+    target = expected_score(gap_scale * (ELO[i] - ELO[i - 1]))
     prev = ladder[i - 1]
     print(f'\n{LEVELS[i]}: aim for {100 * target:.0f}% against {LEVELS[i - 1]} '
           f'(depth {prev["depth"]}, temperature {prev["temperature"]})', flush=True)
@@ -111,10 +120,11 @@ def main():
     scale = float(sys.argv[3]) if len(sys.argv) > 3 else 0.3
     first = int(sys.argv[4]) if len(sys.argv) > 4 else 2
     last = int(sys.argv[5]) if len(sys.argv) > 5 else len(LEVELS) - 1
+    gap_scale = float(sys.argv[6]) if len(sys.argv) > 6 else DEFAULT_GAP_SCALE
     ladder = current_table()
     scratch = out + '.try.json'
     for i in range(first, last + 1):
-        depth, temperature = tune_level(ladder, i, games, scale, scratch)
+        depth, temperature = tune_level(ladder, i, games, scale, scratch, gap_scale)
         ladder = with_level(ladder, i, depth=depth, temperature=temperature)
         print(f'-> {LEVELS[i]}: depth {depth}, temperature {temperature}, margin {ladder[i]["margin"]}', flush=True)
         json.dump(ladder, open(out, 'w'), indent=1)
