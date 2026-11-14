@@ -1,7 +1,18 @@
+import 'package:chess_solver/engine/opponent.dart';
 import 'package:chess_solver/engine/rating.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('the matched level is the one nearest the rating', () {
+    expect(levelForRating(0), Level.beginner);
+    expect(levelForRating(1000), Level.casual);
+    expect(levelForRating(1090), Level.casual);
+    expect(levelForRating(1110), Level.intermediate);
+    expect(levelForRating(1100), Level.casual, reason: 'a tie goes to the weaker level');
+    expect(levelForRating(2460), Level.grandmaster);
+    expect(levelForRating(9999), Level.grandmaster);
+  });
+
   test('equal ratings expect half a point', () {
     expect(expectedScore(1200, 1200), closeTo(0.5, 1e-9));
     expect(expectedScore(1600, 1200), greaterThan(0.9));

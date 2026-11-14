@@ -71,6 +71,31 @@ void main() {
       expect(result!.control, TimeControl.off);
     });
 
+    testWidgets('Match my rating picks the level nearest the rating and locks the slider', (tester) async {
+      NewGameChoice? result;
+      _phone(tester);
+      await tester.pumpWidget(_host((context) async {
+        result = await showNewGameSheet(
+          context,
+          level: Level.club,
+          side: SideChoice.white,
+          control: TimeControl.off,
+          rating: 1790,
+        );
+      }));
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Match my rating'));
+      await tester.pumpAndSettle();
+      expect(find.text('${Level.expert.elo}'), findsWidgets);
+      expect(tester.widget<Slider>(find.byType(Slider)).onChanged, isNull);
+      await tester.ensureVisible(find.text('Start game'));
+      await tester.tap(find.text('Start game'));
+      await tester.pumpAndSettle();
+      expect(result!.level, Level.expert);
+      expect(result!.matchRating, isTrue);
+    });
+
     testWidgets('side and clock changes come back in the choice', (tester) async {
       NewGameChoice? result;
       _phone(tester);

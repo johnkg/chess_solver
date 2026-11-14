@@ -2,6 +2,7 @@ import 'package:chess_solver/engine/drill.dart';
 import 'package:chess_solver/engine/piece.dart';
 import 'package:chess_solver/engine/structure.dart';
 import 'package:chess_solver/engine/position.dart';
+import 'package:chess_solver/engine/search.dart';
 import 'package:chess_solver/lessons/drills.dart';
 import 'package:chess_solver/lessons/lessons.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -93,10 +94,30 @@ void main() {
           expect(got, want, reason: d.id);
           expect(d.answers, isNotEmpty, reason: d.id);
         } else {
-          expect(d.maxMoves, inInclusiveRange(5, 60));
+          // Short mate drills (a forced mate in a few moves) are checked below.
+          expect(d.maxMoves, inInclusiveRange(d.goal == DrillGoal.mate ? 2 : 5, 60), reason: d.id);
         }
         if (d.lesson != null) expect(lessonIds, contains(d.lesson), reason: d.id);
         expect(drillStatus(d, pos, 0).over, isFalse, reason: '${d.id} must not start finished');
+      }
+    });
+
+    test('the short mate drills are forced mates that still count on the last move', () {
+      final short = drills.where((d) => d.goal == DrillGoal.mate && d.maxMoves <= 4).toList();
+      expect(short.length, greaterThanOrEqualTo(3));
+      for (final d in short) {
+        var pos = Position.fromFen(d.fen);
+        var moves = 0;
+        while (true) {
+          final mine = mateIn(pos, d.maxMoves - moves);
+          expect(mine, isNotNull, reason: '${d.id}: no forced mate after $moves moves');
+          pos = pos.makeMove(mine!);
+          moves++;
+          if (pos.isCheckmate) break;
+          pos = pos.makeMove(pos.legalMoves().first);
+        }
+        expect(moves, d.maxMoves, reason: d.id);
+        expect(drillStatus(d, pos, moves).state, DrillState.success, reason: d.id);
       }
     });
 

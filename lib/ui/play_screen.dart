@@ -239,9 +239,16 @@ class _PlayScreenState extends State<PlayScreen> {
       level: _game.level,
       side: _game.sideChoice,
       control: _game.control,
+      rating: widget.progress.rating,
+      matchRating: _game.settings.matchRating,
     );
     if (choice == null || !mounted) return;
-    _game.startWith(level: choice.level, side: choice.side, control: choice.control);
+    _game.startWith(
+      level: choice.level,
+      side: choice.side,
+      control: choice.control,
+      matchRating: choice.matchRating,
+    );
   }
 
   /// Who you play and how; tap to change it (this starts a new game).

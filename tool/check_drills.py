@@ -1,11 +1,14 @@
 # Checks every training drill.  Run: python3 tool/check_drills.py
 import sys
 from perft_mirror import Pos
-from mirror_search import in_check
+from mirror_search import in_check, mate_in
 from drills_data import DRILLS
 from lessons_data import LESSONS
 import tb_kpk as TB
 from mirror_structure import concept_targets
+
+# A mate drill this short must be a forced mate in exactly that many moves.
+SHORT_MATE = 4
 
 fails = 0
 
@@ -27,7 +30,7 @@ for d in DRILLS:
     check(f"{d['id']}: legal position and the game is not over", bool(pos.legal()))
     check(f"{d['id']}: refers to an existing lesson", d.get('lesson') in lesson_ids)
     check(f"{d['id']}: has task, hint and a sensible move limit",
-          d['task'] and d['hint'] and 5 <= d['max'] <= 60)
+          d['task'] and d['hint'] and (5 <= d['max'] <= 60 or d['max'] <= SHORT_MATE and d['goal'] == 'mate'))
     if d['goal'] == 'find':
         got = concept_targets(d['fen'], d['concept'], d['subject'])
         check(f"{d['id']}: the {d['concept']} answer is {d['answers']}", got == sorted(d['answers']), str(got))
@@ -45,6 +48,9 @@ for d in DRILLS:
         board = d['fen'].split()[0]
         check(f"{d['id']}: user has a queen or rook", any(c in board for c in ('Q', 'R')) if side == 0
               else any(c in board for c in ('q', 'r')))
+        if d['max'] <= SHORT_MATE:
+            check(f"{d['id']}: forced mate in {d['max']} and no faster",
+                  mate_in(pos, d['max']) is not None and (d['max'] == 1 or mate_in(pos, d['max'] - 1) is None))
 
 print('\nFAILED' if fails else '\nALL OK', fails or '')
 sys.exit(1 if fails else 0)

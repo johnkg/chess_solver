@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'opponent.dart';
+
 /// Rating a new player starts from.
 const int startRating = 1000;
 
@@ -12,6 +14,16 @@ double expectedScore(int mine, int theirs) =>
 int updatedRating(int mine, int theirs, double score, {required int games}) {
   final k = games < 10 ? 40 : 24;
   return (mine + k * (score - expectedScore(mine, theirs))).round();
+}
+
+/// The level whose target rating is nearest to [rating]; the weaker one when
+/// two are equally near.
+Level levelForRating(int rating) {
+  var nearest = Level.values.first;
+  for (final level in Level.values) {
+    if ((level.elo - rating).abs() < (nearest.elo - rating).abs()) nearest = level;
+  }
+  return nearest;
 }
 
 /// One finished, rated game against the engine.
