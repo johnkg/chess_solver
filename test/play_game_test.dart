@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:chess_solver/engine/clock.dart';
 import 'package:chess_solver/engine/opponent.dart';
 import 'package:chess_solver/engine/piece.dart';
+import 'package:chess_solver/engine/rating.dart';
 import 'package:chess_solver/ui/play_game.dart';
 import 'package:chess_solver/ui/progress_store.dart';
 import 'package:chess_solver/ui/settings_store.dart';
@@ -130,6 +131,32 @@ void main() {
     expect(game.coach, isNull);
     expect(game.assisted, isFalse);
     expect(game.isShowingFirstHint, isFalse);
+  });
+
+  test('with Match my rating on, every new game is against the level nearest the rating', () async {
+    final settings = SettingsStore()..defaultLevel = Level.beginner;
+    final progress = ProgressStore();
+    final game = PlayGame(progress: progress, settings: settings, random: Random(3));
+    addTearDown(game.dispose);
+    expect(game.level, Level.beginner);
+    game.startWith(
+      level: levelForRating(progress.rating),
+      side: SideChoice.white,
+      control: TimeControl.off,
+      matchRating: true,
+    );
+    expect(settings.matchRating, isTrue);
+    expect(game.level, Level.casual);
+    await progress.recordGame(Level.grandmaster.elo, 1);
+    await progress.recordGame(Level.grandmaster.elo, 1);
+    await progress.recordGame(Level.grandmaster.elo, 1);
+    game.newGame();
+    expect(game.level, levelForRating(progress.rating));
+    expect(game.level, isNot(Level.casual));
+    game.startWith(level: Level.expert, side: SideChoice.white, control: TimeControl.off);
+    expect(settings.matchRating, isFalse);
+    game.newGame();
+    expect(game.level, Level.expert);
   });
 
   test('startWith applies the chosen opponent, side and clock', () {

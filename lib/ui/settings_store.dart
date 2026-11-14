@@ -54,6 +54,10 @@ class SettingsStore extends ChangeNotifier {
   Level defaultLevel = Level.casual;
   SideChoice defaultSide = SideChoice.white;
 
+  /// Each new game is against the level nearest your rating, instead of a
+  /// fixed opponent.
+  bool matchRating = false;
+
   /// Says why your move was good or bad, and why the engine replied.
   bool coach = true;
 
@@ -83,6 +87,7 @@ class SettingsStore extends ChangeNotifier {
       pieces = pick(PieceStyle.values, 'pieces', pieces);
       defaultLevel = pick(Level.values, 'level', defaultLevel);
       defaultSide = pick(SideChoice.values, 'side', defaultSide);
+      matchRating = prefs.getBool('${_prefix}matchrating') ?? matchRating;
       coach = prefs.getBool('${_prefix}coach') ?? coach;
       showLegalMoves = prefs.getBool('${_prefix}legal') ?? showLegalMoves;
       showCoordinates = prefs.getBool('${_prefix}coords') ?? showCoordinates;
@@ -131,6 +136,11 @@ class SettingsStore extends ChangeNotifier {
   Future<void> setDefaultSide(SideChoice v) {
     defaultSide = v;
     return _save('side', v);
+  }
+
+  Future<void> setMatchRating(bool v) {
+    matchRating = v;
+    return _save('matchrating', v);
   }
 
   Future<void> setCoach(bool v) {

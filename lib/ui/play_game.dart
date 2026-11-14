@@ -12,6 +12,7 @@ import '../engine/opponent.dart';
 import '../engine/pgn.dart';
 import '../engine/piece.dart';
 import '../engine/position.dart';
+import '../engine/rating.dart';
 import '../engine/review.dart';
 import '../engine/san.dart';
 import 'analysis.dart';
@@ -41,7 +42,7 @@ class PlayGame extends ChangeNotifier {
       : _random = random,
         _rng = random ?? Random() {
     board.addListener(_onBoardChanged);
-    level = settings.defaultLevel;
+    level = settings.matchRating ? levelForRating(progress.rating) : settings.defaultLevel;
     sideChoice = settings.defaultSide;
     player = sideChoice.resolve(_rng);
   }
@@ -141,7 +142,15 @@ class PlayGame extends ChangeNotifier {
   }
 
   /// Starts a new game with the chosen opponent, side and clock.
-  void startWith({required Level level, required SideChoice side, required TimeControl control}) {
+  /// With [matchRating] this and later games are against the level nearest
+  /// your rating.
+  void startWith({
+    required Level level,
+    required SideChoice side,
+    required TimeControl control,
+    bool matchRating = false,
+  }) {
+    settings.setMatchRating(matchRating);
     this.level = level;
     sideChoice = side;
     this.control = control;
@@ -151,6 +160,7 @@ class PlayGame extends ChangeNotifier {
   void newGame({int? player}) {
     _gameId++;
     this.player = player ?? this.player;
+    if (settings.matchRating) level = levelForRating(progress.rating);
     thinking = false;
     coach = null;
     engineNote = null;

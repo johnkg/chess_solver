@@ -252,6 +252,74 @@ LESSONS = [
                'The mating knight cannot be captured.'],
          fen='6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1', move='g5f7'),
 
+    # Named mating patterns: each position is mate in one.
+    dict(id='mate-anastasia', level=4, kind='idea', idea='checkmate', title="Anastasia's mate",
+         tagline='A knight and a rook trap the king on the edge file.',
+         why='The knight on e7 guards the two squares beside the king (g8 and g6), and the king\'s own pawn blocks g7. '
+             'All that is left is the edge file, so a rook check there is mate. In real games the file is often opened '
+             'first with a queen sacrifice on h7.',
+         spot=['Enemy king on the edge file with its own pawn beside it.',
+               'Your knight on e7 (or e2) covers the squares the pawn does not.',
+               'A rook or queen can reach the edge file with check.'],
+         fen='5r2/4N1pk/8/8/8/R7/8/6K1 w - - 0 1', move='a3h3', drill='dr-anastasia'),
+    dict(id='mate-arabian', level=4, kind='idea', idea='checkmate', title='Arabian mate',
+         tagline='Rook and knight mate a king in the corner.',
+         why='One of the oldest mates in chess. The knight guards the square next to the cornered king and also '
+             'protects the rook, so the rook can give check from right beside the king without being taken.',
+         spot=['Enemy king in the corner.',
+               'Your knight two squares away diagonally (f6 against a king on h8).',
+               'The rook lands next to the king, protected by the knight.'],
+         fen='7k/R7/5N2/8/8/8/8/6K1 w - - 0 1', move='a7h7'),
+    dict(id='mate-boden', level=4, kind='idea', idea='checkmate', title="Boden's mate",
+         tagline='Two bishops cross their diagonals in front of the king.',
+         why='The king is hemmed in by its own rook and knight. One bishop already covers the squares in front of it; '
+             'the second gives check on the crossing diagonal and there is nowhere to go. It usually follows a '
+             'queen sacrifice that tears open the pawn in front of the king.',
+         spot=['Enemy king blocked on one side by its own pieces.',
+               'One bishop already aims at the squares next to the king.',
+               'The other bishop can check on the diagonal that crosses it.'],
+         fen='2kr4/p2n4/2p5/8/5B2/8/4B3/6K1 w - - 0 1', move='e2a6', drill='dr-boden'),
+    dict(id='mate-greco', level=4, kind='idea', idea='checkmate', title="Greco's mate",
+         tagline='A bishop guards the corner exit; the rook mates on the edge file.',
+         why='The king sits in the corner behind its own pawn on g7. Your bishop on the long diagonal to g8 takes away '
+             'the only other square, so any rook or queen check on the h-file is mate.',
+         spot=['Enemy king on h8 with its own pawn on g7.',
+               'Your bishop controls g8.',
+               'The h-file is open for a rook or queen.'],
+         fen='7k/6p1/8/8/2B5/5R2/8/6K1 w - - 0 1', move='f3h3'),
+    dict(id='mate-epaulette', level=4, kind='idea', idea='checkmate', title='Epaulette mate',
+         tagline='The king\'s own rooks stand on both sides like shoulder pads.',
+         why='The two rooks beside the king block its sideways escapes. A queen two squares in front covers all three '
+             'squares ahead of the king and gives check, and neither rook can step in between.',
+         spot=['Enemy king on the back rank with its own pieces on both sides.',
+               'Your queen can land two squares in front of the king.',
+               'Nothing can block or capture the queen.'],
+         fen='3rkr2/8/8/8/8/8/4Q3/6K1 w - - 0 1', move='e2e6'),
+    dict(id='mate-dovetail', level=4, kind='idea', idea='checkmate', title='Dovetail mate',
+         tagline='The queen checks from a corner of the king\'s box; its own pieces fill the far side.',
+         why='A protected queen next to the king diagonally covers every square around it except the two on the '
+             'far side. If the king\'s own pieces stand on those two squares, it is mate.',
+         spot=['Two of the king\'s own pieces stand next to it, on one side.',
+               'Your queen can check from the diagonally opposite square.',
+               'The queen is protected there, so the king cannot take it.'],
+         fen='8/5r2/5kp1/8/3P4/8/8/4Q1K1 w - - 0 1', move='e1e5'),
+    dict(id='mate-damiano', level=4, kind='idea', idea='checkmate', title="Damiano's mate",
+         tagline='A pawn on g6 supports the queen on h7.',
+         why='Your pawn on g6 does two jobs: it protects the queen when she lands on h7 and it guards f7. '
+             'With the king\'s own rook on f8, the king has no square at all.',
+         spot=['Your pawn has reached g6, next to the castled king.',
+               'The queen can reach h7 with check.',
+               'The king\'s own rook or pawns block the squares the pawn does not cover.'],
+         fen='5rk1/6p1/6P1/7Q/8/8/8/6K1 w - - 0 1', move='h5h7'),
+    dict(id='mate-lolli', level=4, kind='idea', idea='checkmate', title="Lolli's mate",
+         tagline='A pawn on f6 and a queen on h6: mate on g7.',
+         why='When the pawn in front of the castled king has moved to g6, the squares f6 and h6 are weak. A pawn on f6 '
+             'protects g7, the queen comes to h6, and Qg7 is mate. Think twice before you play ...g6 without a bishop on g7.',
+         spot=['The enemy g-pawn has moved up one square.',
+               'Your pawn (or bishop) is fixed on f6.',
+               'Your queen can reach h6, and then g7.'],
+         fen='6k1/5p1p/5PpQ/8/8/8/8/6K1 w - - 0 1', move='h6g7', drill='dr-lolli'),
+
     # ------------------------------------------------- level 7: famous games
     # ------------------------------------------------------- level 5: endgames
     dict(id='eg-kq', level=5, kind='plan', title='King and queen against king',

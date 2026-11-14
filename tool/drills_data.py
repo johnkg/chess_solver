@@ -54,6 +54,22 @@ DRILLS = [
          fen='2k5/8/8/PK6/8/8/8/8 w - - 0 1', side='black', goal='hold', max=25,
          hint='Run to the corner (a8 or b8). A king on the corner square in front of a rook-pawn can never be driven out.',
          lesson='eg-rookpawn'),
+    # ------------------------------------------------- named mates, in two moves
+    dict(id='dr-anastasia', phase='middlegame', title="Anastasia's mate in two", level='expert',
+         task='Checkmate the black king in 2 moves.',
+         fen='5r1k/4N1pp/8/8/8/R2Q4/8/6K1 w - - 0 1', side='white', goal='mate', max=2,
+         hint='Give up the queen on h7. The king must take, and then the h-file is open for the rook.',
+         lesson='mate-anastasia'),
+    dict(id='dr-boden', phase='middlegame', title="Boden's mate in two", level='expert',
+         task='Checkmate the black king in 2 moves.',
+         fen='2kr4/pp1n4/2p5/8/5B2/5Q2/4B3/6K1 w - - 0 1', side='white', goal='mate', max=2,
+         hint='Take on c6 with the queen. After the pawn recaptures, the diagonal to a6 is open for the bishop.',
+         lesson='mate-boden'),
+    dict(id='dr-lolli', phase='middlegame', title="Lolli's mate in two", level='expert',
+         task='Checkmate the black king in 2 moves.',
+         fen='5rk1/5p1p/5Pp1/8/8/8/3Q4/6K1 w - - 0 1', side='white', goal='mate', max=2,
+         hint='Bring the queen to h6. Nothing can stop her landing on g7 next move.',
+         lesson='mate-lolli'),
 ]
 
 

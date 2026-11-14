@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../engine/clock.dart';
 import '../engine/opponent.dart';
+import '../engine/rating.dart';
 import 'labels.dart';
 import 'layout.dart';
 import 'settings_store.dart';
@@ -9,9 +10,12 @@ import 'theme.dart';
 
 /// What the New game sheet hands back.
 class NewGameChoice {
-  const NewGameChoice(this.level, this.side, this.control);
+  const NewGameChoice(this.level, this.side, this.control, {this.matchRating = false});
 
   final Level level;
+
+  /// Keep picking the level nearest the player's rating for later games too.
+  final bool matchRating;
   final SideChoice side;
   final TimeControl control;
 }
@@ -23,21 +27,37 @@ Future<NewGameChoice?> showNewGameSheet(
   required Level level,
   required SideChoice side,
   required TimeControl control,
+  int rating = startRating,
+  bool matchRating = false,
 }) {
   return showModalBottomSheet<NewGameChoice>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (_) => _NewGameSheet(level: level, side: side, control: control),
+    builder: (_) => _NewGameSheet(
+      level: matchRating ? levelForRating(rating) : level,
+      side: side,
+      control: control,
+      rating: rating,
+      matchRating: matchRating,
+    ),
   );
 }
 
 class _NewGameSheet extends StatefulWidget {
-  const _NewGameSheet({required this.level, required this.side, required this.control});
+  const _NewGameSheet({
+    required this.level,
+    required this.side,
+    required this.control,
+    required this.rating,
+    required this.matchRating,
+  });
 
   final Level level;
   final SideChoice side;
   final TimeControl control;
+  final int rating;
+  final bool matchRating;
 
   @override
   State<_NewGameSheet> createState() => _NewGameSheetState();
@@ -47,6 +67,7 @@ class _NewGameSheetState extends State<_NewGameSheet> {
   late Level _level = widget.level;
   late SideChoice _side = widget.side;
   late TimeControl _control = widget.control;
+  late bool _matchRating = widget.matchRating;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +125,7 @@ class _NewGameSheetState extends State<_NewGameSheet> {
               divisions: Level.values.length - 1,
               label: _level.label,
               semanticFormatterCallback: (v) => Level.values[v.round()].title,
-              onChanged: (v) => setState(() => _level = Level.values[v.round()]),
+              onChanged: _matchRating ? null : (v) => setState(() => _level = Level.values[v.round()]),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -112,6 +133,16 @@ class _NewGameSheetState extends State<_NewGameSheet> {
                 for (final l in [Level.beginner, Level.club, Level.expert, Level.master, Level.grandmaster])
                   Text('${l.elo}', style: theme.textTheme.labelSmall),
               ],
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Match my rating'),
+              subtitle: Text('You are about ${widget.rating}. The opponent follows your rating from game to game.'),
+              value: _matchRating,
+              onChanged: (on) => setState(() {
+                _matchRating = on;
+                if (on) _level = levelForRating(widget.rating);
+              }),
             ),
             const SizedBox(height: 14),
             Text('YOU PLAY', style: theme.textTheme.labelMedium),
@@ -146,7 +177,7 @@ class _NewGameSheetState extends State<_NewGameSheet> {
             SizedBox(
               width: double.infinity,
               child: FilledButton(
-                onPressed: () => Navigator.pop(context, NewGameChoice(_level, _side, _control)),
+                onPressed: () => Navigator.pop(context, NewGameChoice(_level, _side, _control, matchRating: _matchRating)),
                 child: const Text('Start game'),
               ),
             ),
