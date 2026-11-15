@@ -22,6 +22,9 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          # Pinned: a newer stable deprecates package:flutter/material.dart and
+          # `flutter analyze` then fails on 42 infos. Raise it together with that migration.
+          flutter-version: 3.47.9
           cache: true
       - run: flutter pub get
       - run: flutter analyze

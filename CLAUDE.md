@@ -21,7 +21,7 @@ Flutter SDK is at `~/flutter/bin` (not on PATH): use `~/flutter/bin/flutter` and
 - One test file: `flutter test test/engine/perft_test.dart`; one test by name: `flutter test --plain-name "<name>" <file>`
 - CLI explainer: `dart run tool/solve.dart "<fen>" [depth] [move-to-critique, e.g. e2e4]`
 - Python mirrors: `python3 tool/<name>.py`, see below.
-- CI (`.github/workflows/pages.yml`): every push to `main` runs `flutter analyze` + `flutter test`, then deploys the web build to GitHub Pages. An analyzer warning or failing test blocks the deploy.
+- CI (`.github/workflows/pages.yml`): every push to `main` runs `flutter analyze` + `flutter test`, then deploys the web build to GitHub Pages. An analyzer warning or failing test blocks the deploy. The workflow pins Flutter 3.47.9: newer stable releases deprecate `package:flutter/material.dart` (use `package:material_ui/material_ui.dart`), and those infos fail `flutter analyze`; migrate the imports before raising the pin.
 
 ## Architecture
 - `lib/engine/` (pure Dart, no Flutter imports):
