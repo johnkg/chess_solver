@@ -26,6 +26,13 @@ Level levelForRating(int rating) {
   return nearest;
 }
 
+/// Puzzle rating of each difficulty tier (index 0 = tier 1). A puzzle you
+/// solve cleanly counts as a win against this rating, a miss as a loss.
+const List<int> tierRatings = [800, 1000, 1200, 1400, 1600];
+
+/// The rating of a puzzle of difficulty [tier] (1 to 5).
+int tierRating(int tier) => tierRatings[(tier - 1).clamp(0, tierRatings.length - 1)];
+
 /// One finished, rated game against the engine.
 class GameRecord {
   const GameRecord({

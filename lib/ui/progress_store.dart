@@ -17,6 +17,8 @@ class ProgressStore extends ChangeNotifier {
   static const String _srsKey = 'srs_cards';
   static const String _rushKey = 'rush_best';
   static const String _savedKey = 'saved_games';
+  static const String _puzzleRatingKey = 'puzzle_rating';
+  static const String _puzzleCountKey = 'puzzle_rated_count';
 
   /// How many finished games are kept for later review.
   static const int savedGameLimit = 20;
@@ -28,6 +30,15 @@ class ProgressStore extends ChangeNotifier {
   final Map<String, SrsCard> _srs = {};
   final List<String> _saved = [];
   int _rushBest = 0;
+  int _puzzleRating = startRating;
+  int _puzzlesRated = 0;
+
+  /// Puzzle rating: starts at [startRating]; moves with each puzzle tried for
+  /// the first time against that puzzle's [tierRating].
+  int get puzzleRating => _puzzleRating;
+
+  /// Puzzles that have counted for [puzzleRating].
+  int get puzzlesRated => _puzzlesRated;
 
   /// Puzzles being re-reviewed (missed before), by id.
   Map<String, SrsCard> get srsCards => Map.unmodifiable(_srs);
@@ -158,6 +169,8 @@ class ProgressStore extends ChangeNotifier {
         ]);
       _learned = prefs.getInt('$_srsKey.learned') ?? 0;
       _rushBest = prefs.getInt(_rushKey) ?? 0;
+      _puzzleRating = prefs.getInt(_puzzleRatingKey) ?? startRating;
+      _puzzlesRated = prefs.getInt(_puzzleCountKey) ?? 0;
       _saved
         ..clear()
         ..addAll(prefs.getStringList(_savedKey) ?? const <String>[]);
@@ -180,6 +193,22 @@ class ProgressStore extends ChangeNotifier {
       // No storage available.
     }
     return after;
+  }
+
+  /// A puzzle of difficulty [tier] was tried: [solved] means solved cleanly
+  /// (no miss, no hint). Returns the new puzzle rating.
+  Future<int> recordPuzzle(int tier, {required bool solved}) async {
+    _puzzleRating = updatedRating(_puzzleRating, tierRating(tier), solved ? 1 : 0, games: _puzzlesRated);
+    _puzzlesRated++;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_puzzleRatingKey, _puzzleRating);
+      await prefs.setInt(_puzzleCountKey, _puzzlesRated);
+    } catch (_) {
+      // No storage available.
+    }
+    return _puzzleRating;
   }
 
   Future<void> markSolved(String id) async {

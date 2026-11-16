@@ -65,6 +65,20 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   bool _solved = false;
   bool _missed = false;
   bool _usedHint = false;
+
+  /// A puzzle counts for the puzzle rating once, and only if it was not
+  /// solved before: the first miss, hint or clean solve decides it.
+  late bool _rated = widget.progress.isSolved(_puzzle.id);
+  int? _ratingChange;
+
+  void _rate({required bool solved}) {
+    if (_rated) return;
+    _rated = true;
+    final before = widget.progress.puzzleRating;
+    widget.progress.recordPuzzle(_puzzle.tier, solved: solved).then((after) {
+      if (mounted) setState(() => _ratingChange = after - before);
+    });
+  }
   int _hints = 0;
 
   /// Where the current step of the puzzle starts, and how many of your moves
@@ -121,6 +135,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
       final done = _puzzle.mateIn == 0 || after.legalMoves().isEmpty;
       if (done) {
         _board.setPosition(after);
+        _rate(solved: !_missed && !_usedHint);
         widget.progress.markSolved(_puzzle.id);
         final day = widget.dailyDay;
         if (day != null) widget.progress.markDaily(day);
@@ -163,6 +178,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
     }
     if (!_missed) {
       _missed = true;
+      _rate(solved: false);
       widget.progress.recordMiss(weakKey(_puzzle.idea));
       widget.progress.recordReview(_puzzle.id, correct: false, today: _today);
     }
@@ -190,6 +206,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
     if (m == null || _solved || _busy) return;
     setState(() {
       _usedHint = true;
+      _rate(solved: false);
       _hints = !SettingsScope.of(context).stepHints ? 3 : (_hints < 3 ? _hints + 1 : 3);
       switch (_hints) {
         case 1:
@@ -330,6 +347,15 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                             _feedback!.contains('not the winning move')
                         ? CoachTone.bad
                         : CoachTone.neutral,
+              ),
+            ],
+            if (_ratingChange case final change?) ...[
+              gapSmall,
+              Text(
+                'Puzzle rating ${widget.progress.puzzleRating} '
+                '(${change >= 0 ? '+' : ''}$change)',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium,
               ),
             ],
           ],

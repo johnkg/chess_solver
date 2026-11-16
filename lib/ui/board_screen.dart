@@ -6,6 +6,7 @@ import 'board_controller.dart';
 import 'board_view.dart';
 import 'labels.dart';
 import 'layout.dart';
+import 'play_screen.dart';
 import 'progress_store.dart';
 import 'settings_screen.dart';
 import 'widgets.dart';
@@ -59,6 +60,15 @@ class _BoardScreenState extends State<BoardScreen> {
     final move = _board.lastMove;
     if (before == null || move == null) return;
     setState(() => _analysis = critiqueMove(before, move));
+  }
+
+  /// Plays the engine from the position on the board, you taking the side to move.
+  void _playFromHere(ProgressStore progress) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => PlayScreen(progress: progress, start: _board.position),
+      ),
+    );
   }
 
   Future<void> _pasteFen() async {
@@ -153,6 +163,12 @@ class _BoardScreenState extends State<BoardScreen> {
                   icon: const Icon(Icons.lightbulb_outline),
                   label: const Text('Best move'),
                 ),
+                if (widget.progress case final progress?)
+                  OutlinedButton.icon(
+                    onPressed: _gameOver ? null : () => _playFromHere(progress),
+                    icon: const Icon(Icons.smart_toy_outlined),
+                    label: const Text('Play from here'),
+                  ),
                 OutlinedButton.icon(
                   onPressed: _board.canUndo ? _critique : null,
                   icon: const Icon(Icons.fact_check_outlined),

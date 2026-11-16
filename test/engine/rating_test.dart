@@ -3,6 +3,13 @@ import 'package:chess_solver/engine/rating.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('harder puzzle tiers are rated higher', () {
+    expect(tierRating(1), 800);
+    expect(tierRating(5), 1600);
+    expect([for (var t = 1; t <= 5; t++) tierRating(t)], orderedEquals([...tierRatings]..sort()));
+    expect(tierRating(9), 1600);
+  });
+
   test('the matched level is the one nearest the rating', () {
     expect(levelForRating(0), Level.beginner);
     expect(levelForRating(1000), Level.casual);

@@ -22,6 +22,20 @@ void main() {
     expect(b.missed, isEmpty);
   });
 
+  test('puzzle rating moves with each rated puzzle and survives a reload', () async {
+    final a = ProgressStore();
+    expect(a.puzzleRating, 1000);
+    expect(await a.recordPuzzle(2, solved: true), 1020);
+    expect(await a.recordPuzzle(1, solved: false), lessThan(1020));
+    expect(a.puzzlesRated, 2);
+    expect(a.rating, 1000, reason: 'puzzles do not touch the game rating');
+
+    final b = ProgressStore();
+    await b.load();
+    expect(b.puzzleRating, a.puzzleRating);
+    expect(b.puzzlesRated, 2);
+  });
+
   test('rated games move the rating and survive a reload', () async {
     final a = ProgressStore();
     expect(a.rating, 1000);

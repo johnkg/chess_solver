@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:chess_solver/engine/clock.dart';
 import 'package:chess_solver/engine/opponent.dart';
+import 'package:chess_solver/engine/pgn.dart';
+import 'package:chess_solver/engine/position.dart';
 import 'package:chess_solver/engine/piece.dart';
 import 'package:chess_solver/engine/rating.dart';
 import 'package:chess_solver/ui/play_game.dart';
@@ -188,6 +190,66 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 50));
     expect(game.progress.rating, before);
     expect(game.ratingNote, startsWith('Practice game'));
+  });
+
+  group('from a set-up position', () {
+    // Black to move, a rook up: you play Black and the engine waits.
+    const fen = 'r3k3/8/8/8/8/8/8/4K3 b - - 0 1';
+
+    PlayGame fromSetUp() {
+      final settings = SettingsStore()..defaultLevel = Level.beginner;
+      final game = PlayGame(
+        progress: ProgressStore(),
+        settings: settings,
+        random: Random(3),
+        start: Position.fromFen(fen),
+      );
+      addTearDown(game.dispose);
+      return game;
+    }
+
+    test('you play the side to move and the engine waits for you', () {
+      final game = fromSetUp();
+      expect(game.player, black);
+      expect(game.fromSetUp, isTrue);
+      expect(game.position.toFen(), fen);
+      game.start();
+      expect(game.thinking, isFalse);
+      expect(game.isMyTurn, isTrue);
+      expect(game.canUndo, isFalse);
+    });
+
+    test('a move gets a reply, take-back works, and New game returns to the set-up', () async {
+      final game = fromSetUp();
+      await game.onTap(square('a8'));
+      await game.onTap(square('a1'));
+      expect(game.board.ply, 2);
+      expect(game.canUndo, isTrue);
+      game.newGame();
+      expect(game.position.toFen(), fen);
+      expect(game.player, black);
+    });
+
+    test('the game is saved with its start position but not rated', () async {
+      final game = fromSetUp();
+      final before = game.progress.rating;
+      await game.onTap(square('a8'));
+      await game.onTap(square('a1'));
+      game.resign();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(game.progress.rating, before);
+      expect(game.ratingNote, startsWith('Game from a set-up position'));
+      final pgn = game.progress.savedGames.single;
+      expect(pgn, contains('[FEN "$fen"]'));
+      expect(parsePgn(pgn).moves, hasLength(2));
+    });
+
+    test('a game chosen in the New game sheet starts from the normal position again', () {
+      final game = fromSetUp();
+      game.startWith(level: Level.beginner, side: SideChoice.white, control: TimeControl.off);
+      expect(game.fromSetUp, isFalse);
+      expect(game.position.toFen(), Position.start().toFen());
+    });
   });
 
   test('listeners hear about every change', () async {

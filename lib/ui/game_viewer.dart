@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../engine/game_eval.dart';
 import '../engine/mistakes.dart';
 import '../engine/pgn.dart';
 import '../engine/piece.dart';
@@ -9,6 +10,7 @@ import '../engine/san.dart';
 import 'analysis.dart';
 import 'board_view.dart';
 import 'controls.dart';
+import 'eval_chart.dart';
 import 'labels.dart';
 import 'layout.dart';
 import 'pgn_dialogs.dart';
@@ -18,7 +20,7 @@ import 'widgets.dart';
 
 /// Steps through a game loaded from PGN: first/previous/next/last, a move
 /// list to jump around, the best move on demand, and a review of one side's
-/// mistakes.
+/// mistakes, and an eval bar and chart of who was winning at each move.
 class GameViewer extends StatefulWidget {
   const GameViewer({super.key, required this.game, this.progress});
 
@@ -47,6 +49,40 @@ class _GameViewerState extends State<GameViewer> {
   final Set<int> _tracked = {};
   final ScrollController _scroll = ScrollController();
   bool _busy = false;
+
+  /// White-view score of each position (null until worked out), filled in
+  /// the background when the viewer opens.
+  late List<int?> _scores = List<int?>.filled(_positions.length, null);
+
+  /// Moves that swung the game most, once every score is known.
+  List<int> _swings = const [];
+
+  /// How many turning points are listed under the chart.
+  static const int _swingsShown = 3;
+
+  @override
+  void initState() {
+    super.initState();
+    _evaluate();
+  }
+
+  /// Scores every position, yielding between them so the screen stays live.
+  Future<void> _evaluate() async {
+    for (var i = 0; i < _positions.length; i++) {
+      await Future<void>.delayed(Duration.zero);
+      if (!mounted) return;
+      final score = whiteScore(_positions[i]);
+      setState(() => _scores = [..._scores]..[i] = score);
+    }
+    final all = [for (final s in _scores) s!];
+    setState(() => _swings = biggestSwings(all, _positions.first.turn).take(_swingsShown).toList());
+  }
+
+  /// "12... Qxe4" for the move from position [i].
+  String _moveName(int i) {
+    final pos = _positions[i];
+    return '${pos.fullmove}.${pos.turn == white ? '' : '..'} ${_names[i]}';
+  }
 
   @override
   void dispose() {
@@ -191,6 +227,8 @@ class _GameViewerState extends State<GameViewer> {
                 arrows: hint?.arrows ?? const [],
               ),
             ),
+            gapSmall,
+            EvalBar(score: _scores[_ply]),
             gapMedium,
             StepControls(ply: _ply, lastPly: game.moves.length, onGoTo: _go),
             gapSmall,
@@ -199,6 +237,29 @@ class _GameViewerState extends State<GameViewer> {
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium,
             ),
+            if (game.moves.isNotEmpty) ...[
+              gapMedium,
+              EvalChart(scores: _scores, ply: _ply, swings: _swings, onGoTo: _go),
+            ],
+            if (_swings.isNotEmpty) ...[
+              gapSmall,
+              Text('Turning points', style: theme.textTheme.titleSmall),
+              gapTiny,
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  for (final i in _swings)
+                    ActionChip(
+                      avatar: const Icon(Icons.trending_down, size: 18),
+                      label: Text(
+                        '${_moveName(i)}  ${scoreLabel(_scores[i]!)} → ${scoreLabel(_scores[i + 1]!)}',
+                      ),
+                      onPressed: () => _go(i + 1),
+                    ),
+                ],
+              ),
+            ],
             gapMedium,
             Wrap(
               spacing: 6,

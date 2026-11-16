@@ -92,12 +92,15 @@ void main() {
       expect(nextRushPuzzle(const [], 0, {}), isNull);
     });
 
-    test('the training path serves the easiest unsolved puzzle', () {
-      final lib = [puzzle('c', 3), puzzle('a', 1), puzzle('b', 1), puzzle('d', 2)];
-      expect(nextPathPuzzle(lib, {})!.id, 'a');
-      expect(nextPathPuzzle(lib, {'a', 'b'})!.id, 'd');
-      expect(nextPathPuzzle(lib, {'a', 'b', 'c', 'd'}), isNull);
-      expect(nextPathPuzzle(lib, {}, only: (p) => p.tier == 3)!.id, 'c');
+    test('Next for you serves the unsolved puzzle nearest the puzzle rating', () {
+      final lib = [puzzle('c', 3), puzzle('a', 1), puzzle('b', 1), puzzle('d', 2), puzzle('e', 5)];
+      expect(nextRatedPuzzle(lib, {}, 800)!.id, 'a');
+      expect(nextRatedPuzzle(lib, {'a', 'b'}, 800)!.id, 'd');
+      expect(nextRatedPuzzle(lib, {}, 1210)!.id, 'c');
+      expect(nextRatedPuzzle(lib, {}, 1100)!.id, 'd', reason: 'a tie goes to the easier tier');
+      expect(nextRatedPuzzle(lib, {}, 2400)!.id, 'e');
+      expect(nextRatedPuzzle(lib, {'a', 'b', 'c', 'd', 'e'}, 1000), isNull);
+      expect(nextRatedPuzzle(lib, {}, 800, only: (p) => p.tier == 3)!.id, 'c');
     });
   });
 
