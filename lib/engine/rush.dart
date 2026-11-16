@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'puzzle.dart';
+import 'rating.dart';
 
 /// Puzzle Rush: as many puzzles as you can in [rushSeconds], three strikes
 /// and you are out. They get harder as you go.
@@ -38,19 +39,26 @@ Puzzle? nextRushPuzzle(
   return pick([for (final p in candidates) if (p.tier == tiers.first) p]);
 }
 
-/// The easiest unsolved puzzle at or above the tier you have mastered,
-/// optionally limited to [only] (a theme). "Mastered" means every puzzle of
-/// the tier is solved. Null when all are solved.
-Puzzle? nextPathPuzzle(
+/// The unsolved puzzle whose tier rating is nearest [rating], optionally
+/// limited to [only]; ties go to the easier tier, then by id. Null when all
+/// are solved.
+Puzzle? nextRatedPuzzle(
   List<Puzzle> library,
-  Set<String> solved, {
+  Set<String> solved,
+  int rating, {
   bool Function(Puzzle)? only,
 }) {
-  final pool = [for (final p in library) if (only == null || only(p)) p];
-  final open = [for (final p in pool) if (!solved.contains(p.id)) p]
-    ..sort((a, b) {
-      final c = a.tier.compareTo(b.tier);
-      return c != 0 ? c : a.id.compareTo(b.id);
-    });
-  return open.isEmpty ? null : open.first;
+  Puzzle? best;
+  int distance(Puzzle p) => (tierRating(p.tier) - rating).abs();
+  for (final p in library) {
+    if (solved.contains(p.id) || (only != null && !only(p))) continue;
+    final b = best;
+    if (b == null) {
+      best = p;
+      continue;
+    }
+    final c = distance(p).compareTo(distance(b));
+    if (c < 0 || (c == 0 && (p.tier < b.tier || (p.tier == b.tier && p.id.compareTo(b.id) < 0)))) best = p;
+  }
+  return best;
 }

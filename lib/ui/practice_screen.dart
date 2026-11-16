@@ -62,8 +62,13 @@ class _PracticeScreenState extends State<PracticeScreen> {
     );
   }
 
-  Puzzle? _pathNext(Set<String> seen) =>
-      nextPathPuzzle(puzzleLibrary, progress.solved, only: (p) => _inTheme(p) && !seen.contains(p.id));
+  /// The next unsolved puzzle nearest your puzzle rating, in the chosen theme.
+  Puzzle? _pathNext(Set<String> seen) => nextRatedPuzzle(
+        puzzleLibrary,
+        progress.solved,
+        progress.puzzleRating,
+        only: (p) => _inTheme(p) && !seen.contains(p.id),
+      );
 
   Puzzle? _dueNext(Set<String> seen) {
     for (final id in progress.dueForReview(_today)) {
@@ -125,6 +130,13 @@ class _PracticeScreenState extends State<PracticeScreen> {
               ),
             ),
           ],
+        ),
+        gapTiny,
+        Text(
+          'Puzzle rating ${progress.puzzleRating}'
+          '${progress.puzzlesRated == 0 ? '' : ' · ${countOf(progress.puzzlesRated, 'puzzle')} rated'}'
+          '. Next for you picks puzzles near it.',
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         gapMedium,
         SingleChildScrollView(

@@ -3,6 +3,7 @@ import 'package:chess_solver/engine/opponent.dart';
 import 'package:chess_solver/engine/pgn.dart';
 import 'package:chess_solver/engine/piece.dart';
 import 'package:chess_solver/ui/board_screen.dart';
+import 'package:chess_solver/ui/progress_store.dart';
 import 'package:chess_solver/ui/board_view.dart';
 import 'package:chess_solver/ui/new_game_sheet.dart';
 import 'package:chess_solver/ui/pgn_dialogs.dart';
@@ -293,6 +294,28 @@ void main() {
       expect(find.text('White to move'), findsOneWidget);
       final undo = tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Undo'));
       expect(undo.onPressed, isNull);
+    });
+
+    testWidgets('Play from here opens a game from the board position', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      _phone(tester);
+      await tester.pumpWidget(MaterialApp(
+        theme: buildTheme(Brightness.light),
+        home: BoardScreen(progress: ProgressStore()),
+      ));
+      await tester.pumpAndSettle();
+      await _move(tester, 'e2', 'e4');
+      final play = find.text('Play from here');
+      await tester.ensureVisible(play);
+      await tester.tap(play);
+      await tester.pumpAndSettle();
+      expect(find.text('Play from position'), findsOneWidget);
+      expect(find.text('Your move'), findsOneWidget, reason: 'you play Black, who is to move');
+    });
+
+    testWidgets('no Play from here without a progress store', (tester) async {
+      await pump(tester);
+      expect(find.text('Play from here'), findsNothing);
     });
 
     testWidgets('Best move shows a coach card; a move clears it', (tester) async {

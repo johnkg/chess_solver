@@ -1,5 +1,6 @@
 import 'package:chess_solver/engine/pgn.dart';
 import 'package:chess_solver/ui/board_view.dart';
+import 'package:chess_solver/ui/eval_chart.dart';
 import 'package:chess_solver/ui/game_viewer.dart';
 import 'package:chess_solver/ui/progress_store.dart';
 import 'package:chess_solver/ui/theme.dart';
@@ -14,7 +15,7 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   Future<void> open(WidgetTester tester, {ProgressStore? progress}) async {
-    tester.view.physicalSize = const Size(390, 2600);
+    tester.view.physicalSize = const Size(390, 3600);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(MaterialApp(
@@ -23,6 +24,23 @@ void main() {
     ));
     await tester.pumpAndSettle();
   }
+
+  testWidgets('the eval bar, chart and turning points follow the game', (tester) async {
+    await open(tester);
+    expect(find.byType(EvalBar), findsOneWidget);
+    expect(find.byType(EvalChart), findsOneWidget);
+    expect(find.text('Turning points'), findsOneWidget);
+    // White's 6.Rf1 lets Black win: it is one of the turning points.
+    final rf1 = find.descendant(of: find.byType(ActionChip), matching: find.textContaining('6. Rf1'));
+    expect(rf1, findsOneWidget);
+    await tester.tap(rf1);
+    await tester.pumpAndSettle();
+    expect(find.text('Move 12 of 14'), findsOneWidget);
+    // The last position is Black's mate.
+    await tester.tap(find.byTooltip('End'));
+    await tester.pumpAndSettle();
+    expect(find.text('-#'), findsOneWidget);
+  });
 
   testWidgets('reviewing both sides scores each one', (tester) async {
     await open(tester);

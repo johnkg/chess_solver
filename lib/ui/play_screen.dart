@@ -26,9 +26,13 @@ import 'widgets.dart';
 /// Play a game against the engine. After each of your moves it says whether
 /// the move was fine or a mistake, and why; it also says why it replied.
 class PlayScreen extends StatefulWidget {
-  const PlayScreen({super.key, required this.progress, this.random});
+  const PlayScreen({super.key, required this.progress, this.random, this.start});
 
   final ProgressStore progress;
+
+  /// A set-up position to play from (opened from the Board tab); null for
+  /// the Play tab, which starts from the normal position.
+  final Position? start;
 
   /// Fixed source of randomness for tests.
   final Random? random;
@@ -54,10 +58,15 @@ class _PlayScreenState extends State<PlayScreen> {
       return;
     }
     // The first game starts from the defaults in Settings.
-    final created = PlayGame(progress: widget.progress, settings: settings, random: widget.random);
+    final created = PlayGame(
+      progress: widget.progress,
+      settings: settings,
+      random: widget.random,
+      start: widget.start,
+    );
     created.addListener(_onGameChanged);
     _gameState = created;
-    if (created.player == black) {
+    if (created.player != created.startPosition.turn) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && created.board.ply == 0 && !created.thinking) created.start();
       });
@@ -109,7 +118,7 @@ class _PlayScreenState extends State<PlayScreen> {
     final arrowsFit = coach != null && coach.fen == _pos.toFen();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Play'),
+        title: Text(widget.start == null ? 'Play' : 'Play from position'),
         actions: [
           IconButton(
             tooltip: 'New game',

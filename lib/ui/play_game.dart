@@ -38,13 +38,17 @@ const int _minPliesToRecord = 2;
 /// clock, the engine's replies, the coach's remarks, hints, take-backs,
 /// resigning and recording the result. [PlayScreen] only shows it.
 class PlayGame extends ChangeNotifier {
-  PlayGame({required this.progress, required this.settings, Random? random})
+  /// With [start] the game begins from that position and you play the side
+  /// to move; otherwise from the normal start, on your default side.
+  PlayGame({required this.progress, required this.settings, Random? random, Position? start})
       : _random = random,
-        _rng = random ?? Random() {
+        _rng = random ?? Random(),
+        startPosition = start ?? Position.start(),
+        board = BoardController(start) {
     board.addListener(_onBoardChanged);
     level = settings.matchRating ? levelForRating(progress.rating) : settings.defaultLevel;
     sideChoice = settings.defaultSide;
-    player = sideChoice.resolve(_rng);
+    player = start?.turn ?? sideChoice.resolve(_rng);
   }
 
   final ProgressStore progress;
@@ -57,7 +61,16 @@ class PlayGame extends ChangeNotifier {
   final Random? _random;
   final Random _rng;
 
-  final BoardController board = BoardController();
+  final BoardController board;
+
+  /// Where every game starts: the normal start, or a position set up on the
+  /// Board tab. Choosing a new game in the New game sheet goes back to the
+  /// normal start.
+  Position startPosition;
+
+  /// True when the game starts from a set-up position; such games are not rated.
+  bool get fromSetUp => startPosition.toFen() != Position.start().toFen();
+
   late Level level;
   late SideChoice sideChoice;
   late int player;
@@ -107,7 +120,7 @@ class PlayGame extends ChangeNotifier {
   bool get isShowingFirstHint => _hintStage == 1 && _hintFen == position.toFen();
 
   bool get canUndo =>
-      settings.allowTakeBacks && !isOver && board.ply >= (player == white ? 1 : 2);
+      settings.allowTakeBacks && !isOver && board.ply >= (player == startPosition.turn ? 1 : 2);
 
   /// 1, 0.5 or 0 for the player once the game is over, else null.
   double? get score => playerScore(
@@ -138,8 +151,9 @@ class PlayGame extends ChangeNotifier {
 
   /// Starts the first game; the engine moves first when you play Black.
   void start() {
-    if (player == black) _engineMove();
+    if (player != startPosition.turn) _engineMove();
   }
+
 
   /// Starts a new game with the chosen opponent, side and clock.
   /// With [matchRating] this and later games are against the level nearest
@@ -154,6 +168,7 @@ class PlayGame extends ChangeNotifier {
     this.level = level;
     sideChoice = side;
     this.control = control;
+    startPosition = Position.start();
     newGame(player: side.resolve(_rng));
   }
 
@@ -178,8 +193,8 @@ class PlayGame extends ChangeNotifier {
     if (clock != null) {
       _ticker = Timer.periodic(_clockTickInterval, (_) => _onClockTick());
     }
-    board.setPosition(Position.start());
-    if (this.player == black) _engineMove();
+    board.setPosition(startPosition);
+    if (this.player != startPosition.turn) _engineMove();
     _notify();
   }
 
@@ -365,6 +380,10 @@ class PlayGame extends ChangeNotifier {
     if (result == null || _recorded) return;
     _recorded = true;
     if (board.ply >= _minPliesToRecord) progress.saveGame(pgnText());
+    if (fromSetUp) {
+      ratingNote = 'Game from a set-up position: rating unchanged.';
+      return;
+    }
     if (assisted) {
       ratingNote = 'Practice game (hints or take-backs used): rating unchanged.';
       return;
@@ -384,6 +403,7 @@ class PlayGame extends ChangeNotifier {
     final opponentName = level.title;
     return toPgn(
       board.moves,
+      start: startPosition,
       result: pgnResultForScore(score, player),
       headers: {
         'Date': pgnDate(DateTime.now()),

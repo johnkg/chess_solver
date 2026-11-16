@@ -113,6 +113,44 @@ void main() {
       expect(progress.srsCards['review-me']!.due, 104);
     });
 
+    testWidgets('a clean solve raises the puzzle rating once; Again does not count', (tester) async {
+      final progress = ProgressStore();
+      await show(tester, PuzzleScreen(puzzle: rushPuzzle('p', tier: 2), progress: progress));
+      await move(tester, 'd1d8');
+      await tester.pumpAndSettle();
+      expect(progress.puzzleRating, 1020);
+      expect(find.text('Puzzle rating 1020 (+20)'), findsOneWidget);
+      await tester.tap(find.text('Again'));
+      await tester.pumpAndSettle();
+      await move(tester, 'd1d8');
+      await tester.pumpAndSettle();
+      expect(progress.puzzlesRated, 1);
+    });
+
+    testWidgets('a miss or a hint costs puzzle rating; a solved puzzle no longer counts', (tester) async {
+      final progress = ProgressStore();
+      await show(tester, PuzzleScreen(puzzle: rushPuzzle('miss', tier: 2), progress: progress));
+      await move(tester, 'd1d2');
+      await tester.pumpAndSettle();
+      expect(progress.puzzleRating, 980);
+      await move(tester, 'd1d8');
+      await tester.pumpAndSettle();
+      expect(progress.puzzlesRated, 1);
+
+      await show(tester, PuzzleScreen(key: UniqueKey(), puzzle: rushPuzzle('hint', tier: 2), progress: progress));
+      await tester.tap(find.text('Hint'));
+      await tester.pumpAndSettle();
+      expect(progress.puzzlesRated, 2);
+      expect(progress.puzzleRating, lessThan(980));
+
+      final before = progress.puzzleRating;
+      await show(tester, PuzzleScreen(key: UniqueKey(), puzzle: rushPuzzle('miss', tier: 2), progress: progress));
+      await move(tester, 'd1d2');
+      await tester.pumpAndSettle();
+      expect(progress.puzzleRating, before);
+      expect(progress.puzzlesRated, 2);
+    });
+
     testWidgets('a next button follows the supplied run', (tester) async {
       final a = rushPuzzle('a');
       final b = rushPuzzle('b');
