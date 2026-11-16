@@ -2238,17 +2238,6 @@ const List<Puzzle> puzzleLibrary = [
   ),
   Puzzle(
     id: 'discoveredAttack-33',
-    fen: 'rnb1kbn1/1pqp2pr/1p2pp2/P1p4p/2P5/5N2/3PPPPP/RNBQKB1R w KQq - 0 1',
-    solutions: ['a5b6'],
-    san: 'axb6',
-    idea: Idea.discoveredAttack,
-    mateIn: 0,
-    tier: 3,
-    text: 'Moving the pawn uncovers the rook on a1, which now attacks the rook on a8, while the pawn makes a threat of its own. Black cannot meet both.',
-    source: 'game2000170',
-  ),
-  Puzzle(
-    id: 'discoveredAttack-34',
     fen: 'rnb2b1r/1pk3pp/pqp4n/4Np2/Q4B2/P2B3P/1P3PP1/RN2K2R w KQ - 0 1',
     solutions: ['e5c4'],
     san: 'Nc4+',
@@ -2259,7 +2248,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game2000068',
   ),
   Puzzle(
-    id: 'discoveredAttack-35',
+    id: 'discoveredAttack-34',
     fen: 'rnb3nr/2p1p1b1/pp3k1p/6pq/PP1P1B1P/2p3KR/4PPP1/RN1Q1BN1 w - - 0 1',
     solutions: ['h4g5'],
     san: 'hxg5+',
@@ -2270,7 +2259,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game700406',
   ),
   Puzzle(
-    id: 'discoveredAttack-36',
+    id: 'discoveredAttack-35',
     fen: 'rnbk1b1r/pp3p1p/2p1p1p1/8/2P3nP/N3PN2/PP1BBP2/3RK2R w - - 0 1',
     solutions: ['d2c3'],
     san: 'Bc3+',
@@ -2281,7 +2270,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game700059',
   ),
   Puzzle(
-    id: 'discoveredAttack-37',
+    id: 'discoveredAttack-36',
     fen: 'rnbk1r2/1pq1p1b1/1ppp1p1p/P4n2/3P3p/2P5/RQ2PPPN/1NBK1BR1 w - - 0 1',
     solutions: ['a5b6'],
     san: 'axb6',
@@ -2292,7 +2281,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game2000712',
   ),
   Puzzle(
-    id: 'discoveredAttack-38',
+    id: 'discoveredAttack-37',
     fen: 'rnbq1bn1/pp1pp3/5kpr/5p1p/2p1PN2/N2P2PP/PPPB1P2/R2QKB1R w KQ - 0 1',
     solutions: ['f4d5'],
     san: 'Nd5+',
@@ -2303,7 +2292,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game2000465',
   ),
   Puzzle(
-    id: 'discoveredAttack-39',
+    id: 'discoveredAttack-38',
     fen: 'rnbqkbn1/ppp1p3/4r1P1/3p3Q/P7/2P3P1/1P1PNP1P/RNBK1B1R w q - 0 1',
     solutions: ['g6g7'],
     san: 'g7+',
@@ -2314,7 +2303,7 @@ const List<Puzzle> puzzleLibrary = [
     source: 'game600243',
   ),
   Puzzle(
-    id: 'discoveredAttack-40',
+    id: 'discoveredAttack-39',
     fen: 'rnq2k1r/p1p2ppp/1p5n/4p1b1/2P5/4PPPP/P2PN1BR/1QB1K1N1 w - - 0 1',
     solutions: ['f3f4'],
     san: 'f4',
