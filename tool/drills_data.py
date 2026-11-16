@@ -54,6 +54,25 @@ DRILLS = [
          fen='2k5/8/8/PK6/8/8/8/8 w - - 0 1', side='black', goal='hold', max=25,
          hint='Run to the corner (a8 or b8). A king on the corner square in front of a rook-pawn can never be driven out.',
          lesson='eg-rookpawn'),
+    dict(id='dr-spare-tempo', phase='endgame', title='Spare pawn move', level='expert',
+         task='Promote the pawn. The kings face each other and it is your move.',
+         fen='8/8/4k3/8/4K3/8/4P3/8 w - - 0 1', side='white', goal='promote', max=30,
+         hint='Normally the side to move loses the opposition, but your pawn can pass the move back: e3 '
+              'leaves Black to move with the kings still facing each other.',
+         lesson='eg-opposition'),
+    dict(id='dr-ahead', phase='endgame', title='King ahead of the pawn', level='expert',
+         task='Promote the pawn.',
+         fen='8/5k2/8/3K4/3P4/8/8/8 w - - 0 1', side='white', goal='promote', max=30,
+         hint='Go to a key square two ranks in front of the pawn: c6, d6 or e6. Kd6 gets there at once; '
+              'then let the pawn follow its king.',
+         lesson='eg-keysq'),
+    dict(id='dr-hold-front', phase='endgame', title='Hold in front of the pawn', level='advanced',
+         task='You are Black. Draw: stop the pawn, win it, or survive 25 moves.',
+         fen='4k3/8/8/4P3/4K3/8/8/8 w - - 0 1', side='black', goal='hold', max=25,
+         hint='Keep your king on the square in front of the pawn or just beside it. When the white king steps up, '
+              'step up to face it with one square between (the opposition). If the pawn reaches the seventh '
+              'with check, go straight in front of it, never to the side.',
+         lesson='eg-opposition'),
     # ------------------------------------------------- named mates, in two moves
     dict(id='dr-anastasia', phase='middlegame', title="Anastasia's mate in two", level='expert',
          task='Checkmate the black king in 2 moves.',
