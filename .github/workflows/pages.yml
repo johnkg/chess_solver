@@ -1,21 +1,23 @@
-name: Deploy web app to GitHub Pages
+name: Check and deploy web app
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
+# A newer run of the same branch or pull request replaces an older one.
 concurrency:
-  group: pages
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
+  # Analyzer and tests: on every pull request and every push to main. A
+  # warning or a failing test blocks the deploy.
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,6 +31,20 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
+
+  # The web build runs next to the checks, not after them, so the deploy only
+  # waits for the slower of the two.
+  build:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+      - run: flutter pub get
       - name: Build web
         run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
       - uses: actions/upload-pages-artifact@v3
@@ -36,8 +52,11 @@ jobs:
           path: build/web
 
   deploy:
-    needs: build
+    needs: [check, build]
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
