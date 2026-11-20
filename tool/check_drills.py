@@ -5,6 +5,7 @@ from mirror_search import in_check, mate_in
 from drills_data import DRILLS
 from lessons_data import LESSONS
 import tb_kpk as TB
+import tb_lichess as LI
 from mirror_structure import concept_targets
 
 # A mate drill this short must be a forced mate in exactly that many moves.
@@ -35,13 +36,17 @@ for d in DRILLS:
         got = concept_targets(d['fen'], d['concept'], d['subject'])
         check(f"{d['id']}: the {d['concept']} answer is {d['answers']}", got == sorted(d['answers']), str(got))
         continue
+    # A rook ending is checked against the Lichess tablebase, a pawn ending against tb_kpk.
+    rooks = any(c in d['fen'].split()[0] for c in 'RrQqBbNn')
+    exact = (lambda f: LI.result(f) == 'win') if rooks else TB.kpk
     if d['goal'] == 'promote':
         # The user's side owns the pawn and the position must be won.
-        check(f"{d['id']}: pawn side wins (tablebase)", TB.kpk(d['fen']))
+        check(f"{d['id']}: pawn side wins ({'Lichess' if rooks else 'KPK'} tablebase)", exact(d['fen']))
         pawn = 'P' if side == 0 else 'p'
         check(f"{d['id']}: user owns the pawn", pawn in d['fen'].split()[0])
     elif d['goal'] == 'hold':
-        check(f"{d['id']}: position is a draw (tablebase)", not TB.kpk(d['fen']))
+        check(f"{d['id']}: position is a draw ({'Lichess' if rooks else 'KPK'} tablebase)",
+              LI.result(d['fen']) == 'draw' if rooks else not TB.kpk(d['fen']))
         pawn = 'p' if side == 0 else 'P'
         check(f"{d['id']}: engine owns the pawn", pawn in d['fen'].split()[0])
     else:  # mate: the user has a queen or rook and the black king is not stalemated/attacked wrongly

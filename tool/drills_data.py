@@ -73,6 +73,24 @@ DRILLS = [
               'step up to face it with one square between (the opposition). If the pawn reaches the seventh '
               'with check, go straight in front of it, never to the side.',
          lesson='eg-opposition'),
+    dict(id='dr-lucena', phase='endgame', title='Lucena: build the bridge', level='expert',
+         task='Promote the pawn and keep the new queen.',
+         fen='3K4/3P1k2/8/8/8/8/r7/4R3 w - - 0 1', side='white', goal='promote', max=30,
+         hint='Play Re4 first. When the king steps out and the black rook checks along the fourth rank, '
+              'block with the rook. Never push the pawn while the checks are still coming.',
+         lesson='eg-lucena'),
+    dict(id='dr-philidor', phase='endgame', title='Philidor: keep the third rank', level='expert',
+         task='You are Black. Draw: keep your rook on the sixth rank, or survive 25 moves.',
+         fen='4k3/8/r7/3KP3/8/8/8/7R w - - 0 1', side='black', goal='hold', max=25,
+         hint='Keep the rook on the sixth rank so the white king cannot pass, and the king on the back rank. '
+              'When the pawn moves to the sixth, switch to checks from behind.',
+         lesson='eg-philidor'),
+    dict(id='dr-philidor-behind', phase='endgame', title='Philidor: check from behind', level='expert',
+         task='You are Black. The pawn is on the sixth: draw by giving checks from behind, or survive 25 moves.',
+         fen='4k3/8/r3P3/4K3/8/8/8/7R b - - 0 1', side='black', goal='hold', max=25,
+         hint='Ra2, Ra3 or Ra4: leave the sixth rank and check from behind, far from the white king. '
+              'Every other move, including staying on the sixth rank or moving the king, loses.',
+         lesson='eg-philidor'),
     # ------------------------------------------------- named mates, in two moves
     dict(id='dr-anastasia', phase='middlegame', title="Anastasia's mate in two", level='expert',
          task='Checkmate the black king in 2 moves.',
