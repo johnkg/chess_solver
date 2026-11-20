@@ -111,6 +111,11 @@ DrillStatus drillStatus(Drill drill, Position pos, int userMoves) {
   final foePieces = _count(pos, foe, (t) => t != pawn && t != king);
   final stalemate = pos.isStalemate;
   final draw = drawReason(pos);
+  // Pieces the drill starts with (a rook ending already has rooks), so that
+  // only a NEW piece counts as a promotion and a rook alone is not one.
+  final start = Position.fromFen(drill.fen);
+  final myNewPieces = myPieces - _count(start, me, (t) => t != pawn && t != king);
+  final foeNewPieces = foePieces - _count(start, foe, (t) => t != pawn && t != king);
 
   switch (drill.goal) {
     case DrillGoal.mate:
@@ -128,13 +133,13 @@ DrillStatus drillStatus(Drill drill, Position pos, int userMoves) {
       if (stalemate) {
         return const DrillStatus(DrillState.failure, 'Stalemate: a draw.');
       }
-      if (myPawns == 0 && myPieces > 0 && pos.turn == me) {
+      if (myPawns == 0 && myNewPieces > 0 && pos.turn == me) {
         return const DrillStatus(
           DrillState.success,
           'Promoted, and the new piece is safe.',
         );
       }
-      if (myPawns == 0 && myPieces == 0) {
+      if (myPawns == 0 && myNewPieces <= 0) {
         return const DrillStatus(
           DrillState.failure,
           'The pawn is lost: a draw.',
@@ -152,13 +157,13 @@ DrillStatus drillStatus(Drill drill, Position pos, int userMoves) {
       if (stalemate) {
         return const DrillStatus(DrillState.success, 'Stalemate: you held the draw!');
       }
-      if (foePawns == 0 && foePieces == 0) {
+      if (foePawns == 0 && foeNewPieces <= 0) {
         return const DrillStatus(
           DrillState.success,
           'The pawn is gone: a draw.',
         );
       }
-      if (foePawns == 0 && foePieces > 0 && pos.turn == me) {
+      if (foePawns == 0 && foeNewPieces > 0 && pos.turn == me) {
         return const DrillStatus(DrillState.failure, 'The pawn promoted.');
       }
       if (draw != null) {

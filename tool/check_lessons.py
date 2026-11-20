@@ -6,6 +6,7 @@ from mirror_search import in_check
 from lessons_data import LESSONS
 from drills_data import DRILLS
 import tb_kpk as TB
+import tb_lichess as LI
 from mirror_structure import concept_targets
 
 fails = 0
@@ -63,7 +64,17 @@ for l in LESSONS:
         if not mv:
             check(f"{lid}: move {l['move']} is legal", False)
             continue
-        if lid in ('eg-kq', 'eg-kr'):
+        if lid in ('eg-lucena', 'eg-philidor'):
+            # Rook endings: exact results from the Lichess tablebase (tb_lichess.py).
+            want = 'win' if lid == 'eg-lucena' else 'draw'
+            moves = LI.results_by_move(l['fen'])
+            check(f"{lid}: the position is a {want} and {l['move']} keeps it",
+                  LI.result(l['fen']) == want and moves.get(l['move']) == want, str(LI.result(l['fen'])))
+            if lid == 'eg-philidor':
+                # The note says exactly these three moves draw and everything else loses.
+                keeps = sorted(u for u, r in moves.items() if r == 'draw')
+                check(f"{lid}: only Ra2, Ra3 and Ra4 draw", keeps == ['a6a2', 'a6a3', 'a6a4'], str(keeps))
+        elif lid in ('eg-kq', 'eg-kr'):
             after = pos.make(mv[0])
             check(f"{lid}: {l['move']} is checkmate", in_check(after) and not after.legal())
         else:

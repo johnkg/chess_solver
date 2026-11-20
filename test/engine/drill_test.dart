@@ -7,12 +7,12 @@ import 'package:chess_solver/lessons/drills.dart';
 import 'package:chess_solver/lessons/lessons.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Drill _drill(DrillGoal goal, {int side = white, int max = 10}) => Drill(
+Drill _drill(DrillGoal goal, {int side = white, int max = 10, String fen = '8/8/8/8/8/8/8/8 w - - 0 1'}) => Drill(
       id: 't',
       phase: 'endgame',
       title: 't',
       task: 't',
-      fen: '8/8/8/8/8/8/8/8 w - - 0 1',
+      fen: fen,
       side: side,
       goal: goal,
       maxMoves: max,
@@ -56,6 +56,31 @@ void main() {
     test('works for Black too', () {
       final b = _drill(DrillGoal.promote, side: black);
       expect(_status(b, 'K6k/8/8/8/8/8/8/4q3 b - - 0 1').state, DrillState.success);
+    });
+  });
+
+  group('rook endings (rooks are on the board from the start)', () {
+    // Lucena: White has a rook and a pawn, Black a rook.
+    final up = _drill(DrillGoal.promote, max: 30, fen: '3K4/3P1k2/8/8/8/8/r7/4R3 w - - 0 1');
+    test('a rook already on the board is not a promotion', () {
+      expect(_status(up, '3K4/3P1k2/8/8/8/8/r7/4R3 w - - 0 1').over, isFalse);
+      // The pawn was lost but the rook is still there: that is not a success.
+      expect(_status(up, '3K4/5k2/8/8/8/8/r7/4R3 w - - 0 1').state, DrillState.failure);
+    });
+    test('a new queen counts, even next to the rook', () {
+      expect(_status(up, '3Q4/5k2/8/8/8/8/r7/4R3 b - - 0 1').over, isFalse, reason: 'not on your turn yet');
+      expect(_status(up, '3Q4/8/5k2/8/8/8/r7/4R3 w - - 0 1').state, DrillState.success);
+    });
+
+    // Philidor: Black defends against the pawn on e6.
+    final defend = _drill(DrillGoal.hold,
+        side: black, max: 25, fen: '4k3/8/r3P3/3K4/8/8/7R/8 b - - 0 1');
+    test('losing the pawn, with the rooks still on, is a draw', () {
+      expect(_status(defend, '4k3/8/r7/3K4/8/8/7R/8 w - - 0 1').state, DrillState.success);
+    });
+    test('a promotion is a loss; the rook alone is not', () {
+      expect(_status(defend, '4k3/8/r3P3/3K4/8/8/7R/8 b - - 0 1', 3).state, DrillState.running);
+      expect(_status(defend, '4Q3/8/r7/3K4/8/8/7R/8 b - - 0 1').state, DrillState.failure);
     });
   });
 

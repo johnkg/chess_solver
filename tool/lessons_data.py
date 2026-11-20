@@ -419,6 +419,32 @@ LESSONS = [
          note='The pawn needs three moves and the black king on g8 is outside its square. Had it been Black\'s move '
               'in this position, the king would catch the pawn and it would be a draw.',
          drill='dr-square'),
+    dict(id='eg-lucena', level=5, kind='plan', title='The Lucena position: build a bridge',
+         tagline='A pawn on the seventh with your king in front of it wins with a rook, if you shield your king from checks.',
+         why='You have a rook and a pawn on the seventh rank, and your king stands on the queening square, but the enemy '
+             'king is cut off and the enemy rook keeps checking. The king cannot walk out because every step meets a '
+             'check. The fix is to put your rook on the fourth rank first, the bridge: the king steps out, and when '
+             'the enemy rook checks along the fourth rank your rook steps in front of it. Then the pawn promotes.',
+         spot=['Your pawn is on the seventh and your king is on the queening square, boxed in by its own pawn.',
+               'The enemy king is cut off from the pawn by your rook on the next file.',
+               'Move your rook to the fourth rank before the king steps out.'],
+         fen='3K4/3P1k2/8/8/8/8/r7/4R3 w - - 0 1', move='e1e4',
+         note='The rook on the fourth rank is the bridge. Checks from behind are answered by the king walking out '
+              'towards the rook, and checks along the fourth rank are blocked by the rook itself.',
+         drill='dr-lucena'),
+    dict(id='eg-philidor', level=5, kind='plan', title='The Philidor position: defend from behind',
+         tagline='Against a rook and pawn, keep your rook on the third rank, then check from behind.',
+         why='The defender keeps the rook on the third rank (the sixth rank for Black) and the king in front of the '
+             'pawn, so the enemy king cannot step past the rook. As soon as the pawn moves to the sixth, the rook '
+             'leaves the sixth rank and gives check after check from behind. The king has nowhere to hide and '
+             'the pawn can never be supported: a draw.',
+         spot=['Your king is on the queening square, in front of the pawn.',
+               'Your rook sits on the third rank until the pawn moves to the sixth.',
+               'After that, check from behind: on the a-file below the white king, far from it.'],
+         fen='4k3/8/r3P3/4K3/8/8/8/7R b - - 0 1', move='a6a2',
+         note='The pawn has reached the sixth, so the rook goes behind the white king and checks from there. '
+              'Ra2, Ra3 and Ra4 draw; every other move, including staying on the sixth rank, loses.',
+         drill='dr-philidor-behind'),
     dict(id='eg-rookpawn', level=5, kind='plan', title='The rook pawn draws',
          tagline='A pawn on the edge file cannot win if the defending king reaches the corner.',
          why='The king in the corner can never be driven away, and a king in front of the pawn means the pawn has '
