@@ -445,6 +445,19 @@ LESSONS = [
          note='The pawn has reached the sixth, so the rook goes behind the white king and checks from there. '
               'Ra2, Ra3 and Ra4 draw; every other move, including staying on the sixth rank, loses.',
          drill='dr-philidor-behind'),
+    dict(id='eg-rooksk', level=5, kind='plan', title='Against a rook pawn: skewer the king and rook',
+         tagline='When the rook is not enough, look for a check that also hits the other rook.',
+         why='White has a pawn on the sixth rank next to the edge, and the white rook defends it from behind. '
+             'Black cannot take the pawn, and nearly every move loses. The one move that saves the game is a check '
+             'along the fourth rank, where the white king and rook stand on the same line: the king must step '
+             'aside and the rook behind it falls. A king and rook pawn against a lone rook cannot win, so the game is drawn.',
+         spot=['The enemy king and rook stand on the same rank or file.',
+               'You can check along that line from the far side of the king.',
+               'The rook behind the king is undefended once the king moves: a skewer.'],
+         fen='8/6k1/P4r2/8/R2K4/8/8/8 b - - 0 1', move='f6f4',
+         note='Rf4+ skewers the king and the rook. After the king moves, Rxa4 wins the rook. '
+              'Every other move, including the king moves, loses.',
+         drill='dr-rooksk'),
     dict(id='eg-rookpawn', level=5, kind='plan', title='The rook pawn draws',
          tagline='A pawn on the edge file cannot win if the defending king reaches the corner.',
          why='The king in the corner can never be driven away, and a king in front of the pawn means the pawn has '

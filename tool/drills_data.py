@@ -79,6 +79,12 @@ DRILLS = [
          hint='Play Re4 first. When the king steps out and the black rook checks along the fourth rank, '
               'block with the rook. Never push the pawn while the checks are still coming.',
          lesson='eg-lucena'),
+    dict(id='dr-lucena-king', phase='endgame', title='Lucena: black king closer', level='expert',
+         task='Promote the pawn and keep the new queen.',
+         fen='3K4/3P4/5k2/8/8/8/r7/4R3 w - - 0 1', side='white', goal='promote', max=30,
+         hint='The same plan with the black king on f6: Re4 first, then walk the king out and block the checks '
+              'with the rook on the fourth rank.',
+         lesson='eg-lucena'),
     dict(id='dr-philidor', phase='endgame', title='Philidor: keep the third rank', level='expert',
          task='You are Black. Draw: keep your rook on the sixth rank, or survive 25 moves.',
          fen='4k3/8/r7/3KP3/8/8/8/7R w - - 0 1', side='black', goal='hold', max=25,
@@ -91,6 +97,12 @@ DRILLS = [
          hint='Ra2, Ra3 or Ra4: leave the sixth rank and check from behind, far from the white king. '
               'Every other move, including staying on the sixth rank or moving the king, loses.',
          lesson='eg-philidor'),
+    dict(id='dr-rooksk', phase='endgame', title='Rook pawn: skewer to draw', level='expert',
+         task='You are Black. Draw: win the rook, win the pawn, or survive 25 moves.',
+         fen='8/6k1/P4r2/8/R2K4/8/8/8 b - - 0 1', side='black', goal='hold', max=25,
+         hint='Rf4+! The white king and rook stand on the same rank. After the king steps aside, take the rook. '
+              'Every other move loses.',
+         lesson='eg-rooksk'),
     # ------------------------------------------------- named mates, in two moves
     dict(id='dr-anastasia', phase='middlegame', title="Anastasia's mate in two", level='expert',
          task='Checkmate the black king in 2 moves.',

@@ -403,6 +403,32 @@
 "h1h8": "draw"
 }
 },
+"8/6k1/P4r2/8/R2K4/8/8/8 b - -": {
+"category": "draw",
+"moves": {
+"f6a6": "win",
+"f6b6": "win",
+"f6c6": "win",
+"f6d6": "win",
+"f6e6": "win",
+"f6f1": "win",
+"f6f2": "win",
+"f6f3": "win",
+"f6f4": "draw",
+"f6f5": "win",
+"f6f7": "win",
+"f6f8": "win",
+"f6g6": "win",
+"f6h6": "win",
+"g7f7": "win",
+"g7f8": "win",
+"g7g6": "win",
+"g7g8": "win",
+"g7h6": "win",
+"g7h7": "win",
+"g7h8": "win"
+}
+},
 "r3k3/8/8/3KP3/8/8/8/7R b - -": {
 "category": "draw",
 "moves": {

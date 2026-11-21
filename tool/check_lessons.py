@@ -64,16 +64,19 @@ for l in LESSONS:
         if not mv:
             check(f"{lid}: move {l['move']} is legal", False)
             continue
-        if lid in ('eg-lucena', 'eg-philidor'):
+        if lid in ('eg-lucena', 'eg-philidor', 'eg-rooksk'):
             # Rook endings: exact results from the Lichess tablebase (tb_lichess.py).
             want = 'win' if lid == 'eg-lucena' else 'draw'
             moves = LI.results_by_move(l['fen'])
             check(f"{lid}: the position is a {want} and {l['move']} keeps it",
                   LI.result(l['fen']) == want and moves.get(l['move']) == want, str(LI.result(l['fen'])))
-            if lid == 'eg-philidor':
-                # The note says exactly these three moves draw and everything else loses.
-                keeps = sorted(u for u, r in moves.items() if r == 'draw')
-                check(f"{lid}: only Ra2, Ra3 and Ra4 draw", keeps == ['a6a2', 'a6a3', 'a6a4'], str(keeps))
+            # The notes say exactly which moves keep the result and that every other move loses.
+            only = {'eg-philidor': ['a6a2', 'a6a3', 'a6a4'], 'eg-rooksk': ['f6f4']}.get(lid)
+            if only:
+                keeps = sorted(u for u, r in moves.items() if r == want)
+                others = {r for u, r in moves.items() if u not in only}
+                check(f"{lid}: only {', '.join(only)} keep the {want}, every other move loses",
+                      keeps == only and others == {'loss'}, f'{keeps} {others}')
         elif lid in ('eg-kq', 'eg-kr'):
             after = pos.make(mv[0])
             check(f"{lid}: {l['move']} is checkmate", in_check(after) and not after.legal())
